@@ -19,6 +19,8 @@ Chat memory is not the source of truth. The `.md` files in this folder are.
 | Git | Folder is **not a repo yet** — `git init` + push is part of R0 |
 | Brand / domain | Kan; no owned domain — Vercel Hobby `*.vercel.app` via `NEXT_PUBLIC_SITE_URL` |
 | Toolchain | Node 22, npm 10, git 2.54, Python 3.13, Docker, adb, Vercel/EAS/Supabase/Flutter/gh CLIs — all verified present |
+| Git remote | `https://github.com/okechbrian/kan` — commit `fc54247` pushed to `main` |
+| Live site | https://kan-sme.vercel.app (Vercel project `kan-sme`, Deployment Protection off, all public routes 200) |
 
 ---
 
