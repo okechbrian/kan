@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  id        String   @id
+  name      String
+  created_at DateTime @default(now())
+  server_updated_at DateTime @default(now())
+
+  shops  Shop[]
+  users  User[]
+}
+
+model Shop {
+  id          String   @id
+  business_id String
+  name        String
+  shop_code   String   @unique
+  momo_number String   @default("")
+  currency    String   @default("UGX")
+  active      Boolean  @default(true)
+  server_updated_at DateTime @default(now())
+
+  business     Business    @relation(fields: [business_id], references: [id])
+  users        User[]
+  products     Product[]
+  customers    Customer[]
+  shifts       Shift[]
+  sales        Sale[]
+  stock_movements StockMovement[]
+  deni_ledger  DeniLedger[]
+  cash_movements CashMovement[]
+  devices      Device[]
+
+  @@index([business_id])
+  @@index([shop_code])
+}
+
+model User {
+  id          String   @id
+  business_id String
+  shop_id     String?
+  name        String
+  role        String   // "owner" | "attendant"
+  pin_hash    String
+  active      Boolean  @default(true)
+  server_updated_at DateTime @default(now())
+
+  business Business @relation(fields: [business_id], references: [id])
+  shop     Shop?    @relation(fields: [shop_id], references: [id])
+
+  sales      Sale[]
+  stock_movements StockMovement[]
+  deni_ledger DeniLedger[]
+  cash_movements CashMovement[]
+
+  @@index([business_id])
+  @@index([shop_id])
+  @@index([business_id, shop_id])
+}
+
+model Product {
+  id            String   @id
+  shop_id       String
+  name          String
+  unit          String
+  sku_code      String   @default("")
+  selling_price Int
+  buying_price  Int
+  stock_qty     Int      @default(0)
+  is_fast_mover Boolean  @default(false)
+  photo_url     String   @default("")
+  active        Boolean  @default(true)
+  updated_at    DateTime @default(now())
+  server_updated_at DateTime @default(now())
+
+  shop          Shop    @relation(fields: [shop_id], references: [id])
+  sale_lines    SaleLine[]
+  stock_movements StockMovement[]
+
+  @@index([shop_id])
+  @@index([shop_id, name])
+}
+
+model Customer {
+  id       String  @id
+  shop_id  String
+  name     String
+  phone    String  @default("")
+  notes    String  @default("")
+  balance  Int     @default(0)
+  server_updated_at DateTime @default(now())
+
+  shop        Shop         @relation(fields: [shop_id], references: [id])
+  sales       Sale[]
+  deni_ledger DeniLedger[]
+
+  @@index([shop_id])
+  @@index([shop_id, name])
+}
+
+model Shift {
+  id             String    @id
+  shop_id        String
+  user_id        String
+  opened_at      DateTime  @default(now())
+  closed_at      DateTime?
+  opening_float  Int       @default(0)
+  counted_cash   Int?
+  expected_cash  Int?
+  variance       Int?
+  status         String    @default("open") // "open" | "closed"
+
+  shop           Shop      @relation(fields: [shop_id], references: [id])
+  sales          Sale[]
+  cash_movements CashMovement[]
+
+  @@index([shop_id])
+  @@index([shop_id, status])
+}
+
+model Sale {
+  id          String   @id
+  shop_id     String
+  shift_id    String
+  user_id     String
+  customer_id String?
+  created_at  DateTime @default(now())
+  status      String   @default("completed") // "completed" | "voided"
+  void_reason String   @default("")
+  total       Int
+  note        String   @default("")
+
+  shop        Shop      @relation(fields: [shop_id], references: [id])
+  shift       Shift     @relation(fields: [shift_id], references: [id])
+  user        User      @relation(fields: [user_id], references: [id])
+  customer    Customer? @relation(fields: [customer_id], references: [id])
+  sale_lines  SaleLine[]
+  tenders     Tender[]
+
+  @@index([shop_id])
+  @@index([shift_id])
+  @@index([user_id])
+  @@index([customer_id])
+  @@index([shop_id, created_at])
+}
+
+model SaleLine {
+  id                     String @id
+  sale_id                String
+  product_id             String
+  qty                    Int
+  unit_price             Int
+  line_total             Int
+  buying_price_snapshot  Int
+
+  sale    Sale    @relation(fields: [sale_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@index([sale_id])
+  @@index([product_id])
+}
+
+model Tender {
+  id              String @id
+  sale_id         String
+  method          String // "cash" | "mtn_momo" | "airtel_money" | "credit"
+  amount          Int
+  amount_tendered Int
+  change          Int
+
+  sale Sale @relation(fields: [sale_id], references: [id])
+
+  @@index([sale_id])
+  @@index([method])
+}
+
+model StockMovement {
+  id         String   @id
+  shop_id    String
+  product_id String
+  type       String   // "sale" | "receive" | "adjust" | "void"
+  qty_delta  Int
+  reason     String   @default("")
+  user_id    String
+  created_at DateTime @default(now())
+  ref_id     String   @default("")
+
+  shop    Shop    @relation(fields: [shop_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+  user    User    @relation(fields: [user_id], references: [id])
+
+  @@index([shop_id])
+  @@index([product_id])
+  @@index([type])
+  @@index([ref_id])
+  @@index([shop_id, product_id])
+}
+
+model DeniLedger {
+  id          String   @id
+  shop_id     String
+  customer_id String
+  type        String   // "sale_credit" | "collection" | "void"
+  amount      Int
+  sale_id     String   @default("")
+  user_id     String
+  created_at  DateTime @default(now())
+  note        String   @default("")
+
+  shop     Shop     @relation(fields: [shop_id], references: [id])
+  customer Customer @relation(fields: [customer_id], references: [id])
+  user     User     @relation(fields: [user_id], references: [id])
+
+  @@index([shop_id])
+  @@index([customer_id])
+  @@index([shop_id, customer_id])
+}
+
+model CashMovement {
+  id         String   @id
+  shop_id    String
+  shift_id   String
+  type       String   // "draw" | "expense" | "collection_cash"
+  amount     Int
+  reason     String
+  user_id    String
+  created_at DateTime @default(now())
+
+  shop  Shop  @relation(fields: [shop_id], references: [id])
+  shift Shift @relation(fields: [shift_id], references: [id])
+  user  User  @relation(fields: [user_id], references: [id])
+
+  @@index([shop_id])
+  @@index([shift_id])
+  @@index([type])
+}
+
+model Device {
+  id       String @id
+  shop_id  String
+  token    String @unique
+  name     String
+
+  shop Shop @relation(fields: [shop_id], references: [id])
+
+  @@index([shop_id])
+  @@index([token])
+}
+
+model SyncCursor {
+  id        String   @id
+  shop_id   String
+  cursor    BigInt   @default(0)
+  updated_at DateTime @default(now())
+
+  @@unique([shop_id])
+}

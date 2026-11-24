@@ -1,0 +1,55 @@
+# Locked plan — Kan
+
+**Date locked:** 2026-11-24 (supersedes the Duuka-only plan of 2026-09-02)
+**Authoritative scope:** [KAN_SCOPE.md](KAN_SCOPE.md) · **Decisions:** [DECISIONS.md](DECISIONS.md) D40–D47
+**Read with:** `PRODUCT_VISION.md`, `DOMAIN.md`, `UI_MAP.md`, `SYNC.md`, `IMPLEMENTATION_PLAN.md`.
+
+---
+
+## One sentence
+
+An Uganda-first commerce platform, built on a phone till that sells with no internet, where one owner can run many shops and later open an online store — with banking, crypto and AI only through partners.
+
+## What changed on 2026-11-24
+
+| Was (Duuka) | Now (Kan) |
+|---|---|
+| Offline grocery till, one owner, many shops | Same core **plus** platform, storefront, payments, analytics, clients |
+| "Not an online store, not SaaS, no AI" (D5/D30) | Superseded by D40–D47; those features are scoped, not built yet |
+| One Next.js PWA | One Next.js app now; native/desktop clients from R8 |
+| No billing chrome | Subscriptions and quotas from R2 |
+
+The offline till engine, integer money, PIN roles, `shop_id` on every row, deni rules and close formula are **unchanged**. See `DOMAIN.md` and `SYNC.md`.
+
+## Right now (R0/R1)
+
+1. **R0** — re-lock docs, `git init` + push, brand.
+2. **R1** — public marketing site at a temporary Vercel URL + **honest** dashboard shell:
+   - Marketing: `/`, `/features`, `/supported`, `/pricing`, `/devices`, `/help`, `/privacy`, `/terms`, `/merchant-terms`, `/account-deletion`
+   - App: `/app` and sub-pages for dashboard, products, orders, customers, reports, shops, staff, billing, settings
+   - Till: unchanged at `/pin`, `/sell`, `/stock`, `/customers`, `/more`; the old `/` redirect moves to `/pos`
+   - Every unbuilt panel says `Coming soon` or `With partner`. **No fake numbers, no fake testimonials.**
+3. Gates: lint, typecheck, test, build, built-site render check at 360/375/412px.
+
+## Shape
+
+```
+Shopkeeper phone (offline till, Dexie)  ──outbox──> Cloud (Postgres, many shops)
+Owner laptop / phone (dashboard)       <──pull────  Cloud
+Customer browser (online store)        ──order───>  Cloud         [R5+]
+Native Android/iOS, Windows desktop                       [R8+]
+```
+
+## Scope boundaries
+
+- **In the full scope** (`KAN_SCOPE.md`): platform/auth/billing, catalogue depth, warehouses & transfers, purchasing, payments, online store, social store, marketplace, CRM/loyalty, bookings, analytics, AI, vertical packs, native/desktop clients, hardware, legal/support/ops.
+- **Out until further decision:** EFRIS/URA, payroll, multi-currency, crypto custody, in-house banking.
+- **Never:** fake data, silent deletes, blocking a sale on network failure, floating-point money.
+
+## Build order (do not reorder)
+
+R0 → R1 → R2 → R3 → R4 → R5 → R6 → R7 → R8 → R9 → R10 → R11. See `IMPLEMENTATION_PLAN.md`.
+
+## Success for R1
+
+A stranger can open the temporary Vercel URL, understand what Kan is, see which parts exist and which are planned, and reach every legal/support page — with no invented proof and no broken layout on a phone.
