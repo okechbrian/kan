@@ -4,7 +4,7 @@ Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
 
-**Status:** Re-scoped from the Duuka offline till to the Kan platform on 2026-11-24 (D40–D47). **R1–R5 shipped.** R5 added path-based storefront previews (`/shop/[slug]`), catalogue sync, cart/delivery maths, order state machine and invoices. Online ordering stays an honest preview until cloud sync is configured. See [HANDOFF.md](HANDOFF.md) and [KAN_SCOPE.md](KAN_SCOPE.md).
+**Status:** Re-scoped from the Duuka offline till to the Kan platform on 2026-11-24 (D40–D47). **R1–R6 shipped.** R6 added social share links, marketplace sync planning, a merchant directory preview and a Channels dashboard panel. All channel features remain honest previews until cloud sync is configured. See [HANDOFF.md](HANDOFF.md) and [KAN_SCOPE.md](KAN_SCOPE.md).
 
 **Live (temporary Vercel URL):** https://kan-sme.vercel.app · Repo: https://github.com/okechbrian/kan
 

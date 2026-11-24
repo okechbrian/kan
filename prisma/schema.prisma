@@ -124,6 +124,8 @@ model Shop {
   storefronts  Storefront[]
   store_orders StoreOrder[]
   reviews      Review[]
+  channel_syncs ChannelSync[]
+  merchant_profile MerchantProfile?
 
   @@index([business_id])
   @@index([shop_code])
@@ -228,6 +230,34 @@ model Payment {
   @@index([shop_id, sale_id])
   @@index([shop_id, method])
   @@index([status])
+}
+
+model ChannelSync {
+  id         String   @id
+  shop_id    String
+  channel    String
+  product_id String
+  status     String
+  note       String   @default("")
+  created_at DateTime @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id])
+
+  @@index([shop_id, channel])
+}
+
+model MerchantProfile {
+  id         String   @id
+  shop_id    String   @unique
+  slug       String   @unique
+  category   String
+  town       String
+  active     Boolean  @default(true)
+  created_at DateTime @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id])
+
+  @@index([category, town])
 }
 
 model Storefront {
