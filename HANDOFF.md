@@ -23,6 +23,7 @@ Chat memory is not the source of truth. The `.md` files in this folder are.
 | Live site | https://kan-sme.vercel.app (Vercel project `kan-sme`, Deployment Protection off, all public routes 200) |
 | R2 platform | Shipped: Prisma `Account`/`Session`/`Subscription`/`AuditEvent`/`Notification`, auth+onboarding APIs, RBAC, plan quotas, audit redaction. Honest 503 `database_not_configured` while `DATABASE_URL` is unset. 76 tests. |
 | R3 core commerce | Shipped: catalogue validation (barcode, units, UGX integers), batch/expiry tracking (FIFO), warehouses, inter-shop transfer recording, receipt total checks; Dexie v2 + Prisma models. 87 tests. |
+| R4 payments | Shipped (manual first): adapter registry, cash with change, MTN/Airtel MoMo explicit confirmation, credit with customer, split validation, reconciliation by method, `/more/payments` screen, Prisma `Payment`. Gateway methods honestly report `gateway_not_configured`. 97 tests. |
 
 ---
 

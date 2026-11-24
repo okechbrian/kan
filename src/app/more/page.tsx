@@ -131,6 +131,10 @@ export default function MorePage() {
             label="Who owes"
             onClick={() => router.push("/customers")}
           />
+          <MenuItem
+            label="Payments"
+            onClick={() => router.push("/more/payments")}
+          />
           {isOwner && (
             <>
               <MenuItem

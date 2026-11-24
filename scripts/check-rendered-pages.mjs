@@ -32,6 +32,7 @@ const ROUTES = [
   "/app/signup",
   "/stock/batches",
   "/stock/transfer",
+  "/more/payments",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

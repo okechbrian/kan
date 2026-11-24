@@ -349,6 +349,13 @@ Attendant never sees `/home`.
 - Warn when the source would go negative; never block
 - Empty: `Add two shops before moving stock between them.`
 
+## 19. Payments — `/more/payments` (R4)
+
+- Lists methods with state badges: cash, MTN MoMo, Airtel Money, credit and split are `Available now`; bank transfer, card, gift card and crypto are `Coming soon`.
+- Shows totals by method from local tenders (integer UGX).
+- Empty: `No payments recorded yet. Complete a sale to see totals here.`
+- Manual confirmation only: no card data, gateway credentials or bank connection.
+
 ## Kan-era UI note
 
 The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.

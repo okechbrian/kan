@@ -120,6 +120,7 @@ model Shop {
   devices      Device[]
   warehouses   Warehouse[]
   batches      Batch[]
+  payments     Payment[]
 
   @@index([business_id])
   @@index([shop_code])
@@ -206,6 +207,24 @@ model Batch {
 
   @@index([shop_id, product_id])
   @@index([expiry_date])
+}
+
+model Payment {
+  id           String    @id
+  shop_id      String
+  sale_id      String
+  method       String
+  amount       Int
+  reference    String    @default("")
+  status       String    @default("pending") // pending | confirmed | reconciled
+  confirmed_at DateTime?
+  created_at   DateTime  @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id])
+
+  @@index([shop_id, sale_id])
+  @@index([shop_id, method])
+  @@index([status])
 }
 
 model StockTransfer {
