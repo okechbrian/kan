@@ -21,6 +21,7 @@ Chat memory is not the source of truth. The `.md` files in this folder are.
 | Toolchain | Node 22, npm 10, git 2.54, Python 3.13, Docker, adb, Vercel/EAS/Supabase/Flutter/gh CLIs — all verified present |
 | Git remote | `https://github.com/okechbrian/kan` — commit `fc54247` pushed to `main` |
 | Live site | https://kan-sme.vercel.app (Vercel project `kan-sme`, Deployment Protection off, all public routes 200) |
+| R2 platform | Shipped: Prisma `Account`/`Session`/`Subscription`/`AuditEvent`/`Notification`, auth+onboarding APIs, RBAC, plan quotas, audit redaction. Honest 503 `database_not_configured` while `DATABASE_URL` is unset. 76 tests. |
 
 ---
 

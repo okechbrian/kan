@@ -28,6 +28,8 @@ const ROUTES = [
   "/app/staff",
   "/app/billing",
   "/app/settings",
+  "/app/sign-in",
+  "/app/signup",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

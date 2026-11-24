@@ -15,6 +15,87 @@ model Business {
 
   shops  Shop[]
   users  User[]
+
+  accounts     Account[]
+  subscriptions Subscription[]
+  audit_events  AuditEvent[]
+  notifications Notification[]
+}
+
+model Account {
+  id            String   @id
+  business_id   String
+  email         String   @unique
+  password_hash String
+  role          String   @default("owner") // owner | manager | staff
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now())
+
+  business     Business     @relation(fields: [business_id], references: [id])
+  sessions     Session[]
+  audit_events AuditEvent[]
+
+  @@index([business_id])
+}
+
+model Session {
+  id         String    @id
+  account_id String
+  token_hash String    @unique
+  created_at DateTime  @default(now())
+  expires_at DateTime
+  revoked_at DateTime?
+
+  account Account @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  @@index([account_id])
+}
+
+model Subscription {
+  id                String    @id
+  business_id       String    @unique
+  plan              String    @default("basic")
+  status            String    @default("trialing") // trialing | active | past_due | canceled
+  trial_ends_at     DateTime?
+  current_period_end DateTime?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  business Business @relation(fields: [business_id], references: [id])
+}
+
+model AuditEvent {
+  id          String   @id
+  business_id String
+  account_id  String?
+  action      String
+  target_type String?
+  target_id   String?
+  metadata    String   @default("{}")
+  created_at  DateTime @default(now())
+
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
+  account  Account? @relation(fields: [account_id], references: [id], onDelete: SetNull)
+
+  @@index([business_id, created_at])
+  @@index([action])
+}
+
+model Notification {
+  id          String   @id
+  business_id String
+  channel     String // email | sms | whatsapp | push
+  recipient   String
+  subject     String
+  body        String
+  status      String   @default("pending") // pending | sent | failed
+  created_at  DateTime @default(now())
+  sent_at     DateTime?
+  error       String?
+
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
+
+  @@index([business_id, status])
 }
 
 model Shop {

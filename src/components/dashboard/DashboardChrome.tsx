@@ -53,7 +53,15 @@ export function DashboardChrome({ children }: { children: ReactNode }) {
         <div className="rounded-xl bg-cream p-3 text-xs leading-relaxed text-ink/50">
           Accounts open with the platform release. For now, use the till.
         </div>
-        <Link href="/pos" className="btn-secondary mt-3 justify-center text-sm">
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Link href="/app/sign-in" className="btn-secondary justify-center px-2 py-2 text-xs">
+            Sign in
+          </Link>
+          <Link href="/app/signup" className="btn-secondary justify-center px-2 py-2 text-xs">
+            Create workspace
+          </Link>
+        </div>
+        <Link href="/pos" className="btn-secondary mt-2 justify-center text-sm">
           Open your till
         </Link>
       </aside>
