@@ -12,6 +12,7 @@ const NAV = [
   { label: "Channels", href: "/app/channels", icon: "◇" },
   { label: "Customers", href: "/app/customers", icon: "◉" },
   { label: "Reports", href: "/app/reports", icon: "◫" },
+  { label: "Alerts", href: "/app/alerts", icon: "!" },
   { label: "Shops", href: "/app/shops", icon: "▣" },
   { label: "Staff", href: "/app/staff", icon: "♙" },
   { label: "Billing", href: "/app/billing", icon: "◇" },

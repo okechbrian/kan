@@ -30,6 +30,9 @@ const DASHBOARD_ROUTES = [
   "staff",
   "billing",
   "settings",
+  "store",
+  "channels",
+  "alerts",
 ];
 
 describe("Kan R1 — scope and honest shell", () => {
@@ -62,8 +65,9 @@ describe("Kan R1 — scope and honest shell", () => {
       expect(existsSync(join(root, path))).toBe(true);
       const source = read(path);
       expect(
-        source.includes("SimplePage") ||
-          source.includes("EmptyPanel")
+        ["SimplePage", "EmptyPanel", "ReportsPanel", "AlertsPanel", "ChannelsPanel"].some(
+          (component) => source.includes(component)
+        )
       ).toBe(true);
     }
   });

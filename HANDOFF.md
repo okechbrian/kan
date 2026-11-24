@@ -26,6 +26,7 @@ Chat memory is not the source of truth. The `.md` files in this folder are.
 | R4 payments | Shipped (manual first): adapter registry, cash with change, MTN/Airtel MoMo explicit confirmation, credit with customer, split validation, reconciliation by method, `/more/payments` screen, Prisma `Payment`. Gateway methods honestly report `gateway_not_configured`. 97 tests. |
 | R5 online store | Shipped: path-based preview storefront `/shop/[slug]`, catalogue publishing rules (active/unexpired), cart with integer UGX + delivery bands, one-way order state machine, invoice text, Prisma Storefront/StoreOrder/Review. No real orders until cloud sync. 104 tests. |
 | R6 channels | Shipped: social share links/post builder, marketplace sync plan with channel availability, unified orders, merchant directory search, `/discover` and `/app/channels`, Prisma ChannelSync/MerchantProfile. 110 tests. |
+| R7 analytics | Shipped: sales/day/method/basket/product-profit aggregates, stock/expiry/deni alerts, daily report text, Prisma ReportSchedule, real `/app/reports` and `/app/alerts` panels computed from local Dexie data. 119 tests. |
 
 ---
 

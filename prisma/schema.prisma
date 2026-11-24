@@ -126,6 +126,7 @@ model Shop {
   reviews      Review[]
   channel_syncs ChannelSync[]
   merchant_profile MerchantProfile?
+  report_schedules ReportSchedule[]
 
   @@index([business_id])
   @@index([shop_code])
@@ -230,6 +231,20 @@ model Payment {
   @@index([shop_id, sale_id])
   @@index([shop_id, method])
   @@index([status])
+}
+
+model ReportSchedule {
+  id          String   @id
+  shop_id     String
+  frequency   String
+  recipient   String
+  enabled     Boolean  @default(true)
+  last_sent_at DateTime?
+  created_at  DateTime @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id])
+
+  @@index([shop_id, enabled])
 }
 
 model ChannelSync {

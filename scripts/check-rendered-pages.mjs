@@ -37,6 +37,7 @@ const ROUTES = [
   "/shop/demo-duuka",
   "/discover",
   "/app/channels",
+  "/app/alerts",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

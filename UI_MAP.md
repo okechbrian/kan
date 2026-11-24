@@ -370,6 +370,12 @@ Attendant never sees `/home`.
 - `/discover`: public preview directory with search over shops on this device; each result links to its `/shop/[slug]` storefront; `Coming soon` badge explains the public directory opens with cloud sync.
 - Empty: `No shops match yet. Add a shop on the till to see it here.`
 
+## 22. Reports and alerts — `/app/reports` and `/app/alerts` (R7)
+
+- `/app/reports`: sales total, count, average basket, daily sales for the last 7 days, by payment method, top products and profit estimate (last cost minus recorded expenses). Honest note that figures come from this device.
+- `/app/alerts`: counts and lists for low/out-of-stock, expiring/expired batches and customers with old deni balances, with links to the relevant till screens.
+- Empty: `No closed sales yet.` / `Nothing low in stock.` / `No old balances to follow up.`
+
 ## Kan-era UI note
 
 The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.
