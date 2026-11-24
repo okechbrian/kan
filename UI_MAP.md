@@ -356,6 +356,14 @@ Attendant never sees `/home`.
 - Empty: `No payments recorded yet. Complete a sale to see totals here.`
 - Manual confirmation only: no card data, gateway credentials or bank connection.
 
+## 20. Storefront preview — `/shop/[slug]` (R5)
+
+- Public, path-based storefront on the main Vercel app (no DNS needed).
+- Header with shop name and `Coming soon` badge; honest note that browsing works offline but orders are not sent.
+- Product grid from the published catalogue (active, unexpired), prices in UGX.
+- Cart with quantity, delivery band (trading centre free / Kampala 5,000 / outside 15,000), phone entry and preview checkout that builds a local order but sends nothing.
+- Empty: `No products on this storefront yet. Add products on the till first.`
+
 ## Kan-era UI note
 
 The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.

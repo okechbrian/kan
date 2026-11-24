@@ -33,6 +33,8 @@ const ROUTES = [
   "/stock/batches",
   "/stock/transfer",
   "/more/payments",
+  "/app/store",
+  "/shop/demo-duuka",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

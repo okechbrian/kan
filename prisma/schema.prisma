@@ -121,6 +121,9 @@ model Shop {
   warehouses   Warehouse[]
   batches      Batch[]
   payments     Payment[]
+  storefronts  Storefront[]
+  store_orders StoreOrder[]
+  reviews      Review[]
 
   @@index([business_id])
   @@index([shop_code])
@@ -225,6 +228,67 @@ model Payment {
   @@index([shop_id, sale_id])
   @@index([shop_id, method])
   @@index([status])
+}
+
+model Storefront {
+  id          String   @id
+  shop_id     String   @unique
+  slug        String   @unique
+  title       String
+  description String   @default("")
+  active      Boolean  @default(true)
+  created_at  DateTime @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id])
+
+  @@index([slug])
+}
+
+model StoreOrder {
+  id             String    @id
+  shop_id        String
+  slug           String
+  customer_phone String
+  delivery_band  String
+  subtotal       Int
+  delivery_fee   Int
+  total          Int
+  status         String    @default("pending")
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  shop  Shop            @relation(fields: [shop_id], references: [id])
+  items StoreOrderItem[]
+
+  @@index([shop_id, created_at])
+  @@index([status])
+}
+
+model StoreOrderItem {
+  id         String @id
+  order_id   String
+  product_id String
+  name       String
+  quantity   Int
+  line_total Int
+
+  order StoreOrder @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  @@index([order_id])
+}
+
+model Review {
+  id         String   @id
+  shop_id    String
+  customer   String
+  rating     Int
+  comment    String
+  approved   Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id])
+
+  @@index([shop_id, approved])
 }
 
 model StockTransfer {
