@@ -64,6 +64,18 @@ export default function StockPage() {
               >
                 Add product
               </Link>
+              <Link
+                href="/stock/batches"
+                className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-700"
+              >
+                Batches
+              </Link>
+              <Link
+                href="/stock/transfer"
+                className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-700"
+              >
+                Move stock
+              </Link>
             </div>
           )}
         </div>

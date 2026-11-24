@@ -335,14 +335,32 @@ Owner with one shop still lands on `/sell`. Owner with two+ shops, on laptop, la
 
 Attendant never sees `/home`.
 
-## What not to build in the UI
+## 17. Batches & expiry — `/stock/batches` (R3, owner)
 
-- Landing/marketing page
-- Charts
-- Dark mode toggle (one high-contrast theme is enough)
-- Email fields
+- List batches for this shop: product, quantity, expiry date, status badge (`no_expiry` / `expired` / `expiring` / `ok`)
+- Empty: `No batches yet. Receive goods with an expiry date to see them here.`
+- FIFO allocation is used when selling batch-tracked products; expiry never blocks a sale.
+
+## 18. Move stock — `/stock/transfer` (R3, owner)
+
+- From shop / To shop selects, product line list with quantity
+- Validate: no same-shop, no empty lines, no duplicate products, positive integer quantities
+- Save as `pending`; local stock is not silently mutated
+- Warn when the source would go negative; never block
+- Empty: `Add two shops before moving stock between them.`
+
+## Kan-era UI note
+
+The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.
+
+## What not to build in the UI (retired list, kept for history)
+
+- ~~Landing/marketing page~~ — built in R1
+- Charts — later (R7)
+- Dark mode toggle
+- Email fields for attendants
 - Language switcher
-- Printer dialogs
-- Barcode scanner
-- Stock transfer between shops
+- Printer dialogs — optional hardware later
+- ~~Barcode scanner~~ — optional in R3
+- ~~Stock transfer between shops~~ — built in R3
 - Shared customer across shops

@@ -42,6 +42,40 @@ export interface Product {
   photo_url: string;
   active: boolean;
   server_updated_at: string;
+  brand?: string;
+  barcode?: string;
+  reorder_level?: number;
+  expiry_tracked?: boolean;
+  warehouse_id?: string;
+}
+
+export interface Batch {
+  id: string;
+  shop_id: string;
+  product_id: string;
+  warehouse_id: string;
+  quantity: number;
+  expiry_date: string | null;
+  created_at: string;
+}
+
+export interface Warehouse {
+  id: string;
+  shop_id: string;
+  name: string;
+  active: boolean;
+  created_at: string;
+}
+
+export interface StockTransfer {
+  id: string;
+  business_id: string;
+  from_shop_id: string;
+  to_shop_id: string;
+  lines: { product_id: string; quantity: number }[];
+  status: "pending" | "completed";
+  created_at: string;
+  completed_at: string | null;
 }
 
 export interface Customer {
@@ -166,6 +200,9 @@ export class DuukaDB extends Dexie {
   cash_movements!: Table<CashMovement>;
   devices!: Table<Device>;
   outbox!: Table<OutboxItem>;
+  batches!: Table<Batch>;
+  warehouses!: Table<Warehouse>;
+  stock_transfers!: Table<StockTransfer>;
 
   constructor() {
     super("duuka");
@@ -184,6 +221,13 @@ export class DuukaDB extends Dexie {
       cash_movements: "id, shop_id, shift_id, type, created_at",
       devices: "id, shop_id, token",
       outbox: "id, table, row_id, created_at, synced_at",
+    });
+    this.version(2).stores({
+      batches:
+        "id, shop_id, product_id, warehouse_id, expiry_date, [shop_id+product_id]",
+      warehouses: "id, shop_id, name",
+      stock_transfers:
+        "id, business_id, from_shop_id, to_shop_id, status, created_at",
     });
   }
 }

@@ -118,6 +118,8 @@ model Shop {
   deni_ledger  DeniLedger[]
   cash_movements CashMovement[]
   devices      Device[]
+  warehouses   Warehouse[]
+  batches      Batch[]
 
   @@index([business_id])
   @@index([shop_code])
@@ -158,15 +160,67 @@ model Product {
   is_fast_mover Boolean  @default(false)
   photo_url     String   @default("")
   active        Boolean  @default(true)
+  brand         String   @default("")
+  barcode       String   @default("")
+  reorder_level Int      @default(5)
+  expiry_tracked Boolean @default(false)
+  warehouse_id  String?
   updated_at    DateTime @default(now())
   server_updated_at DateTime @default(now())
 
   shop          Shop    @relation(fields: [shop_id], references: [id])
   sale_lines    SaleLine[]
   stock_movements StockMovement[]
+  batches       Batch[]
 
   @@index([shop_id])
   @@index([shop_id, name])
+  @@index([shop_id, barcode])
+}
+
+model Warehouse {
+  id         String   @id
+  shop_id    String
+  name       String
+  active     Boolean  @default(true)
+  created_at DateTime @default(now())
+
+  shop   Shop    @relation(fields: [shop_id], references: [id])
+  batches Batch[]
+
+  @@index([shop_id])
+}
+
+model Batch {
+  id           String    @id
+  shop_id      String
+  product_id   String
+  warehouse_id String?
+  quantity     Int       @default(0)
+  expiry_date  DateTime?
+  created_at   DateTime  @default(now())
+
+  shop      Shop       @relation(fields: [shop_id], references: [id])
+  product   Product    @relation(fields: [product_id], references: [id])
+  warehouse Warehouse? @relation(fields: [warehouse_id], references: [id])
+
+  @@index([shop_id, product_id])
+  @@index([expiry_date])
+}
+
+model StockTransfer {
+  id            String    @id
+  business_id   String
+  from_shop_id  String
+  to_shop_id    String
+  lines         Json
+  status        String    @default("pending")
+  created_at    DateTime  @default(now())
+  completed_at  DateTime?
+
+  @@index([business_id, created_at])
+  @@index([from_shop_id])
+  @@index([to_shop_id])
 }
 
 model Customer {
