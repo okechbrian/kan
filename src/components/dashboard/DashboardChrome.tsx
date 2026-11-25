@@ -6,17 +6,21 @@ import type { ReactNode } from "react";
 import {
   AlertTriangle,
   BarChart3,
+  BookmarkCheck,
   Building2,
   CreditCard,
   LayoutDashboard,
   Package,
+  Receipt,
   Settings,
   Share2,
   ShoppingBag,
   Store,
   Tag,
+  Truck,
   Users,
   UserCheck,
+  Warehouse,
 } from "lucide-react";
 import { KanLogo } from "../brand/KanLogo";
 
@@ -24,12 +28,16 @@ const NAV = [
   { label: "Dashboard", href: "/app/dashboard", Icon: LayoutDashboard },
   { label: "Products", href: "/app/products", Icon: Package },
   { label: "Orders", href: "/app/orders", Icon: ShoppingBag },
+  { label: "Reserved orders", href: "/app/reserved-orders", Icon: BookmarkCheck },
+  { label: "Customers", href: "/app/customers", Icon: Users },
+  { label: "Expenses", href: "/app/expenses", Icon: Receipt },
+  { label: "Purchases", href: "/app/purchases", Icon: Truck },
+  { label: "Warehouse", href: "/app/warehouse", Icon: Warehouse },
   { label: "Online store", href: "/app/store", Icon: Store },
   { label: "Channels", href: "/app/channels", Icon: Share2 },
-  { label: "Customers", href: "/app/customers", Icon: Users },
   { label: "Reports", href: "/app/reports", Icon: BarChart3 },
   { label: "Alerts", href: "/app/alerts", Icon: AlertTriangle },
-  { label: "Shops", href: "/app/shops", Icon: Building2 },
+  { label: "Shops", href: "/app/business/branch", Icon: Building2 },
   { label: "Staff", href: "/app/staff", Icon: UserCheck },
   { label: "Billing", href: "/app/billing", Icon: CreditCard },
   { label: "Settings", href: "/app/settings", Icon: Settings },
@@ -47,13 +55,13 @@ export function DashboardChrome({ children }: { children: ReactNode }) {
         </Link>
         <nav className="flex-1 space-y-1 overflow-y-auto" aria-label="Dashboard navigation">
           {NAV.map(({ label, href, Icon }) => {
-            const active = pathname === href;
+            const active = pathname === href || pathname.startsWith(`${href}/`);
             return (
               <Link
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold transition ${
+                className={`flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold transition ${
                   active
                     ? "bg-teal text-navy"
                     : "text-softwhite/75 hover:bg-white/10 hover:text-softwhite"
@@ -65,9 +73,6 @@ export function DashboardChrome({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <div className="rounded-xl bg-white/5 p-3 text-xs leading-relaxed text-softwhite/70">
-          Accounts open with cloud setup. For now, use the offline till.
-        </div>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <Link
             href="/app/sign-in"
@@ -102,7 +107,7 @@ export function DashboardChrome({ children }: { children: ReactNode }) {
             aria-label="Dashboard navigation"
           >
             {NAV.map((item) => {
-              const active = pathname === item.href;
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link
                   key={item.href}

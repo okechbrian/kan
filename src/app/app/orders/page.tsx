@@ -1,12 +1,7 @@
-import { SimplePage } from "../../../components/dashboard/SimplePage";
+import { OrdersPanel } from "../../../components/dashboard/OrdersPanel";
+
+export const metadata = { title: "Orders" };
 
 export default function OrdersPage() {
-  return (
-    <SimplePage
-      title="Orders"
-      description="Counter sales and, later, online store orders in one list."
-      message="No online orders yet. Your storefront opens with the online store release."
-      state="soon"
-    />
-  );
+  return <OrdersPanel />;
 }

@@ -47,6 +47,7 @@ export interface Product {
   reorder_level?: number;
   expiry_tracked?: boolean;
   warehouse_id?: string;
+  published_online?: boolean;
 }
 
 export interface Batch {
@@ -185,6 +186,67 @@ export interface OutboxItem {
   synced_at: string | null;
 }
 
+export interface ExpenseRecord {
+  id: string;
+  shop_id: string;
+  category: string;
+  amount: number;
+  description: string;
+  user_id: string;
+  incurred_at: string;
+}
+
+export interface SupplierRecord {
+  id: string;
+  shop_id: string;
+  name: string;
+  phone: string;
+  email: string;
+  balance: number;
+  created_at: string;
+}
+
+export interface PurchaseItemLine {
+  product_id?: string;
+  name: string;
+  qty: number;
+  unit_cost: number;
+  line_total: number;
+}
+
+export interface PurchaseRecord {
+  id: string;
+  shop_id: string;
+  supplier_id: string | null;
+  supplier_name: string;
+  items: PurchaseItemLine[];
+  total: number;
+  paid: number;
+  status: "received" | "pending";
+  note: string;
+  created_at: string;
+}
+
+export interface ReservedOrderLine {
+  name: string;
+  qty: number;
+  unit_price: number;
+  line_total: number;
+}
+
+export interface ReservedOrderRecord {
+  id: string;
+  shop_id: string;
+  customer_id: string | null;
+  customer_name: string;
+  customer_phone: string;
+  lines: ReservedOrderLine[];
+  total: number;
+  deposit_ugx: number;
+  status: "held" | "invoiced" | "completed" | "cancelled";
+  created_at: string;
+}
+
 export class DuukaDB extends Dexie {
   businesses!: Table<Business>;
   shops!: Table<Shop>;
@@ -203,6 +265,10 @@ export class DuukaDB extends Dexie {
   batches!: Table<Batch>;
   warehouses!: Table<Warehouse>;
   stock_transfers!: Table<StockTransfer>;
+  expenses!: Table<ExpenseRecord>;
+  suppliers!: Table<SupplierRecord>;
+  purchases!: Table<PurchaseRecord>;
+  reserved_orders!: Table<ReservedOrderRecord>;
 
   constructor() {
     super("duuka");
@@ -228,6 +294,12 @@ export class DuukaDB extends Dexie {
       warehouses: "id, shop_id, name",
       stock_transfers:
         "id, business_id, from_shop_id, to_shop_id, status, created_at",
+    });
+    this.version(3).stores({
+      expenses: "id, shop_id, category, incurred_at, [shop_id+incurred_at]",
+      suppliers: "id, shop_id, name",
+      purchases: "id, shop_id, supplier_id, status, created_at",
+      reserved_orders: "id, shop_id, customer_id, status, created_at",
     });
   }
 }

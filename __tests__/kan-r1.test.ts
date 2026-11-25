@@ -69,7 +69,21 @@ describe("Kan R1 — scope and honest shell", () => {
       expect(existsSync(join(root, path))).toBe(true);
       const source = read(path);
       expect(
-        ["SimplePage", "EmptyPanel", "ReportsPanel", "AlertsPanel", "ChannelsPanel", "VerticalsPanel", "AiPanel", "BankingPanel"].some(
+        [
+          "SimplePage",
+          "EmptyPanel",
+          "ReportsPanel",
+          "AlertsPanel",
+          "ChannelsPanel",
+          "VerticalsPanel",
+          "AiPanel",
+          "BankingPanel",
+          "LiveDashboardPanel",
+          "ProductsPanel",
+          "OrdersPanel",
+          "CustomersPanel",
+          "StaffPanel",
+        ].some(
           (component) => source.includes(component)
         )
       ).toBe(true);

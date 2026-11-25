@@ -1,12 +1,7 @@
-import { SimplePage } from "../../../components/dashboard/SimplePage";
+import { StaffPanel } from "../../../components/dashboard/StaffPanel";
+
+export const metadata = { title: "Staff" };
 
 export default function StaffPage() {
-  return (
-    <SimplePage
-      title="Staff"
-      description="PIN access, roles and per-shop permissions."
-      message="Staff accounts open with the platform release. Attendants use PINs on the till today."
-      state="soon"
-    />
-  );
+  return <StaffPanel />;
 }

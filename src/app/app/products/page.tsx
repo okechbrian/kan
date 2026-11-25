@@ -1,13 +1,7 @@
-import { SimplePage } from "../../../components/dashboard/SimplePage";
+import { ProductsPanel } from "../../../components/dashboard/ProductsPanel";
+
+export const metadata = { title: "Products" };
 
 export default function ProductsPage() {
-  return (
-    <SimplePage
-      title="Products"
-      description="Catalogue, prices, stock levels and low-stock alerts."
-      message="No products in the dashboard yet. Add stock from the till."
-      state="now"
-      action={{ label: "Go to stock", href: "/stock" }}
-    />
-  );
+  return <ProductsPanel />;
 }
