@@ -382,6 +382,12 @@ Attendant never sees `/home`.
 - `/more/hardware`: barcode/QR scanner `Available now` as an optional keyboard wedge; printer, drawer and touchscreen `Coming soon`. No hardware is required to sell.
 - `/offline`: honest fallback page with an `Open the till` action.
 
+## 24. Business type — `/app/verticals` (R9 wave 1)
+
+- Three wave sections with all 16 business profiles; wave 1 `Available now`, waves 2–3 `Coming soon`.
+- Wave 1 profiles can be selected and saved on this device; suggested starter items are shown with an honest note that they are only added when entered on the till.
+- Empty starter list for planned profiles unless their workflows are built.
+
 ## Kan-era UI note
 
 The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.

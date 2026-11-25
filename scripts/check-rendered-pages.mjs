@@ -41,6 +41,7 @@ const ROUTES = [
   "/offline",
   "/more/install",
   "/more/hardware",
+  "/app/verticals",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

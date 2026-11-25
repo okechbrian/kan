@@ -17,6 +17,7 @@ const NAV = [
   { label: "Staff", href: "/app/staff", icon: "♙" },
   { label: "Billing", href: "/app/billing", icon: "◇" },
   { label: "Settings", href: "/app/settings", icon: "⚙" },
+  { label: "Business type", href: "/app/verticals", icon: "▦" },
 ];
 
 export function DashboardChrome({ children }: { children: ReactNode }) {

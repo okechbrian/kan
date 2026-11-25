@@ -33,6 +33,7 @@ const DASHBOARD_ROUTES = [
   "store",
   "channels",
   "alerts",
+  "verticals",
 ];
 
 describe("Kan R1 — scope and honest shell", () => {
@@ -65,7 +66,7 @@ describe("Kan R1 — scope and honest shell", () => {
       expect(existsSync(join(root, path))).toBe(true);
       const source = read(path);
       expect(
-        ["SimplePage", "EmptyPanel", "ReportsPanel", "AlertsPanel", "ChannelsPanel"].some(
+        ["SimplePage", "EmptyPanel", "ReportsPanel", "AlertsPanel", "ChannelsPanel", "VerticalsPanel"].some(
           (component) => source.includes(component)
         )
       ).toBe(true);
