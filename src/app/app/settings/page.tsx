@@ -1,13 +1,7 @@
-import { SimplePage } from "../../../components/dashboard/SimplePage";
+import { SettingsPanel } from "../../../components/dashboard/SettingsPanel";
+
+export const metadata = { title: "Settings" };
 
 export default function SettingsPage() {
-  return (
-    <SimplePage
-      title="Settings"
-      description="Shop name, MoMo number, PINs and backup."
-      message="Settings are managed on the till for now."
-      state="now"
-      action={{ label: "Go to settings", href: "/settings" }}
-    />
-  );
+  return <SettingsPanel />;
 }

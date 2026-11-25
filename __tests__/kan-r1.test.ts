@@ -83,6 +83,9 @@ describe("Kan R1 — scope and honest shell", () => {
           "OrdersPanel",
           "CustomersPanel",
           "StaffPanel",
+          "StorePanel",
+          "BillingPanel",
+          "SettingsPanel",
         ].some(
           (component) => source.includes(component)
         )

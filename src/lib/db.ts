@@ -247,6 +247,47 @@ export interface ReservedOrderRecord {
   created_at: string;
 }
 
+export interface BookingRecord {
+  id: string;
+  shop_id: string;
+  customer_name: string;
+  customer_phone: string;
+  service_name: string;
+  staff_name: string;
+  scheduled_at: string;
+  duration_min: number;
+  deposit_ugx: number;
+  status: "scheduled" | "completed" | "cancelled";
+  created_at: string;
+}
+
+export interface ProductionRunRecord {
+  id: string;
+  shop_id: string;
+  product_name: string;
+  batch_code: string;
+  qty_produced: number;
+  unit: string;
+  cost_ugx: number;
+  notes: string;
+  created_at: string;
+}
+
+export interface StoreOrderRecord {
+  id: string;
+  shop_id: string;
+  slug: string;
+  customer_name: string;
+  customer_phone: string;
+  delivery_band: string;
+  items: { name: string; qty: number; line_total: number }[];
+  subtotal: number;
+  delivery_fee: number;
+  total: number;
+  status: "pending" | "confirmed" | "dispatched" | "delivered" | "cancelled";
+  created_at: string;
+}
+
 export class DuukaDB extends Dexie {
   businesses!: Table<Business>;
   shops!: Table<Shop>;
@@ -269,6 +310,9 @@ export class DuukaDB extends Dexie {
   suppliers!: Table<SupplierRecord>;
   purchases!: Table<PurchaseRecord>;
   reserved_orders!: Table<ReservedOrderRecord>;
+  bookings!: Table<BookingRecord>;
+  production_runs!: Table<ProductionRunRecord>;
+  store_orders!: Table<StoreOrderRecord>;
 
   constructor() {
     super("duuka");
@@ -300,6 +344,11 @@ export class DuukaDB extends Dexie {
       suppliers: "id, shop_id, name",
       purchases: "id, shop_id, supplier_id, status, created_at",
       reserved_orders: "id, shop_id, customer_id, status, created_at",
+    });
+    this.version(4).stores({
+      bookings: "id, shop_id, scheduled_at, status",
+      production_runs: "id, shop_id, created_at",
+      store_orders: "id, shop_id, status, created_at",
     });
   }
 }
