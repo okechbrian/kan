@@ -4,7 +4,7 @@ Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
 
-**Status:** R1–R11 baseline complete (commit `3f773d5`). Currently executing **[KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md)** (Phase 0 & Phase 1: housekeeping, CI, Kan brand system v1.0, SVG wordmark, and shared UI kit). See [HANDOFF.md](HANDOFF.md) and [DECISIONS.md](DECISIONS.md) D48–D50.
+**Status:** Phase 0 (Housekeeping & CI), Phase 1 (Kan Brand System & UI Kit), and **Phase 2 (Full 14-Page Konna-Parity Public Website)** complete per **[KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md)**. Next: **Phase 3 (Supabase Cloud & Auth)**. See [HANDOFF.md](HANDOFF.md) and [DECISIONS.md](DECISIONS.md) D48–D50.
 
 **Live (temporary Vercel URL):** https://kan-sme.vercel.app · Repo: https://github.com/okechbrian/kan
 

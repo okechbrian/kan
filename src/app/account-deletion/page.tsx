@@ -1,28 +1,57 @@
-import { LegalPage } from "../../components/site/LegalPage";
+import Link from "next/link";
+import { AccountDeletionForm } from "../../components/site/PublicForms";
+import { SiteFooter } from "../../components/site/SiteFooter";
+import { SiteHeader } from "../../components/site/SiteHeader";
+import { PWATA_CONTACT } from "../../lib/platform/pricing";
 
 export default function AccountDeletionPage() {
   return (
-    <LegalPage
-      title="Account deletion"
-      intro="How to remove your data from Kan, today and when accounts are introduced."
-      sections={[
-        {
-          heading: "Today: no account needed",
-          body: "The till does not require an email or account. Your records live in this browser. Export a JSON backup first, then clear this site's data in your browser settings to remove them from the device.",
-        },
-        {
-          heading: "With the platform release",
-          body: "When accounts are enabled, an in-app request will delete your account, detach your devices and remove your business records after a short verification period.",
-        },
-        {
-          heading: "What may be retained",
-          body: "Transaction records required by law or by a payment provider may be retained for the period they require. Anything retained will be listed in the deletion confirmation.",
-        },
-        {
-          heading: "Backups",
-          body: "Deleting an account does not delete backups you downloaded yourself. Keep them private — they contain customer names and balances.",
-        },
-      ]}
-    />
+    <>
+      <SiteHeader />
+      <main className="section max-w-4xl">
+        <p className="eyebrow">Account & data deletion · {PWATA_CONTACT.entity}</p>
+        <h1 className="mt-3 text-4xl font-bold tracking-tight text-navy sm:text-5xl">
+          Request account deletion
+        </h1>
+        <p className="mt-4 text-base text-navy/70">
+          Submit a request below and {PWATA_CONTACT.entity} will verify the account owner
+          and follow up by email or WhatsApp.
+        </p>
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <AccountDeletionForm />
+          </div>
+
+          <aside className="space-y-4 lg:col-span-5">
+            <div className="card">
+              <h2 className="text-base font-bold text-navy">Data retention</h2>
+              <ul className="mt-3 space-y-2 text-sm text-navy/75">
+                <li>• Active workspace data is deleted within 90 days after closure.</li>
+                <li>
+                  • Transaction records required under Ugandan commercial or tax law may
+                  be retained for up to 7 years.
+                </li>
+                <li>
+                  • Local device till books stay in your browser until you export a JSON
+                  backup and clear site storage.
+                </li>
+              </ul>
+            </div>
+            <div className="card">
+              <h2 className="text-base font-bold text-navy">Need billing help instead?</h2>
+              <p className="mt-2 text-sm text-navy/70">
+                Contact {PWATA_CONTACT.email} or call/WhatsApp{" "}
+                {PWATA_CONTACT.phoneDisplay}.
+              </p>
+              <Link href="/privacy-policy" className="mt-3 inline-block text-xs font-bold text-navy underline">
+                Read full privacy policy
+              </Link>
+            </div>
+          </aside>
+        </div>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

@@ -1,84 +1,138 @@
 import Link from "next/link";
 import {
   BarChart3,
-  CheckCircle2,
+  Bot,
+  Building2,
+  CalendarCheck,
+  Compass,
   CreditCard,
+  Globe,
+  HardDrive,
+  HeartHandshake,
+  Landmark,
   MonitorSmartphone,
   Package,
+  Receipt,
+  Share2,
+  ShoppingBag,
   Store,
-  Users,
+  Truck,
+  UserCheck,
+  WalletCards,
+  Warehouse,
 } from "lucide-react";
 import { FeatureCard } from "../components/site/FeatureCard";
 import { HeroPreview } from "../components/site/HeroPreview";
+import { SharedBottomFunnel } from "../components/site/SharedBottomFunnel";
 import { SiteFooter } from "../components/site/SiteFooter";
 import { SiteHeader } from "../components/site/SiteHeader";
 import { StatusBadge } from "../components/site/StatusBadge";
+import { ugx } from "../lib/money";
+import { KAN_HARDWARE_DEVICES } from "../lib/platform/pricing";
 
-const PILLARS = [
+const MODULE_STRIP = [
+  "Booking & Service Commerce",
+  "Expenses",
+  "Analytics",
+  "Checkout & Payment",
+  "Warehouse",
+  "Inventory",
+  "Social Store",
+  "Discover Merchants",
+  "Online Store",
+  "POS Machines",
+  "Point of Sale",
+  "Loyalty & Rewards",
+  "Multi-staff Support",
+];
+
+const CORE_MODULES = [
   {
-    icon: <MonitorSmartphone className="h-5 w-5" />,
-    title: "Point of sale",
+    icon: <Globe className="h-5 w-5" />,
+    title: "Online Store",
     description:
-      "Big buttons, fast moves, cash and mobile money. A sale finishes even when the network does not.",
-    state: "now" as const,
+      "Publish a shareable shop link synced directly with your stock. Out-of-stock and expired items stay hidden.",
+    state: "soon" as const,
+    href: "/onlineshop",
   },
   {
     icon: <Package className="h-5 w-5" />,
     title: "Inventory",
     description:
-      "Stock drops when you sell. Receive goods, adjust counts and see what is running low.",
+      "Track stock by unit, kg, litre or metre, record batches and expiry dates, and review low-stock alerts.",
     state: "now" as const,
+    href: "/manage-inventory",
   },
   {
-    icon: <Users className="h-5 w-5" />,
-    title: "Credit and customers",
+    icon: <ShoppingBag className="h-5 w-5" />,
+    title: "Point of Sale",
     description:
-      "Record deni, collect payments and see who owes the shop — per shop, never mixed.",
+      "Sell at the counter offline with big product tiles, cash, MTN/Airtel MoMo, split pay and customer credit (deni).",
     state: "now" as const,
-  },
-  {
-    icon: <CreditCard className="h-5 w-5" />,
-    title: "Payments",
-    description:
-      "Split payments and digital channels connect to the same sale record.",
-    state: "now" as const,
-  },
-  {
-    icon: <Store className="h-5 w-5" />,
-    title: "Online store",
-    description:
-      "A shareable storefront that stays in sync with your stock, so one book runs both.",
-    state: "soon" as const,
+    href: "/manage-sales",
   },
   {
     icon: <BarChart3 className="h-5 w-5" />,
     title: "Analytics",
     description:
-      "Clear sales, stock and profit views to answer what to restock and where the money went.",
+      "Turn counter sales, payment tenders, expenses and margins into clear daily and shift reports.",
     state: "now" as const,
+    href: "/business-analytics",
+  },
+  {
+    icon: <Share2 className="h-5 w-5" />,
+    title: "Social Store",
+    description:
+      "Share products straight to WhatsApp and social channels with integer UGX pricing and direct order links.",
+    state: "now" as const,
+    href: "/onlineshop",
+  },
+  {
+    icon: <Store className="h-5 w-5" />,
+    title: "Marketplace Connector",
+    description:
+      "Sync one product edit across your counter catalogue, online storefront and channel listings.",
+    state: "soon" as const,
+    href: "/app/channels",
   },
 ];
 
-const FAQ = [
+const ONE_VIEW_MODULES = [
   {
-    q: "What is Kan?",
-    a: "Kan is a platform for Ugandan shops. The till, stock and credit book are already built. Storefronts, digital payments and analytics are being added in stages.",
+    icon: <Warehouse className="h-5 w-5" />,
+    title: "Warehouse",
+    description: "Manage stock across branches and warehouses with recorded transfers and restock queues.",
+    state: "now" as const,
   },
   {
-    q: "Does the till need the internet?",
-    a: "No. You can sell offline. When the network returns, the sale syncs — a failed connection never blocks a charge.",
+    icon: <CalendarCheck className="h-5 w-5" />,
+    title: "Booking & Service Commerce",
+    description: "Appointments, staff schedules and service tickets for salons, spas and laundries.",
+    state: "soon" as const,
   },
   {
-    q: "Do attendants need an email address?",
-    a: "No. Attendants unlock the till with a PIN.",
+    icon: <UserCheck className="h-5 w-5" />,
+    title: "Staff Management",
+    description: "PIN access for counter attendants, owner-only voids and role-based permissions.",
+    state: "now" as const,
   },
   {
-    q: "Is there a free trial?",
-    a: "Trial terms will be published with the platform release. The till itself works without a subscription today.",
+    icon: <HeartHandshake className="h-5 w-5" />,
+    title: "Loyalty & Rewards",
+    description: "Phone-first customer register, purchase history, deni ledger and returning-buyer rewards.",
+    state: "soon" as const,
   },
   {
-    q: "Can I cancel?",
-    a: "Yes. Cancellation terms will be published with billing. Your records stay exportable as a JSON backup.",
+    icon: <Receipt className="h-5 w-5" />,
+    title: "Expenses",
+    description: "Record shop rent, transport, fuel and cash draws so daily cash close stays exact.",
+    state: "now" as const,
+  },
+  {
+    icon: <WalletCards className="h-5 w-5" />,
+    title: "Checkout & Payments",
+    description: "Cash, MTN MoMo, Airtel Money, credit (deni) and split payments reconciled per shift.",
+    state: "now" as const,
   },
 ];
 
@@ -87,178 +141,254 @@ export default function HomePage() {
     <>
       <SiteHeader />
       <main>
-        <section className="section pb-10 pt-12 sm:pt-16">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <div>
-              <p className="eyebrow">Built for Ugandan shops</p>
-              <h1 className="mt-4 text-4xl font-black leading-[1.08] tracking-tight text-ink sm:text-6xl">
+        <section className="section pb-12 pt-10 sm:pt-16">
+          <div className="grid items-center gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-6">
+              <div className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-white px-3 py-1.5 text-xs font-bold text-navy shadow-sm">
+                <span className="h-2 w-2 rounded-full bg-guava" aria-hidden="true" />
+                Built for Ugandan shops · Pwata Inc
+              </div>
+              <h1 className="mt-5 text-4xl font-bold leading-[1.08] tracking-tight text-navy sm:text-6xl">
                 Your shop,
                 <br />
-                <span className="text-kan">in one place.</span>
+                in one place.
               </h1>
-              <p className="mt-5 max-w-lg text-base leading-relaxed text-ink/65 sm:text-lg">
-                Sell at the counter with no internet. Keep stock and deni straight. Close
-                the day knowing the till matches. Kan grows with you, from one duuka to
-                many shops and an online store.
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-navy/75 sm:text-lg">
+                Sell at the counter even when the network drops. Keep stock, mobile money
+                and customer credit (deni) straight, and expand into an online store as
+                your shop grows.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link href="/pos" className="btn-primary">
                   Open your till
                 </Link>
-                <Link href="/features" className="btn-secondary">
-                  See what is ready
+                <Link href="/app/signup" className="btn-secondary">
+                  Get started
+                </Link>
+                <Link href="/discover" className="btn-quiet">
+                  Shop merchants
                 </Link>
               </div>
-              <p className="mt-4 text-xs text-ink/45">
-                No invented customer counts or testimonials on this site. Feature states
-                are shown honestly.
+              <p className="mt-4 text-xs text-navy/60">
+                Kan is a product of Pwata Inc. Preview panels are clearly labelled Demo;
+                all currency values are integer UGX.
               </p>
             </div>
-            <HeroPreview />
-          </div>
-        </section>
-
-        <section className="section border-t border-black/5 pt-12">
-          <p className="eyebrow">The essentials</p>
-          <h2 className="mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
-            The counter first. Everything else follows.
-          </h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PILLARS.map((pillar) => (
-              <FeatureCard key={pillar.title} {...pillar} />
-            ))}
-          </div>
-        </section>
-
-        <section className="border-y border-black/5 bg-ink text-white">
-          <div className="section">
-            <p className="eyebrow text-white/60">One platform</p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              One book for the counter, the store and the money.
-            </h2>
-            <div className="mt-8 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                "Warehouse and transfers",
-                "Booking and service commerce",
-                "Staff roles and permissions",
-                "Loyalty and rewards",
-                "Expense tracking",
-                "Discover merchants",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex min-h-11 items-center gap-3 rounded-xl bg-white/5 px-4 py-3"
-                >
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-teal" aria-hidden="true" />
-                  {item}
-                  <span className="ml-auto text-[10px] font-bold uppercase tracking-wide text-white/40">
-                    Planned
-                  </span>
-                </div>
-              ))}
+            <div className="lg:col-span-6">
+              <HeroPreview />
             </div>
-            <Link href="/features" className="btn-secondary mt-8 border-white/20 bg-transparent text-white hover:bg-white/10">
-              Read the full feature list
-            </Link>
+          </div>
+        </section>
+
+        <section className="border-y border-navy/10 bg-white py-5">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-2 px-4 sm:px-6">
+            {MODULE_STRIP.map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-navy/10 bg-softwhite px-3.5 py-1.5 text-xs font-bold text-navy/80"
+              >
+                {item}
+              </span>
+            ))}
           </div>
         </section>
 
         <section className="section">
-          <div className="grid gap-8 lg:grid-cols-2">
-            <div>
-              <p className="eyebrow">Supported businesses</p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight">
-                Built around how shops actually work.
-              </h2>
-              <p className="mt-4 text-sm leading-relaxed text-ink/60">
-                Groceries, pharmacies, restaurants, salons, farms, factories and more.
-                Each gets its own workflows — but the same offline till underneath.
-              </p>
-              <Link href="/supported" className="btn-secondary mt-6">
-                See all 16 businesses
-              </Link>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {[
-                "Groceries",
-                "Pharmacy",
-                "Restaurants",
-                "Superstores",
-                "Bakeries",
-                "Fashion",
-                "Kiosks",
-                "Agro",
-                "Electrical",
-                "Furniture",
-                "Bars",
-                "Spas & salons",
-                "Factories",
-                "Laundries",
-                "SMEs",
-              ].map((name) => (
-                <span
-                  key={name}
-                  className="rounded-full border border-black/5 bg-white px-3 py-2 text-xs font-semibold text-ink/60"
+          <div className="max-w-2xl">
+            <p className="eyebrow">One platform. Your entire business.</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy sm:text-4xl">
+              Connect counter sales, inventory and online orders.
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {CORE_MODULES.map((mod) => (
+              <div key={mod.title} className="flex flex-col">
+                <FeatureCard
+                  icon={mod.icon}
+                  title={mod.title}
+                  description={mod.description}
+                  state={mod.state}
+                />
+                <Link
+                  href={mod.href}
+                  className="mt-2 inline-flex min-h-10 items-center px-2 text-xs font-bold text-navy hover:underline"
                 >
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="section border-t border-black/5">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <p className="eyebrow">Pricing</p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight">
-                Plans that grow with the shop.
-              </h2>
-              <p className="mt-3 text-sm text-ink/60">
-                Indicative UGX prices only — final prices to be confirmed.
-              </p>
-            </div>
-            <Link href="/pricing" className="btn-primary">
-              See the plans
-            </Link>
-          </div>
-        </section>
-
-        <section className="section border-t border-black/5">
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <div>
-              <p className="eyebrow">Get the apps</p>
-              <h2 className="mt-3 text-2xl font-black tracking-tight">
-                Android, iOS and Windows are on the roadmap.
-              </h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {["Android app", "iOS app", "Windows desktop"].map((label) => (
-                <span key={label} className="card flex items-center gap-2 px-4 py-3 text-sm">
-                  {label}
-                  <StatusBadge state="soon" />
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="section border-t border-black/5">
-          <h2 className="text-2xl font-black tracking-tight">Frequently asked questions</h2>
-          <div className="mt-6 grid gap-3">
-            {FAQ.map((item) => (
-              <details key={item.q} className="card group">
-                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 font-semibold text-ink marker:hidden">
-                  {item.q}
-                  <span aria-hidden="true" className="text-kan">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 text-sm leading-relaxed text-ink/60">{item.a}</p>
-              </details>
+                  Learn more →
+                </Link>
+              </div>
             ))}
           </div>
         </section>
+
+        <section className="bg-navy text-softwhite">
+          <div className="section">
+            <div className="max-w-2xl">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal">
+                Sell. Operate. Then accelerate.
+              </p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                AI, banking and supply chain built on the same stock ledger.
+              </h2>
+            </div>
+            <div className="mt-8 grid gap-4 lg:grid-cols-3">
+              <article className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <div className="flex items-center justify-between gap-2">
+                  <Bot className="h-6 w-6 text-teal" aria-hidden="true" />
+                  <StatusBadge state="partner" />
+                </div>
+                <h3 className="mt-4 text-xl font-bold">Kan AI Assistant</h3>
+                <p className="mt-2 text-sm text-softwhite/75">
+                  Ask plain questions about your own shop data and reports with strict
+                  tenant isolation and human confirmation.
+                </p>
+                <Link href="/app/ai" className="btn-primary-dark mt-5 text-xs">
+                  Learn more
+                </Link>
+              </article>
+
+              <article className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <div className="flex items-center justify-between gap-2">
+                  <Landmark className="h-6 w-6 text-teal" aria-hidden="true" />
+                  <StatusBadge state="partner" />
+                </div>
+                <h3 className="mt-4 text-xl font-bold">Business Banking</h3>
+                <p className="mt-2 text-sm text-softwhite/75">
+                  Balances, transfers and payouts connected through licensed Uganda
+                  financial partners — never simulated.
+                </p>
+                <Link href="/app/banking" className="btn-primary-dark mt-5 text-xs">
+                  Learn more
+                </Link>
+              </article>
+
+              <article className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <div className="flex items-center justify-between gap-2">
+                  <Truck className="h-6 w-6 text-teal" aria-hidden="true" />
+                  <StatusBadge state="soon" />
+                </div>
+                <h3 className="mt-4 text-xl font-bold">Supply Chain & Production</h3>
+                <p className="mt-2 text-sm text-softwhite/75">
+                  Manage suppliers, production batches, recipes and inbound stock across
+                  branches.
+                </p>
+                <Link href="/manage-inventory" className="btn-primary-dark mt-5 text-xs">
+                  Learn more
+                </Link>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="max-w-2xl">
+              <p className="eyebrow">Point-of-Sale (POS) devices</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy sm:text-4xl">
+                Built for faster counter checkout.
+              </h2>
+              <p className="mt-2 text-sm text-navy/70">
+                Start with any Android phone today. Add a touchscreen register, 80mm
+                thermal printer, barcode scanner or steel cash drawer as volume grows.
+              </p>
+            </div>
+            <Link href="/devices" className="btn-secondary text-sm">
+              Explore all devices
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {KAN_HARDWARE_DEVICES.slice(0, 4).map((device) => (
+              <article key={device.id} className="card flex flex-col justify-between">
+                <div>
+                  <HardDrive className="h-6 w-6 text-navy" aria-hidden="true" />
+                  <h3 className="mt-3 text-base font-bold text-navy">{device.name}</h3>
+                  <p className="mt-1.5 text-xs text-navy/65">{device.summary}</p>
+                </div>
+                <div className="mt-4 border-t border-navy/10 pt-3">
+                  <p className="ugx-amount text-lg font-bold text-navy">
+                    {ugx(device.priceUgx)}
+                  </p>
+                  <p className="text-[11px] text-navy/55">Indicative UGX price</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section border-t border-navy/10">
+          <div className="max-w-2xl">
+            <p className="eyebrow">One business. One view.</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy sm:text-4xl">
+              Every shop operation without disconnected spreadsheets.
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {ONE_VIEW_MODULES.map((item) => (
+              <FeatureCard
+                key={item.title}
+                icon={item.icon}
+                title={item.title}
+                description={item.description}
+                state={item.state}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="section border-t border-navy/10">
+          <div className="grid items-center gap-8 rounded-3xl border border-navy/10 bg-teal-soft p-7 lg:grid-cols-12 lg:p-10">
+            <div className="lg:col-span-8">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-bold text-navy">
+                <Compass className="h-3.5 w-3.5" aria-hidden="true" />
+                Discover merchants
+              </div>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy">
+                Discover & shop from Ugandan businesses powered by Kan.
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm text-navy/75">
+                Browse groceries, pharmacies, bakeries, restaurants, salons and hardware
+                shops across Entebbe, Kampala and beyond.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
+              <Link href="/discover" className="btn-primary">
+                Explore merchants
+              </Link>
+              <Link href="/supported" className="btn-secondary">
+                16 business types
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="section border-t border-navy/10">
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <div>
+              <p className="eyebrow">Supported businesses</p>
+              <h2 className="mt-2 text-2xl font-bold text-navy">
+                Sixteen business verticals, one offline till underneath.
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/supported" className="btn-secondary text-sm">
+                See all 16 businesses
+              </Link>
+              <Link href="/download" className="btn-quiet text-sm">
+                <MonitorSmartphone className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Apps & PWA
+              </Link>
+              <Link href="/app/billing" className="btn-quiet text-sm">
+                <CreditCard className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Billing
+              </Link>
+              <Link href="/app/shops" className="btn-quiet text-sm">
+                <Building2 className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Multi-shop
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <SharedBottomFunnel />
       </main>
       <SiteFooter />
     </>

@@ -1,30 +1,31 @@
 import { LegalPage } from "../../components/site/LegalPage";
+import { PWATA_CONTACT } from "../../lib/platform/pricing";
 
 export default function TermsPage() {
   return (
     <LegalPage
       title="General terms of use"
-      intro="These terms govern use of the Kan website and dashboard. The till is provided as-is while the platform is being built."
+      intro={`These terms govern use of the Kan website, dashboard and offline till provided by ${PWATA_CONTACT.entity} (${PWATA_CONTACT.address}).`}
       sections={[
         {
-          heading: "Using the site",
-          body: "You may browse this site and use the dashboard preview. Feature states are shown honestly: Available now, Coming soon and With partner. Nothing on this site is a guarantee of a future feature or date.",
+          heading: "Using Kan",
+          body: "You may browse this website, run the offline till, and open a workspace. Feature states are labelled honestly as Available now, Coming soon, or With partner.",
         },
         {
-          heading: "Your records",
-          body: "You are responsible for the accuracy of prices, stock counts and customer balances entered into the till. Export a backup regularly — local browser data can be lost.",
+          heading: "Your records & backups",
+          body: "You are responsible for the accuracy of prices, stock counts, tax obligations and customer credit balances entered into Kan. Export a JSON backup regularly when operating offline.",
         },
         {
-          heading: "No financial service today",
-          body: "Kan does not hold money, provide banking, or process payments in the current release. Banking and crypto features, if offered, will be provided through licensed partners and governed by their terms.",
+          heading: "No in-house banking or crypto custody",
+          body: "Kan does not act as a bank, mobile money operator, or crypto custodian. Regulated financial services, if offered, are provided strictly through licensed partners under their own terms.",
         },
         {
-          heading: "Availability",
-          body: "The till works offline. The website and dashboard may be updated or unavailable while the platform is developed.",
+          heading: "Subscription billing",
+          body: "Plans are priced in integer UGX across Monthly, Quarterly, 6-Month and Yearly cycles. You may cancel prior to renewal and export your shop records anytime.",
         },
         {
-          heading: "Changes",
-          body: "These terms may change as features are added. Material changes will be published on this page before they take effect.",
+          heading: "Governing law & contact",
+          body: `These terms are governed by the laws of the Republic of Uganda. Contact ${PWATA_CONTACT.entity} at ${PWATA_CONTACT.email} or ${PWATA_CONTACT.phoneDisplay}.`,
         },
       ]}
     />

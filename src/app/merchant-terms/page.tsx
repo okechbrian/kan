@@ -1,30 +1,31 @@
 import { LegalPage } from "../../components/site/LegalPage";
+import { PWATA_CONTACT } from "../../lib/platform/pricing";
 
 export default function MerchantTermsPage() {
   return (
     <LegalPage
-      title="Merchant terms"
-      intro="These terms apply when a shop uses Kan to run its books, and later to sell through a storefront."
+      title="Merchant terms of use"
+      intro={`These merchant terms apply when a business uses Kan (a product of ${PWATA_CONTACT.entity}) to manage counter sales, inventory, branches, or an online storefront.`}
       sections={[
         {
-          heading: "Your business, your books",
-          body: "You remain responsible for your prices, stock, tax obligations and the accuracy of your records. Kan records what is entered; it does not file returns or calculate tax liability.",
+          heading: "Your shop, your books",
+          body: "Merchants remain solely responsible for product pricing, stock accuracy, consumer disclosures, delivery fulfilment and Ugandan tax compliance (including URA obligations where applicable).",
         },
         {
-          heading: "Shop data and separation",
-          body: "Each shop has its own stock, credit customers and till. Data from one shop is never mixed with another. A device paired to one shop cannot read another shop's records.",
+          heading: "Branch & tenant isolation",
+          body: "Each shop has independent stock movements, customer deni balances and shift registers. Devices paired to one shop cannot access another shop's books.",
         },
         {
-          heading: "Online store",
-          body: "When the storefront opens, you are responsible for product information, delivery promises, returns and customer service. Digital receipts and invoices are generated from your own records.",
+          heading: "Online storefront & Discover directory",
+          body: "Storefront listings must accurately represent available, unexpired goods and lawful services. Pwata Inc may suspend listings that mislead buyers or violate Ugandan law.",
         },
         {
-          heading: "Payments",
-          body: "Payments will be processed by licensed providers. Kan does not store card details. Payment disputes and refunds follow the provider's rules and your own customer policy.",
+          heading: "Payments & settlements",
+          body: "Cash and manual mobile money confirmations are recorded directly by the merchant. Integrated payment gateways or collection APIs are governed by the licensed payment provider's terms; Kan never stores raw card details.",
         },
         {
-          heading: "Suspension and exit",
-          body: "You may export your records at any time. Account suspension and closure terms are published with billing; existing data remains exportable.",
+          heading: "Exit & data portability",
+          body: `You may export your shop books as JSON at any time and request closure via Account Deletion or ${PWATA_CONTACT.email}.`,
         },
       ]}
     />

@@ -8,14 +8,34 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#0b1f1a",
-        kan: {
-          DEFAULT: "#0e7c66",
-          dark: "#095c4c",
-          soft: "#e8f4ef",
+        navy: {
+          DEFAULT: "#070D35",
+          light: "#11194D",
+          muted: "#1B245C",
         },
-        cream: "#f8f7f2",
-        sun: "#f4a261",
+        teal: {
+          DEFAULT: "#42DFD1",
+          dark: "#29C4B6",
+          soft: "#E6FAF8",
+        },
+        guava: {
+          DEFAULT: "#FF806B",
+          dark: "#E66752",
+          soft: "#FFF0ED",
+        },
+        softwhite: "#FAFAFF",
+        // Legacy aliases mapped cleanly to Kan Brand Guidelines v1.0
+        ink: "#070D35",
+        cream: "#FAFAFF",
+        kan: {
+          DEFAULT: "#070D35",
+          dark: "#11194D",
+          soft: "#E6FAF8",
+        },
+        sun: "#FF806B",
+      },
+      fontFamily: {
+        sans: ["var(--font-noto-sans)", "system-ui", "sans-serif"],
       },
     },
   },
