@@ -43,6 +43,7 @@ const ROUTES = [
   "/more/hardware",
   "/app/verticals",
   "/app/verticals/wave2",
+  "/app/verticals/wave3",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

@@ -39,9 +39,14 @@ export function VerticalsPanel() {
         </p>
       </header>
 
-      <Link href="/app/verticals/wave2" className="btn-secondary w-full sm:w-auto">
-        See the wave 2 workflow preview
-      </Link>
+      <div className="flex flex-wrap gap-2">
+        <Link href="/app/verticals/wave2" className="btn-secondary">
+          Wave 2 preview
+        </Link>
+        <Link href="/app/verticals/wave3" className="btn-secondary">
+          Wave 3 preview
+        </Link>
+      </div>
 
       <section className="card">
         <h2 className="text-base font-bold">Your profile</h2>

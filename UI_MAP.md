@@ -394,6 +394,12 @@ Attendant never sees `/home`.
 - Live demo tools: pharmacy batch dispensing (expired batches skipped), bakery recipe scaling, salon free-slot count and laundry ticket flow.
 - Linked from `/app/verticals`.
 
+## 26. Wave 3 preview — `/app/verticals/wave3` (R9)
+
+- Honest banner: helpers are built and tested but not enabled in the till; they do not create production runs, warranties or deliveries.
+- Live demo tools: factory BOM with shortfalls, production batch code, serial validation with warranty expiry, and delivery quote with next state.
+- Linked from `/app/verticals`.
+
 ## Kan-era UI note
 
 The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.
