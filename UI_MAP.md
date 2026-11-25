@@ -376,6 +376,12 @@ Attendant never sees `/home`.
 - `/app/alerts`: counts and lists for low/out-of-stock, expiring/expired batches and customers with old deni balances, with links to the relevant till screens.
 - Empty: `No closed sales yet.` / `Nothing low in stock.` / `No old balances to follow up.`
 
+## 23. Install and hardware — `/more/install`, `/more/hardware` (R8)
+
+- `/more/install`: PWA `Available now` with Add-to-Home-screen steps; Android/iOS/Windows `Coming soon`; warning that clearing browser data deletes local books until backup/sync.
+- `/more/hardware`: barcode/QR scanner `Available now` as an optional keyboard wedge; printer, drawer and touchscreen `Coming soon`. No hardware is required to sell.
+- `/offline`: honest fallback page with an `Open the till` action.
+
 ## Kan-era UI note
 
 The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.

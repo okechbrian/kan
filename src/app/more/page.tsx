@@ -168,6 +168,15 @@ export default function MorePage() {
         <BackupButton canRestore={isOwner} />
 
         <MenuItem
+          label="Install Kan"
+          onClick={() => router.push("/more/install")}
+        />
+        <MenuItem
+          label="Hardware"
+          onClick={() => router.push("/more/hardware")}
+        />
+
+        <MenuItem
           label="Sync now"
           onClick={() => {
             void import("../../lib/sync").then((s) => s.syncNow());

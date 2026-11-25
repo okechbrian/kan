@@ -38,6 +38,9 @@ const ROUTES = [
   "/discover",
   "/app/channels",
   "/app/alerts",
+  "/offline",
+  "/more/install",
+  "/more/hardware",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

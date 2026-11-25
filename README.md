@@ -4,7 +4,7 @@ Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
 
-**Status:** Re-scoped from the Duuka offline till to the Kan platform on 2026-11-24 (D40–D47). **R1–R7 shipped.** R7 added local sales analytics, product profit, daily reports, and low-stock/expiry/old-deni alerts. All reports are computed from till data on the device; cloud reports open with sync. See [HANDOFF.md](HANDOFF.md) and [KAN_SCOPE.md](KAN_SCOPE.md).
+**Status:** Re-scoped from the Duuka offline till to the Kan platform on 2026-11-24 (D40–D47). **R1–R8 shipped.** R8 added a PWA manifest/service worker, offline fallback, sync retry rules, optional barcode handling and ESC/POS output. Native apps and hardware integrations remain honest previews. See [HANDOFF.md](HANDOFF.md) and [KAN_SCOPE.md](KAN_SCOPE.md).
 
 **Live (temporary Vercel URL):** https://kan-sme.vercel.app · Repo: https://github.com/okechbrian/kan
 
