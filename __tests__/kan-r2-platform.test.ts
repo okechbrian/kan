@@ -9,8 +9,12 @@ import { PlatformService, PlatformError } from "../src/lib/platform/service";
 import type { PlatformStore, PlatformRecord } from "../src/lib/platform/store";
 
 function fakeStore(): PlatformStore {
+  const businesses = new Map<string, PlatformRecord>();
   const accounts = new Map<string, PlatformRecord>();
+  const shops = new Map<string, PlatformRecord>();
   const sessions = new Map<string, PlatformRecord>();
+  const resetTokens = new Map<string, PlatformRecord>();
+  let plan = "basic";
   let nextId = 1;
   const record = (data: Record<string, unknown>): PlatformRecord => ({
     id: `r${nextId++}`,
@@ -19,7 +23,12 @@ function fakeStore(): PlatformStore {
   });
   return {
     async createBusiness(input) {
-      return record({ name: input.name });
+      const biz = record({ name: input.name });
+      businesses.set(biz.id, biz);
+      return biz;
+    },
+    async findBusinessById(id) {
+      return businesses.get(id) ?? null;
     },
     async findAccountByEmail(email) {
       return Array.from(accounts.values()).find((a) => a.email === email) ?? null;
@@ -28,29 +37,71 @@ function fakeStore(): PlatformStore {
       return accounts.get(id) ?? null;
     },
     async createAccount(input) {
-      const item = record({ ...input, active: true });
+      const item = record({ ...input, password_hash: input.passwordHash, active: true });
       accounts.set(item.id, item);
       return item;
     },
+    async updateAccountPassword(accountId, passwordHash) {
+      const acc = accounts.get(accountId);
+      if (acc) acc.password_hash = passwordHash;
+    },
     async createShop(input) {
-      return record({ name: input.name, shop_code: `S-${nextId}`, active: true });
+      const shop = record({
+        name: input.name,
+        business_id: input.businessId,
+        shop_code: `S-${nextId}`,
+        momo_number: input.momoNumber ?? "",
+        currency: "UGX",
+        active: true,
+      });
+      shops.set(shop.id, shop);
+      return shop;
+    },
+    async listShopsByBusiness(businessId) {
+      return Array.from(shops.values()).filter((s) => s.business_id === businessId);
     },
     async createSubscription() {
-      return record({ plan: "basic" });
+      return record({ plan });
     },
     async getSubscription() {
-      return record({ plan: "basic" });
+      return record({ plan });
     },
-    async updateSubscription() {},
+    async updateSubscription(_businessId, nextPlan) {
+      plan = nextPlan;
+    },
     async createSession(input) {
       sessions.set(input.tokenHash, record({ account_id: input.accountId, ...input }));
     },
     async findSessionByToken(tokenHash) {
       return sessions.get(tokenHash) ?? null;
     },
-    async revokeSession() {},
-    async countUsage() {
-      return { staff: accounts.size, branches: 1, skus: 0 };
+    async revokeSession(sessionId) {
+      for (const s of Array.from(sessions.values())) {
+        if (s.id === sessionId) s.revoked_at = new Date();
+      }
+    },
+    async revokeAllSessionsForAccount(accountId) {
+      for (const s of Array.from(sessions.values())) {
+        if (s.account_id === accountId) s.revoked_at = new Date();
+      }
+    },
+    async createPasswordResetToken(input) {
+      resetTokens.set(
+        input.tokenHash,
+        record({ account_id: input.accountId, token_hash: input.tokenHash, expires_at: input.expiresAt })
+      );
+    },
+    async findPasswordResetToken(tokenHash) {
+      return resetTokens.get(tokenHash) ?? null;
+    },
+    async markPasswordResetTokenUsed(id) {
+      for (const rt of Array.from(resetTokens.values())) {
+        if (rt.id === id) rt.used_at = new Date();
+      }
+    },
+    async countUsage(businessId) {
+      const branchCount = Array.from(shops.values()).filter((s) => s.business_id === businessId).length;
+      return { staff: accounts.size, branches: Math.max(branchCount, 1), skus: 0 };
     },
     async createAudit() {},
     async createNotification() {},

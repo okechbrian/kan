@@ -8,11 +8,14 @@ export default function SignupPage() {
     <div className="mx-auto max-w-md space-y-5">
       <header>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-3xl font-black tracking-tight">Create your workspace</h1>
-          <StatusBadge state="soon" />
+          <h1 className="text-3xl font-bold tracking-tight text-navy">
+            Create your workspace
+          </h1>
+          <StatusBadge state="now" />
         </div>
-        <p className="mt-2 text-sm text-ink/60">
-          One business, one first shop, one owner account. Add branches after sign-in.
+        <p className="mt-2 text-sm text-navy/70">
+          One business, one first shop, one owner account. Add extra branches after
+          sign-in.
         </p>
       </header>
       <AuthForms mode="signup" />

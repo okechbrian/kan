@@ -34,6 +34,7 @@ model Account {
   business     Business     @relation(fields: [business_id], references: [id])
   sessions     Session[]
   audit_events AuditEvent[]
+  reset_tokens PasswordResetToken[]
 
   @@index([business_id])
 }
@@ -127,6 +128,11 @@ model Shop {
   channel_syncs ChannelSync[]
   merchant_profile MerchantProfile?
   report_schedules ReportSchedule[]
+  expenses         Expense[]
+  suppliers        Supplier[]
+  purchases        Purchase[]
+  bookings         Booking[]
+  production_runs  ProductionRun[]
 
   @@index([business_id])
   @@index([shop_code])
@@ -524,4 +530,126 @@ model SyncCursor {
   updated_at DateTime @default(now())
 
   @@unique([shop_id])
+}
+
+model PasswordResetToken {
+  id         String    @id
+  account_id String
+  token_hash String    @unique
+  expires_at DateTime
+  used_at    DateTime?
+  created_at DateTime  @default(now())
+
+  account Account @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  @@index([account_id])
+}
+
+model Expense {
+  id          String   @id
+  shop_id     String
+  category    String
+  amount      Int
+  description String   @default("")
+  user_id     String?
+  incurred_at DateTime @default(now())
+  created_at  DateTime @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+
+  @@index([shop_id, incurred_at])
+}
+
+model Supplier {
+  id         String   @id
+  shop_id    String
+  name       String
+  phone      String   @default("")
+  email      String   @default("")
+  balance    Int      @default(0)
+  created_at DateTime @default(now())
+
+  shop      Shop       @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+  purchases Purchase[]
+
+  @@index([shop_id])
+}
+
+model Purchase {
+  id          String   @id
+  shop_id     String
+  supplier_id String?
+  total       Int
+  paid        Int      @default(0)
+  status      String   @default("received")
+  note        String   @default("")
+  created_at  DateTime @default(now())
+
+  shop     Shop           @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+  supplier Supplier?      @relation(fields: [supplier_id], references: [id], onDelete: SetNull)
+  items    PurchaseItem[]
+
+  @@index([shop_id, created_at])
+}
+
+model PurchaseItem {
+  id         String  @id
+  purchase_id String
+  product_id String?
+  name       String
+  qty        Int
+  unit_cost  Int
+  line_total Int
+
+  purchase Purchase @relation(fields: [purchase_id], references: [id], onDelete: Cascade)
+
+  @@index([purchase_id])
+}
+
+model Booking {
+  id             String   @id
+  shop_id        String
+  customer_name  String
+  customer_phone String   @default("")
+  service_name   String
+  staff_name     String   @default("")
+  scheduled_at   DateTime
+  duration_min   Int      @default(30)
+  deposit_ugx    Int      @default(0)
+  status         String   @default("scheduled")
+  created_at     DateTime @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+
+  @@index([shop_id, scheduled_at])
+}
+
+model ProductionRun {
+  id           String   @id
+  shop_id      String
+  product_name String
+  batch_code   String   @default("")
+  qty_produced Int
+  unit         String   @default("pc")
+  cost_ugx     Int      @default(0)
+  notes        String   @default("")
+  created_at   DateTime @default(now())
+
+  shop Shop @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+
+  @@index([shop_id, created_at])
+}
+
+model PublicLead {
+  id            String   @id
+  kind          String
+  email         String   @default("")
+  name          String   @default("")
+  phone         String   @default("")
+  business_name String   @default("")
+  message       String   @default("")
+  reference_id  String   @default("")
+  created_at    DateTime @default(now())
+
+  @@index([kind, created_at])
 }

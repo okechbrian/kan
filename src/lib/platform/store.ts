@@ -12,6 +12,7 @@ export type PlatformRecord = {
 
 export type PlatformStore = {
   createBusiness(input: { name: string; ownerEmail: string }): Promise<PlatformRecord>;
+  findBusinessById(id: string): Promise<PlatformRecord | null>;
   findAccountByEmail(email: string): Promise<PlatformRecord | null>;
   findAccountById(id: string): Promise<PlatformRecord | null>;
   createAccount(input: {
@@ -20,7 +21,13 @@ export type PlatformStore = {
     passwordHash: string;
     role: string;
   }): Promise<PlatformRecord>;
-  createShop(input: { businessId: string; name: string }): Promise<PlatformRecord>;
+  updateAccountPassword(accountId: string, passwordHash: string): Promise<void>;
+  createShop(input: {
+    businessId: string;
+    name: string;
+    momoNumber?: string;
+  }): Promise<PlatformRecord>;
+  listShopsByBusiness(businessId: string): Promise<PlatformRecord[]>;
   createSubscription(businessId: string): Promise<PlatformRecord>;
   getSubscription(businessId: string): Promise<PlatformRecord | null>;
   updateSubscription(businessId: string, plan: string): Promise<void>;
@@ -31,6 +38,14 @@ export type PlatformStore = {
   }): Promise<void>;
   findSessionByToken(tokenHash: string): Promise<PlatformRecord | null>;
   revokeSession(sessionId: string): Promise<void>;
+  revokeAllSessionsForAccount(accountId: string): Promise<void>;
+  createPasswordResetToken(input: {
+    accountId: string;
+    tokenHash: string;
+    expiresAt: Date;
+  }): Promise<void>;
+  findPasswordResetToken(tokenHash: string): Promise<PlatformRecord | null>;
+  markPasswordResetTokenUsed(id: string): Promise<void>;
   countUsage(businessId: string): Promise<{ staff: number; branches: number; skus: number }>;
   createAudit(input: {
     actor: Actor;
@@ -66,6 +81,10 @@ export function createPlatformStore(): PlatformStore {
         })
       );
     },
+    async findBusinessById(id) {
+      const row = await db.business.findUnique({ where: { id } });
+      return row ? { ...row, business_id: row.id } : null;
+    },
     async findAccountByEmail(email) {
       return toRecord(await db.account.findUnique({ where: { email } }));
     },
@@ -85,6 +104,12 @@ export function createPlatformStore(): PlatformStore {
         })
       );
     },
+    async updateAccountPassword(accountId, passwordHash) {
+      await db.account.update({
+        where: { id: accountId },
+        data: { password_hash: passwordHash },
+      });
+    },
     async createShop(input) {
       const code = `${input.name.replace(/[^a-z0-9]/gi, "").slice(0, 6).toUpperCase() || "SHOP"}-${randomUUID()
         .replace(/-/g, "")
@@ -97,11 +122,18 @@ export function createPlatformStore(): PlatformStore {
             business_id: input.businessId,
             name: input.name,
             shop_code: code,
-            momo_number: "",
+            momo_number: input.momoNumber ?? "",
             currency: "UGX",
           },
         })
       );
+    },
+    async listShopsByBusiness(businessId) {
+      const rows = await db.shop.findMany({
+        where: { business_id: businessId, active: true },
+        orderBy: { name: "asc" },
+      });
+      return rows.map(toRecord);
     },
     async createSubscription(businessId) {
       return toRecord(
@@ -137,6 +169,32 @@ export function createPlatformStore(): PlatformStore {
     },
     async revokeSession(sessionId) {
       await db.session.update({ where: { id: sessionId }, data: { revoked_at: new Date() } });
+    },
+    async revokeAllSessionsForAccount(accountId) {
+      await db.session.updateMany({
+        where: { account_id: accountId, revoked_at: null },
+        data: { revoked_at: new Date() },
+      });
+    },
+    async createPasswordResetToken(input) {
+      await db.passwordResetToken.create({
+        data: {
+          id: randomUUID(),
+          account_id: input.accountId,
+          token_hash: input.tokenHash,
+          expires_at: input.expiresAt,
+        },
+      });
+    },
+    async findPasswordResetToken(tokenHash) {
+      const row = await db.passwordResetToken.findUnique({ where: { token_hash: tokenHash } });
+      return row ? { ...row, business_id: "" } : null;
+    },
+    async markPasswordResetTokenUsed(id) {
+      await db.passwordResetToken.update({
+        where: { id },
+        data: { used_at: new Date() },
+      });
     },
     async countUsage(businessId) {
       const [staff, branches, skus] = await Promise.all([

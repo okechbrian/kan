@@ -2,7 +2,15 @@ import { randomUUID } from "node:crypto";
 import { checkQuota, planById } from "./plans";
 import { hashPassword, verifyPassword } from "./password";
 import { hashSecret, newSessionToken } from "./tokens";
-import { validateInvite, validateLogin, validatePlanChange, validateSignup } from "./validation";
+import {
+  validateCreateBranch,
+  validateForgotPassword,
+  validateInvite,
+  validateLogin,
+  validatePlanChange,
+  validateResetPassword,
+  validateSignup,
+} from "./validation";
 import { canAccessBusiness, hasPermission, type Permission } from "./access";
 import { sanitizeMetadata, type AuditAction } from "./audit";
 import { createPlatformStore, type PlatformStore, type PlatformRecord } from "./store";
@@ -23,6 +31,7 @@ export class PlatformError extends Error {
 }
 
 const SESSION_MS = 7 * 24 * 60 * 60 * 1000;
+const RESET_MS = 60 * 60 * 1000;
 
 export type SessionContext = {
   accountId: string;
@@ -110,6 +119,143 @@ export class PlatformService {
       actor: { businessId: ctx.businessId, accountId: ctx.accountId },
       action: "account.signed_out",
     });
+  }
+
+  async requestPasswordReset(body: unknown) {
+    const parsed = validateForgotPassword(body);
+    if (!parsed.ok) throw new PlatformError(parsed.error, 400);
+
+    const account = await this.store.findAccountByEmail(parsed.value.email);
+    if (!account || account.active === false) {
+      return { ok: true };
+    }
+
+    const rawToken = newSessionToken();
+    await this.store.createPasswordResetToken({
+      accountId: account.id,
+      tokenHash: hashSecret(rawToken),
+      expiresAt: new Date(Date.now() + RESET_MS),
+    });
+    await this.store.createNotification({
+      businessId: String(account.business_id),
+      channel: "email",
+      recipient: String(account.email),
+      subject: "Reset your Kan password",
+      body: "A password reset was requested for your Kan workspace.",
+    });
+    await this.store.createAudit({
+      actor: { businessId: String(account.business_id), accountId: account.id },
+      action: "password.reset_requested",
+      targetType: "account",
+      targetId: account.id,
+    });
+
+    if (!process.env.SMTP_HOST) {
+      return { ok: true, resetToken: rawToken };
+    }
+    return { ok: true };
+  }
+
+  async resetPassword(body: unknown) {
+    const parsed = validateResetPassword(body);
+    if (!parsed.ok) throw new PlatformError(parsed.error, 400);
+
+    const record = await this.store.findPasswordResetToken(hashSecret(parsed.value.token));
+    if (!record || record.used_at || new Date(String(record.expires_at)) < new Date()) {
+      throw new PlatformError("invalid_reset_token", 400);
+    }
+
+    const account = await this.store.findAccountById(String(record.account_id));
+    if (!account || account.active === false) {
+      throw new PlatformError("invalid_reset_token", 400);
+    }
+
+    await this.store.updateAccountPassword(account.id, hashPassword(parsed.value.password));
+    await this.store.markPasswordResetTokenUsed(record.id);
+    await this.store.revokeAllSessionsForAccount(account.id);
+    await this.store.createAudit({
+      actor: { businessId: String(account.business_id), accountId: account.id },
+      action: "password.reset",
+      targetType: "account",
+      targetId: account.id,
+    });
+    return { ok: true };
+  }
+
+  async getWorkspace(ctx: SessionContext) {
+    const [account, business, subscription, shops, usage] = await Promise.all([
+      this.store.findAccountById(ctx.accountId),
+      this.store.findBusinessById(ctx.businessId),
+      this.store.getSubscription(ctx.businessId),
+      this.store.listShopsByBusiness(ctx.businessId),
+      this.store.countUsage(ctx.businessId),
+    ]);
+
+    return {
+      account: account
+        ? {
+            id: account.id,
+            email: account.email,
+            role: account.role,
+            businessId: account.business_id,
+          }
+        : null,
+      business: business ? { id: business.id, name: business.name } : null,
+      subscription: subscription
+        ? {
+            plan: String(subscription.plan ?? "basic"),
+            status: String(subscription.status ?? "trialing"),
+          }
+        : { plan: "basic", status: "trialing" },
+      shops: shops.map((s) => ({
+        id: s.id,
+        name: s.name,
+        shop_code: s.shop_code,
+        momo_number: s.momo_number,
+        currency: s.currency ?? "UGX",
+      })),
+      usage,
+    };
+  }
+
+  async createBranch(ctx: SessionContext, body: unknown) {
+    if (!hasPermission(ctx.role, "manage_settings")) {
+      throw new PlatformError("forbidden", 403);
+    }
+    const parsed = validateCreateBranch(body);
+    if (!parsed.ok) throw new PlatformError(parsed.error, 400);
+
+    const [usage, subscription] = await Promise.all([
+      this.store.countUsage(ctx.businessId),
+      this.store.getSubscription(ctx.businessId),
+    ]);
+    const plan = planById(String(subscription?.plan ?? "basic"));
+    if (
+      !plan ||
+      !checkQuota(plan.id, { staff: 0, branches: usage.branches, skus: 0 }).allowed
+    ) {
+      throw new PlatformError("branches_limit_reached", 409);
+    }
+
+    const shop = await this.store.createShop({
+      businessId: ctx.businessId,
+      name: parsed.value.name,
+      momoNumber: parsed.value.momoNumber,
+    });
+    await this.store.createAudit({
+      actor: { businessId: ctx.businessId, accountId: ctx.accountId },
+      action: "shop.created",
+      targetType: "shop",
+      targetId: shop.id,
+      metadata: { name: parsed.value.name },
+    });
+    return {
+      id: shop.id,
+      name: shop.name,
+      shop_code: shop.shop_code,
+      momo_number: shop.momo_number,
+      currency: shop.currency ?? "UGX",
+    };
   }
 
   async requireSession(token: string | undefined): Promise<SessionContext> {

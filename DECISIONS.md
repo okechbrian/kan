@@ -19,7 +19,7 @@ Status key: `OPEN` | `LOCKED`
 | D46 | Konna is a **structural reference only** — no copied copy, branding, testimonials, numbers or legal text | LOCKED | 2026-11-24 | Feature-state labels: Available now / Coming soon / With partner |
 | D47 | `KAN_SCOPE.md` is authoritative for scope; this file is authoritative for decisions | LOCKED | 2026-11-24 | Conflicts in older docs resolved in favour of these two |
 | D48 | Pixel-close Konna layout, navigation, and tool-flow parity; zero copied text, images, icons, logos, testimonials, or metrics | LOCKED | 2026-11-25 | Demos labeled `"Demo"` with realistic UGX figures; amends D46 |
-| D49 | Provision a new Supabase PostgreSQL project for cloud accounts, multi-device sync, and live storefront orders | LOCKED | 2026-11-25 | Connected in Phase 3 of `KONNA_PARITY_PLAN.md` |
+| D49 | Provision a new **Neon PostgreSQL** database via Vercel Marketplace (`neon-blue-clock`) for cloud accounts, multi-device sync, and live storefront orders | LOCKED | 2026-11-25 | Switched from Supabase due to active free-project limit; auto-connected to `kan-sme` |
 | D50 | Legal entity **Pwata Inc** ("Kan is a product of Pwata Inc"); address Block 5D, Entebbe Kiwafu, Uganda; phone/WhatsApp `0791149592` (`+256 791 149 592`); email `ubombo256@gmail.com`; Konna subscription & hardware prices converted to integer UGX | LOCKED | 2026-11-25 | Rates referenced: `1 USD ≈ 4,240 UGX`, `1 NGN ≈ 3.05 UGX` |
 | D0 | Project folder is `Desktop/New folder/SME Management System` | LOCKED | 2026-09-02 | All docs live here |
 | D1 | Working product name is **Duuka** | LOCKED | 2026-09-02 | Folder name unchanged |

@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { savePublicLead, publicLeadJson } from "../../../../lib/platform/leads";
 
 export async function POST(request: Request) {
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
   } catch {
-    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+    return publicLeadJson({ error: "invalid_json" }, 400);
   }
 
   const name = typeof body.name === "string" ? body.name.trim() : "";
@@ -15,22 +15,32 @@ export async function POST(request: Request) {
 
   const digits = phone.replace(/\D/g, "");
   if (!name) {
-    return NextResponse.json({ error: "name_required" }, { status: 400 });
+    return publicLeadJson({ error: "name_required" }, 400);
   }
   if (digits.length < 7) {
-    return NextResponse.json({ error: "invalid_phone" }, { status: 400 });
+    return publicLeadJson({ error: "invalid_phone" }, 400);
   }
   if (!email.includes("@") || email.length < 5) {
-    return NextResponse.json({ error: "invalid_email" }, { status: 400 });
+    return publicLeadJson({ error: "invalid_email" }, 400);
   }
   if (message.length < 10) {
-    return NextResponse.json({ error: "message_too_short" }, { status: 400 });
+    return publicLeadJson({ error: "message_too_short" }, 400);
   }
 
   const referenceId = `KAN-INQ-${Date.now().toString(36).toUpperCase()}`;
-  return NextResponse.json({
+  await savePublicLead({
+    kind: "contact",
+    name,
+    phone,
+    email,
+    message,
+    referenceId,
+  });
+
+  return publicLeadJson({
     ok: true,
     referenceId,
-    message: "Your enquiry has been logged. Pwata Inc support will reach out on your phone or email.",
+    message:
+      "Your enquiry has been logged. Pwata Inc support will reach out on your phone or email.",
   });
 }

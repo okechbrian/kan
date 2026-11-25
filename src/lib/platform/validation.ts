@@ -59,3 +59,39 @@ export function validatePlanChange(body: unknown): ValidationResult<{ plan: stri
   }
   return { ok: true, value: { plan } };
 }
+
+export function validateForgotPassword(body: unknown): ValidationResult<{ email: string }> {
+  if (!isObject(body)) return { ok: false, error: "invalid_body" };
+  const email = String(body.email ?? "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+    return { ok: false, error: "invalid_email" };
+  }
+  return { ok: true, value: { email } };
+}
+
+export function validateResetPassword(body: unknown): ValidationResult<{
+  token: string;
+  password: string;
+}> {
+  if (!isObject(body)) return { ok: false, error: "invalid_body" };
+  const token = String(body.token ?? "").trim();
+  const password = String(body.password ?? "");
+  if (!token) return { ok: false, error: "invalid_reset_token" };
+  if (password.length < 10 || password.length > 200) {
+    return { ok: false, error: "invalid_password" };
+  }
+  return { ok: true, value: { token, password } };
+}
+
+export function validateCreateBranch(body: unknown): ValidationResult<{
+  name: string;
+  momoNumber: string;
+}> {
+  if (!isObject(body)) return { ok: false, error: "invalid_body" };
+  const name = String(body.name ?? "").trim();
+  const momoNumber = String(body.momoNumber ?? "").trim();
+  if (name.length < 2 || name.length > 80) {
+    return { ok: false, error: "invalid_branch_name" };
+  }
+  return { ok: true, value: { name, momoNumber } };
+}

@@ -2,6 +2,8 @@ export const AUDIT_ACTIONS = [
   "account.created",
   "account.signed_in",
   "account.signed_out",
+  "password.reset_requested",
+  "password.reset",
   "shop.created",
   "subscription.changed",
   "settings.changed",
