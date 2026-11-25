@@ -29,6 +29,7 @@ Chat memory is not the source of truth. The `.md` files in this folder are.
 | R7 analytics | Shipped: sales/day/method/basket/product-profit aggregates, stock/expiry/deni alerts, daily report text, Prisma ReportSchedule, real `/app/reports` and `/app/alerts` panels computed from local Dexie data. 119 tests. |
 | R8 clients | Shipped: PWA manifest + service worker + offline page, sync retry/backoff and outbox helpers, barcode keyboard-wedge parsing and ESC/POS bytes, `/more/install` and `/more/hardware`. Native apps/printer/drawer honest previews. 126 tests. |
 | R9 wave 1 | Shipped: 16 vertical profiles in 3 waves, capability/selection rules, starter product lists, `/app/verticals` with local profile choice. Wave 1 available; waves 2–3 `Coming soon`. 133 tests. |
+| R9 wave 2 | Shipped: workflow helpers for expiry-aware batch dispensing, recipe scaling, table orders, booking conflicts/slots and laundry ticket states, plus `/app/verticals/wave2` preview. Still marked planned in the till. 139 tests. |
 
 ---
 

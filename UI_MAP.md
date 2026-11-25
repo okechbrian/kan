@@ -388,6 +388,12 @@ Attendant never sees `/home`.
 - Wave 1 profiles can be selected and saved on this device; suggested starter items are shown with an honest note that they are only added when entered on the till.
 - Empty starter list for planned profiles unless their workflows are built.
 
+## 25. Wave 2 preview — `/app/verticals/wave2` (R9)
+
+- Honest banner: helpers are built and tested but not enabled in the till; nothing changes stock or books an appointment.
+- Live demo tools: pharmacy batch dispensing (expired batches skipped), bakery recipe scaling, salon free-slot count and laundry ticket flow.
+- Linked from `/app/verticals`.
+
 ## Kan-era UI note
 
 The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.

@@ -42,6 +42,7 @@ const ROUTES = [
   "/more/install",
   "/more/hardware",
   "/app/verticals",
+  "/app/verticals/wave2",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

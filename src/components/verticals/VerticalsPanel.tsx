@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { VERTICALS, type VerticalProfile } from "../../lib/verticals/profiles";
 import { starterProducts, WAVE_LABELS } from "../../lib/verticals/workflows";
+import Link from "next/link";
 import { StatusBadge } from "../site/StatusBadge";
 
 export function VerticalsPanel() {
@@ -37,6 +38,10 @@ export function VerticalsPanel() {
           others are planned.
         </p>
       </header>
+
+      <Link href="/app/verticals/wave2" className="btn-secondary w-full sm:w-auto">
+        See the wave 2 workflow preview
+      </Link>
 
       <section className="card">
         <h2 className="text-base font-bold">Your profile</h2>
