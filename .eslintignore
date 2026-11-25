@@ -1,0 +1,8 @@
+.next
+node_modules
+coverage
+out
+dist
+prisma/migrations
+install-via-curl.js
+local-proxy.js

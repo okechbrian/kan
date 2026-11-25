@@ -1,13 +1,13 @@
 {
   "name": "Kan — your shop, in one place",
   "short_name": "Kan",
-  "description": "Offline-first till for Ugandan shops.",
+  "description": "Offline-first commerce platform and till for Ugandan shops by Pwata Inc.",
   "start_url": "/pos",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f8f7f2",
-  "theme_color": "#0e7c66",
+  "background_color": "#FAFAFF",
+  "theme_color": "#070D35",
   "icons": [
     {
       "src": "/icon.svg",

@@ -3,85 +3,97 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import {
+  AlertTriangle,
+  BarChart3,
+  Building2,
+  CreditCard,
+  LayoutDashboard,
+  Package,
+  Settings,
+  Share2,
+  ShoppingBag,
+  Store,
+  Tag,
+  Users,
+  UserCheck,
+} from "lucide-react";
+import { KanLogo } from "../brand/KanLogo";
 
 const NAV = [
-  { label: "Dashboard", href: "/app/dashboard", icon: "◷" },
-  { label: "Products", href: "/app/products", icon: "▤" },
-  { label: "Orders", href: "/app/orders", icon: "◈" },
-  { label: "Online store", href: "/app/store", icon: "◍" },
-  { label: "Channels", href: "/app/channels", icon: "◇" },
-  { label: "Customers", href: "/app/customers", icon: "◉" },
-  { label: "Reports", href: "/app/reports", icon: "◫" },
-  { label: "Alerts", href: "/app/alerts", icon: "!" },
-  { label: "Shops", href: "/app/shops", icon: "▣" },
-  { label: "Staff", href: "/app/staff", icon: "♙" },
-  { label: "Billing", href: "/app/billing", icon: "◇" },
-  { label: "Settings", href: "/app/settings", icon: "⚙" },
-  { label: "Business type", href: "/app/verticals", icon: "▦" },
-  { label: "AI assistant", href: "/app/ai", icon: "✦" },
-  { label: "Banking", href: "/app/banking", icon: "▢" },
+  { label: "Dashboard", href: "/app/dashboard", Icon: LayoutDashboard },
+  { label: "Products", href: "/app/products", Icon: Package },
+  { label: "Orders", href: "/app/orders", Icon: ShoppingBag },
+  { label: "Online store", href: "/app/store", Icon: Store },
+  { label: "Channels", href: "/app/channels", Icon: Share2 },
+  { label: "Customers", href: "/app/customers", Icon: Users },
+  { label: "Reports", href: "/app/reports", Icon: BarChart3 },
+  { label: "Alerts", href: "/app/alerts", Icon: AlertTriangle },
+  { label: "Shops", href: "/app/shops", Icon: Building2 },
+  { label: "Staff", href: "/app/staff", Icon: UserCheck },
+  { label: "Billing", href: "/app/billing", Icon: CreditCard },
+  { label: "Settings", href: "/app/settings", Icon: Settings },
+  { label: "Business type", href: "/app/verticals", Icon: Tag },
 ];
 
 export function DashboardChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-cream">
-      <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r border-black/5 bg-white px-3 py-5 lg:flex">
-        <Link href="/" className="mb-6 flex items-center gap-2 px-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-kan text-lg font-black text-white">
-            K
-          </span>
-          <span className="text-lg font-extrabold text-ink">Kan</span>
+    <div className="min-h-screen bg-softwhite">
+      <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r border-navy/10 bg-navy px-3 py-5 text-softwhite lg:flex">
+        <Link href="/" className="mb-6 flex items-center px-2" aria-label="Kan home">
+          <KanLogo variant="primary" className="h-8 w-auto min-w-[80px]" />
         </Link>
-        <nav className="flex-1 space-y-1" aria-label="Dashboard navigation">
-          {NAV.map((item) => {
-            const active = pathname === item.href;
+        <nav className="flex-1 space-y-1 overflow-y-auto" aria-label="Dashboard navigation">
+          {NAV.map(({ label, href, Icon }) => {
+            const active = pathname === href;
             return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={href}
+                href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition ${
+                className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold transition ${
                   active
-                    ? "bg-kan-soft text-kan-dark"
-                    : "text-ink/60 hover:bg-black/5 hover:text-ink"
+                    ? "bg-teal text-navy"
+                    : "text-softwhite/75 hover:bg-white/10 hover:text-softwhite"
                 }`}
               >
-                <span aria-hidden="true" className="text-base">
-                  {item.icon}
-                </span>
-                {item.label}
+                <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                {label}
               </Link>
             );
           })}
         </nav>
-        <div className="rounded-xl bg-cream p-3 text-xs leading-relaxed text-ink/50">
-          Accounts open with the platform release. For now, use the till.
+        <div className="rounded-xl bg-white/5 p-3 text-xs leading-relaxed text-softwhite/70">
+          Accounts open with cloud setup. For now, use the offline till.
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <Link href="/app/sign-in" className="btn-secondary justify-center px-2 py-2 text-xs">
+          <Link
+            href="/app/sign-in"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/20 px-2 py-2 text-center text-xs font-bold text-softwhite transition hover:bg-white/10"
+          >
             Sign in
           </Link>
-          <Link href="/app/signup" className="btn-secondary justify-center px-2 py-2 text-xs">
+          <Link
+            href="/app/signup"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/20 px-2 py-2 text-center text-xs font-bold text-softwhite transition hover:bg-white/10"
+          >
             Create workspace
           </Link>
         </div>
-        <Link href="/pos" className="btn-secondary mt-2 justify-center text-sm">
+        <Link href="/pos" className="btn-primary-dark mt-2 justify-center text-sm">
           Open your till
         </Link>
       </aside>
 
       <div className="lg:pl-60">
-        <header className="sticky top-0 z-20 border-b border-black/5 bg-cream/95 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-20 border-b border-navy/10 bg-navy text-softwhite lg:hidden">
           <div className="flex h-14 items-center justify-between px-4">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-kan text-sm font-black text-white">
-                K
-              </span>
-              <span className="font-extrabold text-ink">Kan</span>
+            <Link href="/" className="flex items-center" aria-label="Kan home">
+              <KanLogo variant="primary" className="h-7 w-auto min-w-[80px]" />
             </Link>
-            <Link href="/pos" className="btn-primary px-3 py-2 text-sm">
+            <Link href="/pos" className="btn-primary-dark px-3 py-2 text-sm">
               Open till
             </Link>
           </div>
@@ -96,8 +108,8 @@ export function DashboardChrome({ children }: { children: ReactNode }) {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`shrink-0 rounded-lg px-3 py-2 text-xs font-semibold ${
-                    active ? "bg-kan text-white" : "bg-white text-ink/60"
+                  className={`shrink-0 rounded-lg px-3 py-2 text-xs font-bold ${
+                    active ? "bg-teal text-navy" : "bg-white/10 text-softwhite/80"
                   }`}
                 >
                   {item.label}

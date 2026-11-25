@@ -1,4 +1,13 @@
 import Link from "next/link";
+import {
+  BarChart3,
+  CheckCircle2,
+  CreditCard,
+  MonitorSmartphone,
+  Package,
+  Store,
+  Users,
+} from "lucide-react";
 import { FeatureCard } from "../components/site/FeatureCard";
 import { HeroPreview } from "../components/site/HeroPreview";
 import { SiteFooter } from "../components/site/SiteFooter";
@@ -7,46 +16,46 @@ import { StatusBadge } from "../components/site/StatusBadge";
 
 const PILLARS = [
   {
-    icon: "▣",
+    icon: <MonitorSmartphone className="h-5 w-5" />,
     title: "Point of sale",
     description:
       "Big buttons, fast moves, cash and mobile money. A sale finishes even when the network does not.",
     state: "now" as const,
   },
   {
-    icon: "▤",
+    icon: <Package className="h-5 w-5" />,
     title: "Inventory",
     description:
       "Stock drops when you sell. Receive goods, adjust counts and see what is running low.",
     state: "now" as const,
   },
   {
-    icon: "◉",
+    icon: <Users className="h-5 w-5" />,
     title: "Credit and customers",
     description:
       "Record deni, collect payments and see who owes the shop — per shop, never mixed.",
     state: "now" as const,
   },
   {
-    icon: "◇",
+    icon: <CreditCard className="h-5 w-5" />,
     title: "Payments",
     description:
-      "Split payments and digital channels will connect to the same sale record.",
-    state: "soon" as const,
+      "Split payments and digital channels connect to the same sale record.",
+    state: "now" as const,
   },
   {
-    icon: "◍",
+    icon: <Store className="h-5 w-5" />,
     title: "Online store",
     description:
       "A shareable storefront that stays in sync with your stock, so one book runs both.",
     state: "soon" as const,
   },
   {
-    icon: "◫",
+    icon: <BarChart3 className="h-5 w-5" />,
     title: "Analytics",
     description:
       "Clear sales, stock and profit views to answer what to restock and where the money went.",
-    state: "soon" as const,
+    state: "now" as const,
   },
 ];
 
@@ -140,9 +149,7 @@ export default function HomePage() {
                   key={item}
                   className="flex min-h-11 items-center gap-3 rounded-xl bg-white/5 px-4 py-3"
                 >
-                  <span className="text-kan-soft" aria-hidden="true">
-                    ◆
-                  </span>
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-teal" aria-hidden="true" />
                   {item}
                   <span className="ml-auto text-[10px] font-bold uppercase tracking-wide text-white/40">
                     Planned

@@ -15,9 +15,10 @@ Chat memory is not the source of truth. The `.md` files in this folder are.
 | Product | Re-scoped to **Kan** platform (D40–D47); full scope in `KAN_SCOPE.md` |
 | Offline till (former Duuka Phases 1–5) | Done and signed off — 49 passing tests; engine preserved |
 | Thin sync (Phase 6) | Scaffolding exists (`sync-core.ts`, `/api/pair`, `/api/sync`, outbox), **not signed off** |
-| Current release | **R0/R1** — docs re-lock + public site + honest dashboard shell |
-| Git | Folder is **not a repo yet** — `git init` + push is part of R0 |
-| Brand / domain | Kan; no owned domain — Vercel Hobby `*.vercel.app` via `NEXT_PUBLIC_SITE_URL` |
+| Current release | **Konna Parity Rebuild — Phase 0 & Phase 1** (R1–R11 baseline complete at `3f773d5`) |
+| Git | `https://github.com/okechbrian/kan` (`main`) |
+| Brand / domain | Kan (a product of **Pwata Inc**); Navy `#070D35` / Teal `#42DFD1` / Guava `#FF806B` / Soft White `#FAFAFF`; `NEXT_PUBLIC_SITE_URL` on Vercel Hobby |
+| Master plan | [KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md) — Phase 0 (Housekeeping), Phase 1 (Brand & UI Kit), Phase 2 (14-page Public Site), Phase 3 (Supabase Cloud & Auth), Phase 4–7 (Dashboard, Reports, Till Reskin, Payments/AI) |
 | Toolchain | Node 22, npm 10, git 2.54, Python 3.13, Docker, adb, Vercel/EAS/Supabase/Flutter/gh CLIs — all verified present |
 | Git remote | `https://github.com/okechbrian/kan` — commit `fc54247` pushed to `main` |
 | Live site | https://kan-sme.vercel.app (Vercel project `kan-sme`, Deployment Protection off, all public routes 200) |

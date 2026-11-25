@@ -4,7 +4,7 @@ Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
 
-**Status:** Re-scoped from the Duuka offline till to the Kan platform on 2026-11-24 (D40–D47). **R1–R11 shipped.** Guardrailed AI and partner-only banking surfaces are honest previews; live APIs are wired later. Launch gates and owner inputs are recorded in [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md). See [HANDOFF.md](HANDOFF.md) and [KAN_SCOPE.md](KAN_SCOPE.md).
+**Status:** R1–R11 baseline complete (commit `3f773d5`). Currently executing **[KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md)** (Phase 0 & Phase 1: housekeeping, CI, Kan brand system v1.0, SVG wordmark, and shared UI kit). See [HANDOFF.md](HANDOFF.md) and [DECISIONS.md](DECISIONS.md) D48–D50.
 
 **Live (temporary Vercel URL):** https://kan-sme.vercel.app · Repo: https://github.com/okechbrian/kan
 

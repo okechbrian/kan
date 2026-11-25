@@ -18,6 +18,9 @@ Status key: `OPEN` | `LOCKED`
 | D45 | No owned domain yet; use Vercel Hobby `*.vercel.app` via `NEXT_PUBLIC_SITE_URL` | LOCKED | 2026-11-24 | Attach real domain later without code changes |
 | D46 | Konna is a **structural reference only** — no copied copy, branding, testimonials, numbers or legal text | LOCKED | 2026-11-24 | Feature-state labels: Available now / Coming soon / With partner |
 | D47 | `KAN_SCOPE.md` is authoritative for scope; this file is authoritative for decisions | LOCKED | 2026-11-24 | Conflicts in older docs resolved in favour of these two |
+| D48 | Pixel-close Konna layout, navigation, and tool-flow parity; zero copied text, images, icons, logos, testimonials, or metrics | LOCKED | 2026-11-25 | Demos labeled `"Demo"` with realistic UGX figures; amends D46 |
+| D49 | Provision a new Supabase PostgreSQL project for cloud accounts, multi-device sync, and live storefront orders | LOCKED | 2026-11-25 | Connected in Phase 3 of `KONNA_PARITY_PLAN.md` |
+| D50 | Legal entity **Pwata Inc** ("Kan is a product of Pwata Inc"); address Block 5D, Entebbe Kiwafu, Uganda; phone/WhatsApp `0791149592` (`+256 791 149 592`); email `ubombo256@gmail.com`; Konna subscription & hardware prices converted to integer UGX | LOCKED | 2026-11-25 | Rates referenced: `1 USD ≈ 4,240 UGX`, `1 NGN ≈ 3.05 UGX` |
 | D0 | Project folder is `Desktop/New folder/SME Management System` | LOCKED | 2026-09-02 | All docs live here |
 | D1 | Working product name is **Duuka** | LOCKED | 2026-09-02 | Folder name unchanged |
 | D2 | Docs are the source of truth for the builder agent | LOCKED | 2026-09-02 | See WORKING_METHOD.md |
@@ -86,6 +89,10 @@ Assume no for v1. Search + fast-mover tiles.
 ## Log
 
 Add newest entries at the top.
+
+### 2026-11-25 — Konna Parity Plan, Brand Guidelines & Pwata Inc Details Locked (D48–D50)
+
+Owner locked `Kan-Brand-Guidelines.pdf` v1.0 (Navy `#070D35`, Teal `#42DFD1`, Guava `#FF806B`, Soft White `#FAFAFF`, Noto Sans, clean SVG wordmark), Pwata Inc legal/contact details (`ubombo256@gmail.com`, `0791149592`, Block 5D Entebbe Kiwafu), Supabase Postgres for cloud sync (D49), and Konna pricing converted to integer UGX (`KONNA_PARITY_PLAN.md`).
 
 ### 2026-11-24 — Product re-scoped to Kan
 

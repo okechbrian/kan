@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
+import { Noto_Sans } from "next/font/google";
 import { ServiceWorkerRegister } from "../components/pwa/ServiceWorkerRegister";
 import "./globals.css";
+
+const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-noto-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -8,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s · Kan",
   },
   description:
-    "Kan is a commerce platform for Ugandan shops: sell offline, keep stock and credit straight, and open your storefront when you are ready.",
+    "Kan is a commerce platform for Ugandan shops by Pwata Inc: sell offline at the counter, keep stock and credit straight, and grow online.",
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg" },
   appleWebApp: { capable: true, title: "Kan", statusBarStyle: "default" },
@@ -20,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={notoSans.variable}>
       <body>
         {children}
         <ServiceWorkerRegister />
