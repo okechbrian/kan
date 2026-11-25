@@ -44,6 +44,9 @@ const ROUTES = [
   "/app/verticals",
   "/app/verticals/wave2",
   "/app/verticals/wave3",
+  "/app/ai",
+  "/app/banking",
+  "/support",
 ];
 const WIDTHS = [360, 375, 412];
 const CHROME =

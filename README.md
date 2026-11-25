@@ -4,7 +4,7 @@ Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
 
-**Status:** Re-scoped from the Duuka offline till to the Kan platform on 2026-11-24 (D40–D47). **R1–R9 all waves shipped.** Wave 1 verticals run on the till; wave 2/3 workflow helpers (expiry, bookings, recipes, BOM, serials, delivery) are built and previewable but not enabled in the till. See [HANDOFF.md](HANDOFF.md) and [KAN_SCOPE.md](KAN_SCOPE.md).
+**Status:** Re-scoped from the Duuka offline till to the Kan platform on 2026-11-24 (D40–D47). **R1–R11 shipped.** Guardrailed AI and partner-only banking surfaces are honest previews; live APIs are wired later. Launch gates and owner inputs are recorded in [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md). See [HANDOFF.md](HANDOFF.md) and [KAN_SCOPE.md](KAN_SCOPE.md).
 
 **Live (temporary Vercel URL):** https://kan-sme.vercel.app · Repo: https://github.com/okechbrian/kan
 

@@ -18,6 +18,8 @@ const NAV = [
   { label: "Billing", href: "/app/billing", icon: "◇" },
   { label: "Settings", href: "/app/settings", icon: "⚙" },
   { label: "Business type", href: "/app/verticals", icon: "▦" },
+  { label: "AI assistant", href: "/app/ai", icon: "✦" },
+  { label: "Banking", href: "/app/banking", icon: "▢" },
 ];
 
 export function DashboardChrome({ children }: { children: ReactNode }) {

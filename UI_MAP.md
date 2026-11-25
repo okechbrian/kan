@@ -400,6 +400,12 @@ Attendant never sees `/home`.
 - Live demo tools: factory BOM with shortfalls, production batch code, serial validation with warranty expiry, and delivery quote with next state.
 - Linked from `/app/verticals`.
 
+## 27. AI, banking and support — `/app/ai`, `/app/banking`, `/support` (R10–R11)
+
+- `/app/ai`: `With partner` state; asks are guarded and answered with an honest safe fallback while no model key is configured; crisis input is handled before any model call.
+- `/app/banking`: every feature `With partner`; no balances, transfers or wallet numbers are shown.
+- `/support`: short counter-focused help, links to legal/data pages, contact marked `[to be confirmed]`.
+
 ## Kan-era UI note
 
 The original "do not build" list below was retired by D40–D47: the marketing site, dashboard shell, barcode support, optional printing and inter-shop transfers are now in `KAN_SCOPE.md`. Still not in the UI: dark mode toggle, language switcher, attended email login, EFRIS, and a required barcode/printer.

@@ -31,6 +31,7 @@ Chat memory is not the source of truth. The `.md` files in this folder are.
 | R9 wave 1 | Shipped: 16 vertical profiles in 3 waves, capability/selection rules, starter product lists, `/app/verticals` with local profile choice. Wave 1 available; waves 2–3 `Coming soon`. 133 tests. |
 | R9 wave 2 | Shipped: workflow helpers for expiry-aware batch dispensing, recipe scaling, table orders, booking conflicts/slots and laundry ticket states, plus `/app/verticals/wave2` preview. Still marked planned in the till. 139 tests. |
 | R9 wave 3 | Shipped: BOM explosion, production batch codes, serial validation, warranty expiry, delivery quotes and states, plus `/app/verticals/wave3` preview. Profiles still marked planned in the till. 145 tests. |
+| R10 + R11 | Shipped: AI guardrails with safe fallback and `ai_not_configured` API, partner-only banking surfaces with no fake balances, support centre, launch checklist and CI. 154 tests. |
 
 ---
 

@@ -17,6 +17,7 @@ const PUBLIC_ROUTES = [
   "terms/page",
   "merchant-terms/page",
   "account-deletion/page",
+  "support/page",
   "pos/page",
 ];
 
@@ -34,6 +35,8 @@ const DASHBOARD_ROUTES = [
   "channels",
   "alerts",
   "verticals",
+  "ai",
+  "banking",
 ];
 
 describe("Kan R1 — scope and honest shell", () => {
@@ -66,7 +69,7 @@ describe("Kan R1 — scope and honest shell", () => {
       expect(existsSync(join(root, path))).toBe(true);
       const source = read(path);
       expect(
-        ["SimplePage", "EmptyPanel", "ReportsPanel", "AlertsPanel", "ChannelsPanel", "VerticalsPanel"].some(
+        ["SimplePage", "EmptyPanel", "ReportsPanel", "AlertsPanel", "ChannelsPanel", "VerticalsPanel", "AiPanel", "BankingPanel"].some(
           (component) => source.includes(component)
         )
       ).toBe(true);
