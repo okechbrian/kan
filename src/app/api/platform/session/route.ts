@@ -9,7 +9,7 @@ export async function GET(request: Request) {
       accountId: ctx.accountId,
       businessId: ctx.businessId,
       role: ctx.role,
-    });
+    }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     return platformErrorResponse(error);
   }

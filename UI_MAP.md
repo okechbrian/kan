@@ -1,5 +1,8 @@
 # UI map — Kan
 
+**Step 03 addition (2026-11-26):** `/app/workspace` is the cloud-session landing after owner signup/sign-in. It shows the authenticated business and first branch, retry/sign-out states and existing-till link. It does not unlock local books or pair a cloud branch; pairing remains Step 05. `/app/signup` and `/app/business/create` resume an existing signed-in workspace; incomplete form details persist in this tab without passwords.
+
+
 This file has two parts:
 - **Part A (R1, new):** Kan public site + dashboard shell. These are the screens to build now.
 - **Part B (preserved):** the offline till screens. Unchanged except the brand name in copy; reused from R3 onward.

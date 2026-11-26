@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const service = PlatformService.create();
     const ctx = await service.requireSession(sessionToken(request));
     const workspace = await service.getWorkspace(ctx);
-    return NextResponse.json({ shops: workspace.shops, plan: workspace.subscription.plan });
+    return NextResponse.json({ shops: workspace.shops, plan: workspace.subscription?.plan ?? "basic" });
   } catch (error) {
     return platformErrorResponse(error);
   }

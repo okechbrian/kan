@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { PlatformError, PlatformNotConfiguredError } from "./service";
 
 export function platformErrorResponse(error: unknown) {
+  const code = typeof error === "object" && error !== null && "code" in error ? String(error.code) : "";
+  if (["P1001", "P1002", "P2024", "P2028", "P2034"].includes(code)) {
+    return NextResponse.json({ error: "platform_temporarily_unavailable" }, { status: 503 });
+  }
   const name =
     typeof error === "object" && error !== null && "name" in error
       ? String((error as { name: unknown }).name)

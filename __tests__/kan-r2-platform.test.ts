@@ -22,6 +22,7 @@ function fakeStore(): PlatformStore {
     ...data,
   });
   return {
+    async transaction(work) { return work(this); },
     async createBusiness(input) {
       const biz = record({ name: input.name });
       businesses.set(biz.id, biz);
@@ -37,7 +38,7 @@ function fakeStore(): PlatformStore {
       return accounts.get(id) ?? null;
     },
     async createAccount(input) {
-      const item = record({ ...input, password_hash: input.passwordHash, active: true });
+      const item = record({ ...input, password_hash: input.passwordHash, business_id: input.businessId, active: true });
       accounts.set(item.id, item);
       return item;
     },
@@ -153,6 +154,14 @@ describe("Kan R2 — credentials", () => {
 });
 
 describe("Kan R2 — validation", () => {
+  it("rejects non-string signup fields and oversized credentials", () => {
+    const body = { businessName: "Aisha Shop", shopName: "Entebbe", email: "aisha@example.com", password: "abcdefghij" };
+    for (const key of Object.keys(body)) {
+      expect(validateSignup({ ...body, [key]: { value: "forged" } }).ok).toBe(false);
+    }
+    expect(validateSignup({ ...body, password: "x".repeat(201) }).ok).toBe(false);
+    expect(validateSignup({ ...body, shopName: "x".repeat(81) }).ok).toBe(false);
+  });
   it("validates signup without trimming passwords", () => {
     const result = validateSignup({
       businessName: "Aisha Shop",
@@ -198,24 +207,46 @@ describe("Kan R2 — service boundaries", () => {
     expect(result.account.role).toBe("owner");
     expect(result.token).toHaveLength(43);
     const ctx = await service.requireSession(result.token);
-    expect(ctx.businessId).toBe("biz1");
+    expect(ctx.businessId).toBe(result.account.businessId);
   });
 
-  it("rejects duplicate emails", async () => {
+  it("resumes a matching registration but rejects another password", async () => {
     const body = {
       businessName: "Aisha Shop",
       shopName: "Nateete",
       email: "aisha@example.com",
       password: "abcdefghij",
     };
-    await service.signup(body);
-    await expect(service.signup(body)).rejects.toMatchObject({ code: "email_taken" });
+    const first = await service.signup(body);
+    const resumed = await service.signup(body);
+    expect(resumed.account.id).toBe(first.account.id);
+    await expect(service.signup({ ...body, password: "another-password" })).rejects.toMatchObject({ code: "email_taken" });
   });
 
   it("does not leak which credential failed", async () => {
     await expect(
       service.login({ email: "nobody@example.com", password: "wrongpassword" })
     ).rejects.toMatchObject({ code: "invalid_credentials", status: 401 });
+  });
+
+  it("never returns another tenant workspace from an inconsistent context", async () => {
+    const owner = await service.signup({ businessName: "Aisha Shop", shopName: "Entebbe", email: "owner@example.com", password: "abcdefghij" });
+    const ctx = await service.requireSession(owner.token);
+    const other = await store.createBusiness({ name: "Another tenant", ownerEmail: "other@example.com" });
+    await expect(service.getWorkspace({ ...ctx, businessId: other.id })).rejects.toMatchObject({ status: 401 });
+    expect((await service.getWorkspace(ctx)).shops).toHaveLength(1);
+  });
+
+  it("loads the onboarding summary without querying billing or usage", async () => {
+    const owner = await service.signup({ businessName: "Aisha Shop", shopName: "Entebbe", email: "summary@example.com", password: "abcdefghij" });
+    const ctx = await service.requireSession(owner.token);
+    vi.spyOn(store, "countUsage").mockRejectedValue(new Error("unneeded_usage_query"));
+    vi.spyOn(store, "getSubscription").mockRejectedValue(new Error("unneeded_billing_query"));
+    const summary = await service.getWorkspace(ctx, true);
+    expect(summary.business?.name).toBe("Aisha Shop");
+    expect(summary.shops).toHaveLength(1);
+    expect(summary).not.toHaveProperty("usage");
+    expect(summary).not.toHaveProperty("subscription");
   });
 
   it("blocks staff from billing", async () => {

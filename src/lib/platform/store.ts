@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { AuditAction } from "./audit";
 import { hashSecret } from "./tokens";
 import { getServerDb } from "../server-db";
+import type { Prisma, PrismaClient } from "@prisma/client";
 
 type Actor = { businessId: string; accountId?: string };
 
@@ -12,6 +13,7 @@ export type PlatformRecord = {
 };
 
 export type PlatformStore = {
+  transaction<T>(work: (store: PlatformStore) => Promise<T>): Promise<T>;
   createBusiness(input: { name: string; ownerEmail: string }): Promise<PlatformRecord>;
   findBusinessById(id: string): Promise<PlatformRecord | null>;
   findAccountByEmail(email: string): Promise<PlatformRecord | null>;
@@ -70,11 +72,14 @@ function requirePrisma() {
   return prisma;
 }
 
-export function createPlatformStore(): PlatformStore {
-  const db = requirePrisma();
+export function createPlatformStore(db: PrismaClient | Prisma.TransactionClient = requirePrisma()): PlatformStore {
   const toRecord = (value: unknown): PlatformRecord => value as PlatformRecord;
 
   return {
+    async transaction(work) {
+      if (!("$transaction" in db)) throw new Error("Nested platform transaction");
+      return db.$transaction((tx) => work(createPlatformStore(tx)), { timeout: 30000, isolationLevel: "Serializable" });
+    },
     async createBusiness(input) {
       return toRecord(
         await db.business.create({

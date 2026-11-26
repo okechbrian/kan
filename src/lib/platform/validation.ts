@@ -13,6 +13,9 @@ export function validateSignup(body: unknown): ValidationResult<{
   password: string;
 }> {
   if (!isObject(body)) return { ok: false, error: "invalid_body" };
+  if (["businessName", "shopName", "email", "password"].some((key) => typeof body[key] !== "string")) {
+    return { ok: false, error: "invalid_body" };
+  }
   const businessName = String(body.businessName ?? "").trim();
   const shopName = String(body.shopName ?? "").trim();
   const email = String(body.email ?? "").trim().toLowerCase();

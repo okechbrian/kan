@@ -17,6 +17,7 @@ function makeMemoryStore(): PlatformStore {
   const id = (prefix: string) => `${prefix}-${seq++}`;
 
   return {
+    async transaction(work) { return work(this); },
     async createBusiness(input) {
       const bid = id("biz");
       const rec: PlatformRecord = { id: bid, business_id: bid, name: input.name };

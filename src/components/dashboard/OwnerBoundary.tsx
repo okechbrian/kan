@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ownerContext } from "../../lib/dashboard/access";
 
-const ACCOUNT_ROUTES = new Set(["/app/sign-in", "/app/signup", "/app/forgot-password", "/app/reset-password", "/app/business/create", "/app/business/branch", "/app/billing"]);
+const ACCOUNT_ROUTES = new Set(["/app/sign-in", "/app/signup", "/app/forgot-password", "/app/reset-password", "/app/business/create", "/app/business/branch", "/app/billing", "/app/workspace"]);
 
 export function OwnerBoundary({ children }: { children: ReactNode }) {
   const path = usePathname();

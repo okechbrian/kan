@@ -54,29 +54,56 @@ export class PlatformService {
   async signup(body: unknown) {
     const parsed = validateSignup(body);
     if (!parsed.ok) throw new PlatformError(parsed.error, 400);
-    const existing = await this.store.findAccountByEmail(parsed.value.email);
-    if (existing) throw new PlatformError("email_taken", 409);
-
-    const business = await this.store.createBusiness({
-      name: parsed.value.businessName,
-      ownerEmail: parsed.value.email,
-    });
-    const account = await this.store.createAccount({
-      businessId: business.id,
-      email: parsed.value.email,
-      passwordHash: hashPassword(parsed.value.password),
-      role: "owner",
-    });
-    await this.store.createShop({ businessId: business.id, name: parsed.value.shopName });
-    await this.store.createSubscription(business.id);
-    await this.store.createAudit({
-      actor: { businessId: business.id, accountId: account.id },
-      action: "account.created",
-      targetType: "business",
-      targetId: business.id,
-      metadata: { business: parsed.value.businessName },
-    });
-    return this.issueSession(account);
+    // Password hashing stays outside the database transaction.
+    const passwordHash = hashPassword(parsed.value.password);
+    const register = async (store: PlatformStore) => {
+      const existing = await store.findAccountByEmail(parsed.value.email);
+      if (existing) {
+        // A lost response can be retried with the same owner's credentials.
+        // Never use email alone as authorization to resume a workspace.
+        if (existing.active === false || existing.role !== "owner" ||
+            !verifyPassword(parsed.value.password, String(existing.password_hash))) {
+          throw new PlatformError("email_taken", 409);
+        }
+        const business = await store.findBusinessById(String(existing.business_id));
+        const shops = await store.listShopsByBusiness(String(existing.business_id));
+        if (business?.name !== parsed.value.businessName ||
+            (shops.length > 0 && !shops.some((shop) => shop.name === parsed.value.shopName))) {
+          throw new PlatformError("email_taken", 409);
+        }
+        // Repair an interrupted legacy registration after credential verification.
+        if (shops.length === 0) await store.createShop({ businessId: String(existing.business_id), name: parsed.value.shopName });
+        if (!await store.getSubscription(String(existing.business_id))) {
+          await store.createSubscription(String(existing.business_id));
+        }
+        return new PlatformService(store).issueSession(existing);
+      }
+      const business = await store.createBusiness({ name: parsed.value.businessName, ownerEmail: parsed.value.email });
+      const account = await store.createAccount({
+        businessId: business.id, email: parsed.value.email, passwordHash, role: "owner",
+      });
+      await store.createShop({ businessId: business.id, name: parsed.value.shopName });
+      await store.createSubscription(business.id);
+      await store.createAudit({
+        actor: { businessId: business.id, accountId: account.id },
+        action: "account.created", targetType: "business", targetId: business.id,
+        metadata: { business: parsed.value.businessName },
+      });
+      return new PlatformService(store).issueSession(account);
+    };
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this.store.transaction(register);
+      } catch (error) {
+        // Unique email resolves concurrent registrations; the losing transaction
+        // rolls back its business before authenticating the committed winner.
+        if (attempt < 2 && typeof error === "object" && error !== null && "code" in error &&
+            (error.code === "P2002" || error.code === "P2034")) {
+          continue;
+        }
+        throw error;
+      }
+    }
   }
 
   async login(body: unknown) {
@@ -179,14 +206,18 @@ export class PlatformService {
     return { ok: true };
   }
 
-  async getWorkspace(ctx: SessionContext) {
+  async getWorkspace(ctx: SessionContext, summary = false) {
     const [account, business, subscription, shops, usage] = await Promise.all([
       this.store.findAccountById(ctx.accountId),
       this.store.findBusinessById(ctx.businessId),
-      this.store.getSubscription(ctx.businessId),
+      summary ? Promise.resolve(null) : this.store.getSubscription(ctx.businessId),
       this.store.listShopsByBusiness(ctx.businessId),
-      this.store.countUsage(ctx.businessId),
+      summary ? Promise.resolve(null) : this.store.countUsage(ctx.businessId),
     ]);
+
+    if (!account || account.active === false || account.business_id !== ctx.businessId || !business) {
+      throw new PlatformError("unauthorized", 401);
+    }
 
     return {
       account: account
@@ -198,12 +229,12 @@ export class PlatformService {
           }
         : null,
       business: business ? { id: business.id, name: business.name } : null,
-      subscription: subscription
+      ...(!summary ? { subscription: subscription
         ? {
             plan: String(subscription.plan ?? "basic"),
             status: String(subscription.status ?? "trialing"),
           }
-        : { plan: "basic", status: "trialing" },
+        : { plan: "basic", status: "trialing" }, usage } : {}),
       shops: shops.map((s) => ({
         id: s.id,
         name: s.name,
@@ -211,7 +242,6 @@ export class PlatformService {
         momo_number: s.momo_number,
         currency: s.currency ?? "UGX",
       })),
-      usage,
     };
   }
 

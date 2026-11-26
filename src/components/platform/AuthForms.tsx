@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Input } from "../ui";
 
@@ -14,6 +14,8 @@ const ERROR_COPY: Record<string, string> = {
   account_inactive: "This account is inactive. Contact your shop owner.",
   invalid_business_name: "Business name must be between 2 and 80 characters.",
   invalid_shop_name: "First shop name must be between 2 and 80 characters.",
+  invalid_email: "Enter a valid owner email address.",
+  platform_temporarily_unavailable: "The connection to your workspace was interrupted. Retry with the same details; your business will not be created twice.",
 };
 
 type Mode = "sign-in" | "signup";
@@ -26,9 +28,39 @@ export function AuthForms({ mode }: { mode: Mode }) {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
+  const [draftReady, setDraftReady] = useState(false);
+
+  useEffect(() => {
+    if (mode === "signup") {
+      try {
+        const draft = JSON.parse(sessionStorage.getItem("kan.signup.v1") ?? "null");
+        if (draft && typeof draft === "object") {
+          setBusinessName(typeof draft.businessName === "string" ? draft.businessName : "");
+          setShopName(typeof draft.shopName === "string" ? draft.shopName : "");
+          setEmail(typeof draft.email === "string" ? draft.email : "");
+        }
+      } catch { /* Storage can be unavailable; registration still works. */ }
+    }
+    setDraftReady(true);
+    const controller = new AbortController();
+    void fetch("/api/platform/session", { cache: "no-store", signal: controller.signal })
+      .then((response) => { if (response.ok) window.location.replace("/app/workspace"); })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode !== "signup" || !draftReady) return;
+    try {
+      sessionStorage.setItem("kan.signup.v1", JSON.stringify({ businessName, shopName, email }));
+    } catch { /* Never persist the password or session token. */ }
+  }, [mode, draftReady, businessName, shopName, email]);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    if (submitting.current) return;
+    submitting.current = true;
     setBusy(true);
     setMessage("");
     setIsError(false);
@@ -58,19 +90,21 @@ export function AuthForms({ mode }: { mode: Mode }) {
         return;
       }
       setMessage(mode === "signup" ? "Workspace created. Welcome to Kan." : "Signed in.");
-      window.location.href = "/app/dashboard";
+      try { sessionStorage.removeItem("kan.signup.v1"); } catch { /* Optional draft only. */ }
+      window.location.replace("/app/workspace");
     } catch {
       setIsError(true);
-      setMessage(NOT_CONFIGURED);
+      setMessage("Connection interrupted. Your details are kept in this tab. Retry with the same password, or sign in if your workspace was already created.");
     } finally {
       setBusy(false);
+      submitting.current = false;
     }
   }
 
   const isSignup = mode === "signup";
 
   return (
-    <form onSubmit={submit} className="card space-y-4">
+    <form onSubmit={submit} className="card space-y-4" aria-busy={busy}>
       {isSignup ? (
         <>
           <Input
@@ -79,6 +113,8 @@ export function AuthForms({ mode }: { mode: Mode }) {
             onChange={(event) => setBusinessName(event.target.value)}
             required
             minLength={2}
+            maxLength={80}
+            autoComplete="organization"
             placeholder="e.g. Kiwafu General Traders"
           />
           <Input
@@ -87,6 +123,7 @@ export function AuthForms({ mode }: { mode: Mode }) {
             onChange={(event) => setShopName(event.target.value)}
             required
             minLength={2}
+            maxLength={80}
             placeholder="e.g. Entebbe Main"
           />
         </>
@@ -97,6 +134,8 @@ export function AuthForms({ mode }: { mode: Mode }) {
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         required
+        maxLength={254}
+        autoComplete="email"
         placeholder="owner@shop.ug"
       />
       <Input
@@ -106,6 +145,8 @@ export function AuthForms({ mode }: { mode: Mode }) {
         onChange={(event) => setPassword(event.target.value)}
         required
         minLength={isSignup ? 10 : 1}
+        maxLength={200}
+        autoComplete={isSignup ? "new-password" : "current-password"}
         helperText={isSignup ? "Minimum 10 characters." : undefined}
       />
       {!isSignup ? (

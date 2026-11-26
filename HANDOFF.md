@@ -1,9 +1,28 @@
 # HANDOFF — current verified state
 
-**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment baseline is verified; Step 03 owner onboarding is next and not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 owner registration/onboarding is implemented and locally verified; verify its commit checks and production deployment before sign-off. Step 04 account recovery is next, not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 **Date:** 2026-11-26
 **Project:** Kan (SME Management System)
-**Current work:** D54 Step 02 deployment baseline verified; awaiting next instruction for Step 03. Step 01 accepted as documented baseline; no new application module build.
+**Current work:** Step 03 implemented and locally verified. Commit/CI/Vercel evidence must match main; Step 04 is next and has not started.
+
+## Step 03 — owner registration and onboarding, locally verified
+
+K03.01 validated owner credentials/business/first branch; K03.02 atomic tenant creation; K03.03 retry/resume after interruption; K03.04 authenticated cloud workspace landing; K03.05 two-owner isolation and session lifecycle. Acceptance: two independent owners see only their own business/branch; simultaneous or lost-response retry creates one business/account/branch/subscription; failed transaction leaves no partial records; signup/login reach a usable workspace without a local PIN. Existing till remains independent until Step 05. Affected files: platform service/store/validation and routes, AuthForms, cloud workspace page, OwnerBoundary allowlist, regression/integration/browser checks. Dependencies: existing Neon schema/session cookie; no new provider, schema migration or specialist feature required.
+
+Implementation: signup validates strings and atomically commits business, owner, first branch, subscription, audit and session in a serializable transaction. Same verified credentials resume matching registration, including legacy owners with a missing branch/subscription; unique-email/serialization conflicts retry without orphan businesses. The form restores non-password details within the same tab and prevents duplicate submission. Passwords and raw session tokens are never saved in draft storage. Signup and sign-in land at `/app/workspace`, which shows the authenticated cloud business/branches without unlocking local books; sign-out revokes the server session. Existing signed-in users reopening signup return to their workspace. Workspace/session responses are private/no-store. The landing request omits unused billing/quota queries; transient database failures show retryable errors.
+
+Verification before commit:
+- `npm run lint`, `npm test` (215 passed; 6 opt-in tests skipped), `npm run build` (103 static pages), and standalone `npm run typecheck` after build: passed.
+- `KAN_ONBOARDING_INTEGRATION=1 npx vitest run __tests__/owner-onboarding.integration.test.ts`: 4 passed against Neon; transaction failure rollback, concurrent retries, legacy resume, two-owner isolation, sign-in/out, HttpOnly cookie and non-cached workspace. Cleanup assertions removed generated tenants/accounts.
+- `KAN_SYNC_INTEGRATION=1 npx vitest run __tests__/audit-sync.integration.test.ts`: 2 passed on isolated rerun. An earlier run during concurrent cloud traffic timed out with P2028 and failed dependent cash assertions; it was not treated as a pass. No sync runtime code changed.
+- `python scripts/check-onboarding.py --base http://localhost:3111`: passed at 360/1440px, including a deliberately lost signup response, draft reload and password exclusion.
+- Same command with `--live`: passed with actual Neon-backed registration, workspace, logout and login at both widths. Generated fixtures removed. A prior workspace-load failure prompted the summary-query optimization; final live run passed. Test-only cleanup timeout accommodates slow cross-region connections.
+- Render gate: 63 routes x 4 widths = 252 cases passed, including the new workspace; no HTTP/JS/overflow failures. Phone and desktop screenshots inspected.
+- Offline till workflow: passed; stock 20 to 18, expected cash UGX 57,000, variance 0, attendant/foreign-shop access denied.
+
+Click-through: open `/app/signup`, enter business, first shop, owner email and password, submit, then inspect `/app/workspace`. Refresh/reopen signup to resume; use Sign out then sign in again. This creates a cloud workspace only. Till pairing stays Step 05; real recovery email stays Step 04. No schema migration, payment provider, local till ledger or new vertical was added.
+
+Post-push acceptance: confirm CI for this commit (includes render/offline/onboarding browser checks), Vercel READY with matching Git SHA, and live onboarding/health. Deployment evidence is available in the commit's GitHub/Vercel checks; a push alone is not sign-off. No Step 04 work is authorized by this implementation.
 
 ## Step 01 — accepted baseline; reference verification deferred
 
@@ -98,7 +117,7 @@ The original full platform plan has 14 workstreams (WS-0 through WS-13), includi
 | Basic sales, stock, deni and profit-estimate reports | Working locally; scheduled delivery is not included |
 | JSON backup and restore | Working |
 | Cloud sync and recovery | Implemented; isolated Neon multi-client tests pass; physical two-device field verification and recovery drills remain |
-| Owner workspace / branch onboarding | Partial; cloud accounts and local PIN till are not one complete onboarding/branch-management flow |
+| Owner workspace / branch onboarding | Owner registration/cloud workspace verified in Step 03; cloud-branch to local till pairing remains Step 05, so the combined group remains partial |
 
 Count: 10 working bounded MVP tools, 2 groups still needing completion/operational sign-off. None of these counts is a production-readiness certification.
 

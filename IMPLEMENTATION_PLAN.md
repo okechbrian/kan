@@ -96,7 +96,7 @@ Rows mentioning multiple providers, reports, hardware devices, channels or verti
 
 ### Current position
 
-**Step 01 is accepted as a documented baseline under D54. Step 02 production baseline is verified; Step 03 is next, not started.** Authenticated onboarding was inspected, but dashboard/tutorial coverage remains unverified. K01–K56 are delivery groups, not a definitive tool count. Expand each group into atomic IDs before its build; maintain deferred reference work through final parity acceptance. No application module is being built in Step 02.
+**Step 01 is accepted as a documented baseline under D54. Step 03 is implemented and locally verified; its CI and deployed SHA must pass before sign-off. Step 04 is next, not started.** Authenticated onboarding was inspected, but dashboard/tutorial coverage remains unverified. K01–K56 are delivery groups, not a definitive tool count. Expand each group into atomic IDs before its build; maintain deferred reference work through final parity acceptance. Step 03 acceptance evidence and the remaining till-pairing boundary are in HANDOFF.md.
 
 ---
 

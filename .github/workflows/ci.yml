@@ -56,3 +56,4 @@ jobs:
           done
           npm run check:render
           python scripts/check-till-workflow.py --base http://localhost:3100
+          python scripts/check-onboarding.py --base http://localhost:3100

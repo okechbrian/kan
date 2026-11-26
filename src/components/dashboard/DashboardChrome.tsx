@@ -30,6 +30,7 @@ import {
 import { KanLogo } from "../brand/KanLogo";
 
 const NAV = [
+  { label: "Workspace", href: "/app/workspace", Icon: Building2 },
   { label: "Dashboard", href: "/app/dashboard", Icon: LayoutDashboard },
   { label: "Products", href: "/app/products", Icon: Package },
   { label: "Orders", href: "/app/orders", Icon: ShoppingBag },
