@@ -96,7 +96,7 @@ Rows mentioning multiple providers, reports, hardware devices, channels or verti
 
 ### Current position
 
-**Step 01 is next and not yet executed.** Creating this plan does not start application implementation, authenticate to another product, or count any delivery step as completed. Existing audit evidence remains in HANDOFF.md. Dates and total individual feature counts will be estimated only after Step 01; there is no evidence-based finish date yet.
+**Step 01 is active, with reference-browser access blocked.** The provisional K01–K56 delivery-group matrix is in KONNA_PARITY_PLAN.md section 6. Public claims and targeted code gaps have been checked; the authenticated reference and tutorials still need verification, grouped items need expansion, and exclusions need explicit resolution. This is not a completed parity inventory or an application build. Step 02 has not started. Existing audit evidence remains in HANDOFF.md. Dates and definitive individual feature counts await Step 01 completion.
 
 ---
 

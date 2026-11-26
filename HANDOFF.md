@@ -3,7 +3,19 @@
 **Active execution rule (D53, 2026-11-26):** Follow the sequential completion plan in `IMPLEMENTATION_PLAN.md`. Full Konna parity remains the goal. Exactly one step/substep may be active. Next: Step 01, the verified feature inventory; no application build is started by this planning task. Earlier current-phase/start commands are historical where they conflict with D53.
 **Date:** 2026-11-26
 **Project:** Kan (SME Management System)
-**Current work:** D51 audit remediation, explicitly authorized by the user. No new feature release is unlocked.
+**Current work:** D53 Step 01 capability inventory, started by the user's “buil” instruction. No application module build is active.
+
+## Step 01 — active, reference access blocked
+
+Inventory IDs K01–K56 are mapped in `KONNA_PARITY_PLAN.md`, section 6. This is a provisional delivery-group inventory, not a definitive count of individual Konna tools. Public source checks and targeted code inspection are recorded separately from historical teardown claims. No tool is promoted to deployed/field verified by this documentation task.
+
+Acceptance: inspect the public reference, authenticated dashboard and tutorials; expand grouped capabilities into individual source-backed IDs; map each to code, gaps, dependencies and a fixture; resolve scope discrepancies explicitly. Affected files: this handoff, IMPLEMENTATION_PLAN.md and KONNA_PARITY_PLAN.md. Dependencies: working reference-browser access, an authorized Konna session, remaining tutorial evidence and owner decisions where Uganda locks differ.
+
+Observed access failure: the existing Edge Konna tab was visible in the accessibility inventory, but selecting it returned “coordinate input geometry is unavailable”. Opening app.konna.io through the in-app browser timed out and reset the kernel. No authenticated reference workflow was inspected. Public pages were readable through web tools. Step 01 remains active/blocked; Step 02 must not start automatically.
+
+Newly confirmed code gaps: purchasing writes supplier balances and purchase records separately without goods-receipt stock movements; production logs output notes without consuming recipe inputs or receiving finished stock; booking deposits are fields without payment settlement; warehouse creation is not proof of location stock accounting. Existing “now” badges on these screens overstate full workflow availability. Repair each in its scheduled step and keep them out of completion counts.
+
+Verification for this increment: `git diff --check`, `npm run lint`, `npm test` (212 passed, 2 opt-in integration tests skipped), `npm run build` (102 static pages generated) and standalone `npm run typecheck` after build all passed. No runtime files changed. Browser/offline and opt-in Neon integration results below remain prior evidence, not rerun results. Deployment identity remains unverified until Step 02.
 
 ## Status
 

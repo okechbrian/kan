@@ -1,5 +1,99 @@
 # Kan × Konna Parity Master Plan (Uganda)
 
+## 6. Step 01 provisional capability and gap register — 2026-11-26
+
+Status: **active / blocked on reference access**. K01–K56 below identify delivery groups, mapped one-to-one to D53 steps 01–56. They are not 56 individual tools. Compound rows must be expanded before Step 01 can pass. No definitive fully functional tool count is established yet; local till evidence in HANDOFF is bounded and does not establish complete platform parity.
+
+Source key (all public checks dated 2026-11-26):
+
+- I: [inventory](https://www.konna.io/manage-inventory), public claims checked; units/brands, dates, scanning and cross-device stock.
+- S: [sales](https://www.konna.io/manage-sales), public claims checked; pay-later, invoices, staff, customers, delivery and feedback.
+- O: [online shop](https://www.konna.io/onlineshop), public claims checked; shop identity, catalogue, notices and receipts.
+- P: [payments](https://www.konna.io/payment), public claims checked; split, transfers, cards, gift cards, stablecoin and currency conversion.
+- H: saved teardown in KAN_SCOPE sections 2–4 and this document sections 3–4; **not independently reverified this session**.
+- K: Kan's own safety/operational scope in KAN_SCOPE, DOMAIN and SYNC; not asserted to be a Konna feature.
+
+Public marketing is evidence of advertised scope, not proof of reference runtime behavior. Authenticated dashboard and tutorial walkthroughs remain unverified: native Edge selection failed with unavailable input geometry; the in-app browser timed out. No account was created and no merchant records were changed.
+
+Legend: **partial** means code/helpers or a bounded local workflow exist; **unverified** means acceptance evidence is missing; **blocked** means an external dependency prevents completion. Paths below are relative to repository root. Each fixture also requires tenant and role denial tests, integer UGX, retry safety and appropriate offline behavior. No row is declared fully deployed/field verified.
+
+| ID / step | Capability / source | Current code and state | Remaining gap / dependency | Required acceptance fixture |
+|---|---|---|---|---|
+| K01 / 01 | Reference inventory / H,K | This register; partial | Authenticated access, tutorials, atomic IDs and decisions | Every observed feature has evidence and a mapped step |
+| K02 / 02 | Deployment baseline / K | `.github/workflows`; unverified | Vercel/CI identity and rollback evidence | Deployed SHA equals pushed main; health and rollback pass |
+| K03 / 03 | Owner onboarding / H | `src/lib/platform/service.ts`; partial | Complete isolated registration and resumed setup | Two owners create distinct businesses without duplicates |
+| K04 / 04 | Recovery email / H | `src/lib/platform/service.ts`; partial | Real email delivery worker/provider | Delivered link expires, works once and revokes sessions |
+| K05 / 05 | Branch/till pairing / K | `src/lib/server-sync.ts`; partial | Cloud-to-local identity walkthrough | Pair cloud branch without creating disconnected books |
+| K06 / 06 | Staff permissions / S,H | `src/lib/platform/access.ts`, `src/lib/pin.ts`; partial | Lifecycle and complete server permission matrix | Disabled attendant cannot act; PIN needs no email |
+| K07 / 07 | Multi-branch owner view / H | `src/components/dashboard/LiveDashboardPanel.tsx`; partial | Authoritative cloud totals and switching | Branch A/B totals stay isolated; till binding fixed |
+| K08 / 08 | Multi-device offline sync / I,K | `src/lib/sync.ts`, `src/lib/server-sync.ts`; partial | Physical devices | Offline concurrent sales/replay converge exactly once |
+| K09 / 09 | Backup and field recovery / K | `src/lib/backup.ts`; partial | Fresh-device drill and seven shop days | Restore, re-pair and reconcile stock/deni/cash |
+| K10 / 10 | Catalogue / I,H | `src/lib/commerce/catalogue.ts`, ProductsPanel; partial | Units, brands, variants, images and scan UI completion | Create/edit/archive all required product forms |
+| K11 / 11 | Bulk and branch import / H | BulkCsvPanel, BranchCopyPanel; partial | Excel, duplicates, quota and stock-opening semantics | Bad rows rejected; copied products have zero stock |
+| K12 / 12 | Batches and expiry / I,H | `src/lib/commerce/inventory.ts`; partial | Batch allocation integrated with sale ledger | Receive/sell/void updates correct batch quantities |
+| K13 / 13 | Warehouse balances / H | WarehousePanel; partial | Location ledger and valuation | Location balances sum to shop stock |
+| K14 / 14 | Transfers / H | `src/lib/commerce/inventory.ts`; partial | Dispatch/receipt/cancel stock postings | Retry transfer without duplicating either movement |
+| K15 / 15 | Supplier ledger / H | PurchasesPanel; partial | Atomic payable ledger and payment history | Purchase less payment equals supplier balance |
+| K16 / 16 | Purchasing and receipt / H | PurchasesPanel; partial | Current record creation does not receive stock | Receive/return posts stock, costs and payable atomically |
+| K17 / 17 | Pricing controls / H | `src/lib/sale.ts`; partial | Documented promotions and permissioned overrides | Discount totals equal tender sum; denied override fails |
+| K18 / 18 | Held orders/invoices / S,H | ReservedOrdersPanel; partial | Defined reservations and invoice-to-payment workflow | Hold/resume/cancel cannot create a premature sale |
+| K19 / 19 | Returns/refunds / H,K | `src/lib/sale.ts`; partial | Partial linked returns and provider refunds | Refund twice cannot reverse more than sold |
+| K20 / 20 | Receipts and invoices / S,O | `src/lib/commerce/receipt.ts`; partial | Configurable delivery and customer receipt proof | Branding/notes persist; print/share without required printer |
+| K21 / 21 | MTN then Airtel collections / K | `src/lib/payments/adapters.ts`; partial, manual only | Merchant accounts and real callback integration | Valid callback settles once; mismatched amount rejected |
+| K22 / 22 | Bank/card gateways / P | `src/lib/payments/adapters.ts`; blocked | Agreed Uganda-supported providers, one per substep | Real provider payment roundtrip; no card storage |
+| K23 / 23 | Reconciliation/disputes / P,S,H | `src/lib/payments/reconcile.ts`; partial | Settlement, refund and dispute lifecycle | Provider fixture balances sales and payouts |
+| K24 / 24 | Gift cards / P | Payment method declaration; blocked | Issuer/provider and liability rules undecided | Concurrent redemption cannot overspend balance |
+| K25 / 25 | Public catalogue / O | `src/lib/store/catalogue.ts`, StorePanel; partial | Owner preview is not anonymous storefront | Fresh buyer sees published stock and expiry rules |
+| K26 / 26 | Checkout/order inbox / O,H | `src/lib/store/orders.ts`; blocked | Live order API intentionally returns 503 | Server-priced persisted order reaches merchant inbox |
+| K27 / 27 | Delivery lifecycle / S,H | Store order helpers; partial | Reservation, dispatch, tracking and cancellation | Delivery/cancel reconcile stock and payment |
+| K28 / 28 | Store customization / O | StorePanel; partial | Persisted public branding/domain workflow | Published edits visible from another device |
+| K29 / 29 | Reviews / S | Store helpers; unverified | Verified purchase linkage and moderation | Buyer review is scoped; unrelated order denied |
+| K30 / 30 | Social selling / O,H | `src/lib/channels/social.ts`; partial | Working buyer links and real channel orders | Shared product resolves and order attribution persists |
+| K31 / 31 | Marketplace connectors / H | `src/lib/channels/marketplace.ts`; partial | Agreed connector credentials and actual sync | Edit/order/retry roundtrip without duplicates |
+| K32 / 32 | Merchant discovery / H | `src/lib/channels/directory.ts`; partial | Real cross-device published directory | Category/town search returns authorized public shops |
+| K33 / 33 | CRM/history/privacy / S,H | CustomersPanel, `src/lib/till.ts`; partial | Unified counter/store/service history and rights | Known customer balance and histories agree |
+| K34 / 34 | Loyalty/campaigns / H | `src/lib/verticals/workflows.ts`; partial | Earn/redeem/reverse and consented real delivery | Refund reverses earned points; opt-out prevents send |
+| K35 / 35 | Targets/activity / S,H | StaffPanel; partial | Real targets and all activity attribution | Owner sees source-linked activity; attendant denied |
+| K36 / 36 | Booking availability / H | BookingsPanel; partial | Cross-device schedules/conflict prevention | Two clients cannot reserve same exclusive slot |
+| K37 / 37 | Booking payments/reminders / H | BookingsPanel; partial | Deposit field is not a settled payment | Deposit/refund/completion and reminder reconcile |
+| K38 / 38 | Recipes/BOM / H | `src/lib/verticals/wave2.ts`; partial | Versioned persisted recipes, units and costing | Known recipe cost and shortage fixture agree |
+| K39 / 39 | Production ledger / H | ProductionPanel; partial | Log does not consume inputs/receive output | One run posts inputs, outputs and waste exactly once |
+| K40 / 40 | Sixteen vertical packs / H | `src/lib/verticals/`; partial | One specialist end-to-end workflow per pack | Separate fixture for each named pack below |
+| K41 / 41 | Twelve reports / H | `src/lib/analytics/suite.ts`; partial | Complete source-specific queries/filters/export | Each report reconciles known ledgers, dates and branch |
+| K42 / 42 | Live dashboard / H | LiveDashboardPanel; partial | Real cross-device KPI deltas/channels | Dashboard equals accepted report fixtures |
+| K43 / 43 | Seven notification types / O | NotificationsPanel, analytics alerts; partial | Real event delivery, preferences and retries | Each named event below deduplicates on replay |
+| K44 / 44 | Scheduled reports / H | Analytics helpers; unverified | Scheduler, delivery provider and Uganda day bounds | Schedule delivers correct tenant report; failure retries |
+| K45 / 45 | Subscription lifecycle / H | `src/lib/platform/plans.ts`, pricing, BillingPanel; partial | Real provider, trial/renewal/dunning/cancel/referrals | Quotas enforced server-side; renewal replay bills once |
+| K46 / 46 | PWA install/update / H,K | `public/`; partial | Device install, migration and recovery proof | Offline restart/update preserves books and outbox |
+| K47 / 47 | Android / H | Packaging scope only; unverified | Signed client, device and store account | Install, sell offline, sync and upgrade |
+| K48 / 48 | iOS / H | Packaging scope only; unverified | Signing, Apple account and device | Install, sell offline, sync and upgrade |
+| K49 / 49 | Windows / H | Packaging scope only; unverified | Installer, signing and updater | Install and upgrade preserve books |
+| K50 / 50 | Optional hardware / H | `src/lib/hardware/`; partial | Actual scanner/printer/drawer/register tests | Each device works; sale works without any of them |
+| K51 / 51 | Real AI assistant / H | `src/lib/ai/guard.ts`; blocked | Provider, grounded tenant queries and action authorization | Isolation/injection/cost tests and real grounded response |
+| K52 / 52 | Banking / H | `src/lib/banking/partners.ts`; blocked | Licensed partner, KYC and settlement contracts | Actual partner balances/transfers reconcile |
+| K53 / 53 | Processor crypto / P | Partner feature flags; blocked | Processor/regulatory decisions; no custody | Confirmed processor receipt settles once in allowed model |
+| K54 / 54 | Site/support/data rights / H,K | Public pages, `src/lib/platform/leads.ts`; partial | Fulfilled requests, legal ownership and truthful availability | Contact/export/deletion handled through completion |
+| K55 / 55 | Launch operations / K | CI, backup and audit tests; partial | Production monitoring, DR and rollback drills | Restore and alert drill pass without exposing secrets |
+| K56 / 56 | Full acceptance / K | No final sign-off; unverified | All atomic IDs accepted; external blocks resolved | Owner walkthrough and field sign-off; zero silent deferrals |
+
+Panel filenames without a directory refer to `src/components/dashboard/`. Code existence is not acceptance evidence. In particular, manual MoMo recording is not an API collection; helper tests are not provider or cross-device walkthroughs.
+
+### Required serial expansion before inventory sign-off
+
+- K40.01–16: groceries, kiosks, food shops, bars, SMEs, pharmacy, bakeries, restaurants, spas/salons, laundries, superstores, fashion, agro, electrical/electronics, furniture, factories. Specialist behavior must come from approved domain rules; a profile card is insufficient.
+- K41.01–12: sales, transactions, customers, expenses, inventory, purchases, refunds, staff, warehouse, restock, transfers, statement.
+- K43.01–07: new order, staff login/logout, stock exhausted, least purchased, report, near expiry, most purchased.
+- K50.01–04: scanner, printer, cash drawer, register. K21: MTN then Airtel separately. K22/K30/K31: name and approve each provider/channel before its individual build.
+- All other compound rows still require atomic capability IDs, individual source evidence, dependencies and fixtures. This register deliberately does not invent a final feature total from delivery-step counts.
+
+### Unresolved scope discrepancies — no implicit unlock
+
+Konna advertises currency conversion (P), while Kan locks integer UGX and excludes multi-currency. Retain this as an explicit parity discrepancy pending owner decision; no FX implementation is authorized. Gift-card liability/issuer and exact Uganda gateway/channel coverage also require explicit product/provider decisions. Banking and crypto remain required partner-blocked scope; exclusion of custody is preserved. No new evidence here establishes payroll or EFRIS as a Konna tool; existing Kan exclusions remain intact. A Uganda adaptation cannot silently claim identical provider coverage.
+
+### Next action within Step 01
+
+Restore browser access and inspect an authorized Konna session plus tutorials. Record exact paths and observed actions, expand the grouped register, then resolve the outstanding scope decisions. Until then, Step 01 has a useful baseline but has not met its exit criterion. Do not begin Step 02 or claim full Konna study is complete.
+
 **Active execution rule (D53, 2026-11-26):** Follow the sequential completion plan in `IMPLEMENTATION_PLAN.md`. Full Konna parity remains the goal. Exactly one step/substep may be active. Next: Step 01, the verified feature inventory; no application build is started by this planning task. Earlier current-phase/start commands are historical where they conflict with D53.
 **D52 reaffirmation (2026-11-26):** Full tool parity is the product target. The smaller grocery MVP is only an interim milestone. Prior phase-complete claims are withdrawn; screens, schemas and helpers require end-to-end acceptance evidence. Current public-site recheck confirms online store/catalogue sync, payment channels, inventory and specialist business capabilities remain relevant. The authenticated dashboard has not been exhaustively re-walked in this session.
 
@@ -7,7 +101,7 @@
 **Product:** **Kan** — a product of **Pwata Inc**  
 **Repository:** `https://github.com/okechbrian/kan`  
 **Live Deployment:** `https://kan-sme.vercel.app`  
-**Reference Studied:** `konna.io` (all 14 public pages), `app.konna.io` (45+ app routes), Konna public tutorials, and `Kan-Brand-Guidelines.pdf` (v1.0).
+**Historical reference claim (not fresh verification):** `konna.io` (14 public pages), `app.konna.io` (45+ app routes), Konna public tutorials, and `Kan-Brand-Guidelines.pdf` (v1.0). The current verification boundary is recorded in section 6.
 
 ---
 
