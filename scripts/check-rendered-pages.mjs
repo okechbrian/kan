@@ -66,7 +66,10 @@ const ROUTES = [
   "/app/verticals/wave2",
   "/app/verticals/wave3",
   "/app/ai",
+  "/app/assistant",
   "/app/banking",
+  "/app/wallet",
+  "/app/payments",
   "/support",
 ];
 const WIDTHS = [360, 375, 412];
