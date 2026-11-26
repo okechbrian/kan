@@ -21,6 +21,10 @@ An Uganda-first commerce platform, built on a phone till that sells with no inte
 
 The offline till engine, integer money, PIN roles, `shop_id` on every row, deni rules and close formula are **unchanged**. See `DOMAIN.md` and `SYNC.md`.
 
+## Product target reaffirmed — D52
+
+Full Konna tool coverage is the agreed target. The 12-tool grocery MVP assessment is an interim milestone, not a reduction of scope. Use KAN_SCOPE.md and KONNA_PARITY_PLAN.md for the full feature inventory. Delivery remains sequential; completion requires working end-to-end flows and recorded acceptance evidence for every capability. Partner-dependent capabilities remain required integrations, never simulated tools.
+
 ## Right now — audit remediation (D51, 2026-11-26)
 
 The user authorized fixing all findings in the project audit, starting with critical security, then sync and money correctness. This is the current work across existing code. The historical R1-only editing restriction does not block these fixes. No new feature release, deployment or field-test sign-off is implied.

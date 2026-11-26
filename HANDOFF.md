@@ -83,3 +83,7 @@ Count: 10 working bounded MVP tools, 2 groups still needing completion/operation
 Full-platform gaps beyond this MVP: public storefront/checkout/delivery/reviews; automated MoMo/card payments and reconciliation/refunds; purchasing tied atomically to stock/payables; completed warehouse transfers; CRM/loyalty; operational bookings/deposits and production/BOM stock accounting; live channel connectors/directory; scheduled notifications/reports and email delivery; enforceable billing/subscription lifecycle; native clients and real hardware integration; specialist vertical workflows; configured AI and licensed banking/crypto partners; monitoring, disaster recovery and a real-shop field test. Existing forms, schemas, helper functions and preview screens do not make these completed tools.
 
 Owner's standing Git preference: commit verified changes and push to main for Vercel deployment. A successful push is not proof that a deployment succeeded.
+
+## Owner scope correction — D52
+
+All Konna tools remain required for Kan. The 12-tool grocery assessment above is an interim readiness view, not the agreed finish line. Full parity must be measured feature by feature against KAN_SCOPE.md and KONNA_PARITY_PLAN.md, with end-to-end evidence and honest partner dependencies. Public reference pages were rechecked on 2026-11-26; authenticated dashboard coverage is not newly verified by that recheck.

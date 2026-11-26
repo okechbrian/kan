@@ -19,6 +19,8 @@ Work on **one release at a time**. Current authorized work is **D51 audit remedi
 
 ## Mission
 
+D52: Full Konna tool coverage is the product target. A smaller grocery MVP is an interim milestone only; do not silently remove tools from the agreed scope.
+
 Build only the locked approach’s current phase. The user will field-test this in a real shop. Correctness of money and stock beats beautiful UI.
 
 ## Hard rules
