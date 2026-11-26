@@ -1,9 +1,9 @@
 # HANDOFF — current verified state
 
-**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment verification is active. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment baseline is verified; Step 03 owner onboarding is next and not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 **Date:** 2026-11-26
 **Project:** Kan (SME Management System)
-**Current work:** D54 Step 02 deployment baseline. Step 01 accepted as documented baseline; no new application module build.
+**Current work:** D54 Step 02 deployment baseline verified; awaiting next instruction for Step 03. Step 01 accepted as documented baseline; no new application module build.
 
 ## Step 01 — accepted baseline; reference verification deferred
 
@@ -11,12 +11,20 @@ K01–K56 in KONNA_PARITY_PLAN.md map delivery groups to code, gaps, dependencie
 
 Purchases, production, booking payments and warehouse accounting remain partial; existing badges do not prove complete workflows. Prior lint, 212 tests, build and typecheck passed at 1772e98; opt-in Neon and browser evidence below were not rerun for these documentation changes.
 
-## Step 02 — active deployment baseline
+## Step 02 — verified production baseline
 
 Inventory K02. Gap: production alias served commit 4bef800, while main is 1772e98 with audited security/sync fixes. Vercel project had no Git link, so pushes did not trigger deployments. Connected existing kan-sme project to okechbrian/kan using Vercel CLI; no new project or credentials created.
 
 Acceptance: production metadata identifies main SHA, CI passes, health and critical negative checks pass, and rollback instructions name an appropriate audited target. Affected files: governance docs and this handoff; deployment metadata is external. Dependencies: existing GitHub/Vercel access and production configuration. Do not begin Step 03 until this baseline is verified.
 
+
+Production evidence (2026-11-26): Vercel deployment `dpl_Fg8GkX8hJeQ1ngNbhdCcKjjjahim`, `https://kan-5te9zqy66-okechbrian-5599s-projects.vercel.app`, READY and aliased to `https://kan-sme.vercel.app`, reports Git SHA `fe0a561644b0080147dc6359e2388493ff5ac848`. Project metadata confirms GitHub `okechbrian/kan`, production branch `main`. This SHA includes the audited security/sync fixes from bc68fa6. Later documentation-only pushes supersede this baseline SHA without changing application code.
+
+Production checks: `/` 200; `/api/health` 200; database environment configured (not a database connectivity test); workspace GET and sync POST without credentials 401; store order POST 503 `ordering_not_available`; unsigned/unconfigured payment callback 503 `gateway_not_configured`; malformed password-reset request 400 without token. Payments and AI are not configured. No merchant or transaction records were created. Authenticated production onboarding and physical device acceptance remain later work.
+
+Rollback procedure (documented, not executed): inspect the candidate SHA and READY state with `vercel inspect <deployment> --scope okechbrian-5599s-projects`; run `vercel rollback <deployment> --scope okechbrian-5599s-projects --yes`, then repeat health/access checks and verify alias metadata. The first known audited target is the deployment above; older 4bef800/3f773d5 deployments must not be selected because they predate the audit fixes. If this target is itself defective, revert the specific application commit on main and let Git deploy the reviewed fix. A deployment rollback does not restore the database; coordinate any data/migration recovery separately. No rollback drill or database restore was performed here.
+
+CI evidence: [run for fe0a561](https://github.com/okechbrian/kan/actions/runs/45824365677) completed successfully: lint, typecheck, tests, build and the phone/desktop browser plus offline till gate all passed. A fresh reserved-domain missing-account recovery request returned 200 `{ok:true}` without a token; no existing-account email was requested. Documentation changes pass `git diff --check`. Runtime files were unchanged in this step.
 
 ## Status
 
@@ -50,7 +58,7 @@ The live integration test uses generated, isolated business/shop IDs and deletes
 
 ## Operational limits / next sign-off
 
-- Changes in this workspace are not deployed automatically. The existing Vercel deployment has not been changed by this task.
+- Git pushes to main now trigger Vercel production deployment; Step 02 metadata and production checks above supersede the earlier deployment-unknown state.
 - Programmatic Neon multi-client integration passed. A physical two-device offline → online shop test remains required before field sign-off.
 - Email delivery needs a real worker/provider; a queued password-reset notification is not a sent email.
 - Public online ordering, native installers, bank/crypto services and a configured AI provider remain outside this remediation.

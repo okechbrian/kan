@@ -1,6 +1,6 @@
 # Kan — commerce platform for Ugandan shops
 
-**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment verification is active. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment baseline is verified; Step 03 owner onboarding is next and not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
@@ -84,4 +84,4 @@ TLS/proxy note: `npm install` has failed with `ERR_SSL_CIPHER_OPERATION_FAILED` 
 
 ## Next step
 
-Follow `HANDOFF.md` and D51 for audit remediation. Do not add a new release or treat local checks as a live deployment / two-device field sign-off.
+Follow HANDOFF.md and D54: deployment baseline verified; owner onboarding is next. Deferred reference work remains tracked; production smoke checks do not establish two-device field sign-off.

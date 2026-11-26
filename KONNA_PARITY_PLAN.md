@@ -20,7 +20,7 @@ Legend: **partial** means code/helpers or a bounded local workflow exist; **unve
 | ID / step | Capability / source | Current code and state | Remaining gap / dependency | Required acceptance fixture |
 |---|---|---|---|---|
 | K01 / 01 | Reference inventory / H,K | This register; partial | Authenticated access, tutorials, atomic IDs and decisions | Every observed feature has evidence and a mapped step |
-| K02 / 02 | Deployment baseline / K | `.github/workflows`; unverified | Vercel/CI identity and rollback evidence | Deployed SHA equals pushed main; health and rollback pass |
+| K02 / 02 | Deployment baseline / K | Verified production baseline fe0a561; see HANDOFF | Git connection repaired; rollback documented, drill deferred to K55 | READY production SHA, CI and safe health/access checks; rollback target recorded |
 | K03 / 03 | Owner onboarding / H | `src/lib/platform/service.ts`; partial | Complete isolated registration and resumed setup | Two owners create distinct businesses without duplicates |
 | K04 / 04 | Recovery email / H | `src/lib/platform/service.ts`; partial | Real email delivery worker/provider | Delivered link expires, works once and revokes sessions |
 | K05 / 05 | Branch/till pairing / K | `src/lib/server-sync.ts`; partial | Cloud-to-local identity walkthrough | Pair cloud branch without creating disconnected books |
@@ -94,7 +94,7 @@ Konna advertises currency conversion (P), while Kan locks integer UGX and exclud
 
 Restore browser access and inspect an authorized Konna session plus tutorials. Record exact paths and observed actions, expand the grouped register, then resolve the outstanding scope decisions. D54 explicitly permits Step 02 to proceed using this baseline. Full Konna study is not complete; deferred evidence must be resolved before final parity sign-off.
 
-**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment verification is active. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment baseline is verified; Step 03 owner onboarding is next and not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 **D52 reaffirmation (2026-11-26):** Full tool parity is the product target. The smaller grocery MVP is only an interim milestone. Prior phase-complete claims are withdrawn; screens, schemas and helpers require end-to-end acceptance evidence. Current public-site recheck confirms online store/catalogue sync, payment channels, inventory and specialist business capabilities remain relevant. The authenticated dashboard has not been exhaustively re-walked in this session.
 
 **Date:** 2026-11-25  
