@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { hashPassword } from "../src/lib/platform/password";
 import { PlatformService } from "../src/lib/platform/service";
 import type { PlatformRecord, PlatformStore } from "../src/lib/platform/store";
-import { hashSecret } from "../src/lib/platform/tokens";
+import { hashSecret, newSessionToken } from "../src/lib/platform/tokens";
 
 function makeMemoryStore(): PlatformStore {
   const businesses = new Map<string, PlatformRecord>();
@@ -116,11 +116,19 @@ function makeMemoryStore(): PlatformStore {
     async findPasswordResetToken(tokenHash) {
       return resets.get(tokenHash) ?? null;
     },
-    async markPasswordResetTokenUsed(rid) {
-      for (const r of Array.from(resets.values())) {
-        if (r.id === rid) r.used_at = new Date();
-      }
+    async markPasswordResetTokenUsed(id) {
+      const token = Array.from(resets.values()).find((row) => row.id === id);
+      if (!token || token.used_at || new Date(String(token.expires_at)) <= new Date()) return false;
+      token.used_at = new Date(); return true;
     },
+    async invalidatePasswordResetTokens(accountId) {
+      for (const row of Array.from(resets.values())) if (row.account_id === accountId && !row.used_at) row.used_at = new Date();
+    },
+    async countPasswordResetTokens() { return 0; },
+    async findRecentResetEmail() { return null; },
+    async findResetEmail() { return null; },
+    async finishResetEmail() {},
+    async cancelResetEmails() {},
     async countUsage(businessId) {
       return {
         staff: Array.from(accounts.values()).filter((a) => a.business_id === businessId).length,
@@ -129,7 +137,7 @@ function makeMemoryStore(): PlatformStore {
       };
     },
     async createAudit() {},
-    async createNotification() {},
+    async createNotification(input) { return { id: "notification", business_id: input.businessId, ...input }; },
   };
 }
 
@@ -176,13 +184,14 @@ describe("Kan Phase 3 — password reset, branch quotas & routes", () => {
     ).rejects.toMatchObject({ code: "invalid_reset_token" });
 
     // Expired token rejected
+    const expiredToken = newSessionToken();
     await store.createPasswordResetToken({
       accountId: signup.account.id,
-      tokenHash: hashSecret("expired-token"),
+      tokenHash: hashSecret(expiredToken),
       expiresAt: new Date(Date.now() - 60_000),
     });
     await expect(
-      service.resetPassword({ token: "expired-token", password: "another-password-123" }),
+      service.resetPassword({ token: expiredToken, password: "another-password-123" }),
     ).rejects.toMatchObject({ code: "invalid_reset_token" });
   });
 

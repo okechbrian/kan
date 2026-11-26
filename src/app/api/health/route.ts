@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { resetEmailConfigured } from "../../../lib/platform/reset-email";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ export async function GET() {
     product: "Kan",
     entity: "Pwata Inc",
     database: process.env.DATABASE_URL ? "configured" : "not_configured",
+    passwordRecovery: resetEmailConfigured() ? "configured" : "not_configured",
     paymentsWebhook:
       process.env.FLW_WEBHOOK_SECRET || process.env.MOMO_WEBHOOK_SECRET
         ? "configured"

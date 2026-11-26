@@ -1,6 +1,6 @@
 # Kan — commerce platform for Ugandan shops
 
-**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 owner registration/onboarding is implemented and locally verified; verify its commit checks and production deployment before sign-off. Step 04 account recovery is next, not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 is verified deployed. Step 04 account recovery is active with Resend; live delivery requires configured credentials, a verified sender and a controlled inbox. Step 05 is not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
@@ -84,4 +84,4 @@ TLS/proxy note: `npm install` has failed with `ERR_SSL_CIPHER_OPERATION_FAILED` 
 
 ## Next step
 
-Follow HANDOFF.md and D54: owner onboarding implemented; verify its commit checks and deployment, then account recovery is next. Deferred reference work remains tracked; production smoke checks do not establish two-device field sign-off.
+Follow HANDOFF.md and D54/D55: owner onboarding is deployed; account recovery is active, with real Resend delivery still requiring provider configuration and a controlled inbox. Deferred reference work remains tracked; production smoke checks do not establish two-device field sign-off.

@@ -48,7 +48,13 @@ export type PlatformStore = {
     expiresAt: Date;
   }): Promise<void>;
   findPasswordResetToken(tokenHash: string): Promise<PlatformRecord | null>;
-  markPasswordResetTokenUsed(id: string): Promise<void>;
+  markPasswordResetTokenUsed(id: string): Promise<boolean>;
+  invalidatePasswordResetTokens(accountId: string): Promise<void>;
+  countPasswordResetTokens(accountId: string, since: Date): Promise<number>;
+  findRecentResetEmail(businessId: string, recipient: string, since: Date): Promise<PlatformRecord | null>;
+  findResetEmail(id: string): Promise<PlatformRecord | null>;
+  finishResetEmail(id: string, status: "sent" | "failed" | "canceled", error?: string): Promise<void>;
+  cancelResetEmails(businessId: string, recipient: string): Promise<void>;
   countUsage(businessId: string): Promise<{ staff: number; branches: number; skus: number }>;
   createAudit(input: {
     actor: Actor;
@@ -63,7 +69,7 @@ export type PlatformStore = {
     recipient: string;
     subject: string;
     body: string;
-  }): Promise<void>;
+  }): Promise<PlatformRecord>;
 };
 
 function requirePrisma() {
@@ -78,7 +84,7 @@ export function createPlatformStore(db: PrismaClient | Prisma.TransactionClient 
   return {
     async transaction(work) {
       if (!("$transaction" in db)) throw new Error("Nested platform transaction");
-      return db.$transaction((tx) => work(createPlatformStore(tx)), { timeout: 30000, isolationLevel: "Serializable" });
+      return db.$transaction((tx) => work(createPlatformStore(tx)), { maxWait: 10000, timeout: 30000, isolationLevel: "Serializable" });
     },
     async createBusiness(input) {
       return toRecord(
@@ -197,10 +203,32 @@ export function createPlatformStore(db: PrismaClient | Prisma.TransactionClient 
       return row ? { ...row, business_id: "" } : null;
     },
     async markPasswordResetTokenUsed(id) {
-      await db.passwordResetToken.update({
-        where: { id },
+      const result = await db.passwordResetToken.updateMany({
+        where: { id, used_at: null, expires_at: { gt: new Date() } },
         data: { used_at: new Date() },
       });
+      return result.count === 1;
+    },
+    async invalidatePasswordResetTokens(accountId) {
+      await db.passwordResetToken.updateMany({ where: { account_id: accountId, used_at: null }, data: { used_at: new Date() } });
+    },
+    async countPasswordResetTokens(accountId, since) {
+      return db.passwordResetToken.count({ where: { account_id: accountId, created_at: { gte: since } } });
+    },
+    async findRecentResetEmail(businessId, recipient, since) {
+      return toRecord(await db.notification.findFirst({ where: { business_id: businessId, recipient, channel: "email", subject: "Reset your Kan password", created_at: { gte: since } }, orderBy: { created_at: "desc" } }));
+    },
+    async findResetEmail(id) {
+      return toRecord(await db.notification.findFirst({ where: { id, channel: "email", subject: "Reset your Kan password" } }));
+    },
+    async finishResetEmail(id, status, error) {
+      await db.notification.updateMany({
+        where: { id, channel: "email", subject: "Reset your Kan password", status: { in: ["pending", "failed"] } },
+        data: { status, error: error ?? null, ...(status === "sent" ? { sent_at: new Date(), body: "" } : status === "canceled" ? { body: "" } : {}) },
+      });
+    },
+    async cancelResetEmails(businessId, recipient) {
+      await db.notification.updateMany({ where: { business_id: businessId, recipient, channel: "email", subject: "Reset your Kan password", status: { in: ["pending", "failed"] } }, data: { status: "canceled", body: "", error: null } });
     },
     async countUsage(businessId) {
       const [staff, branches, skus] = await Promise.all([
@@ -224,7 +252,7 @@ export function createPlatformStore(db: PrismaClient | Prisma.TransactionClient 
       });
     },
     async createNotification(input) {
-      await db.notification.create({
+      return toRecord(await db.notification.create({
         data: {
           id: randomUUID(),
           business_id: input.businessId,
@@ -233,7 +261,7 @@ export function createPlatformStore(db: PrismaClient | Prisma.TransactionClient 
           subject: input.subject,
           body: input.body,
         },
-      });
+      }));
     },
   };
 }

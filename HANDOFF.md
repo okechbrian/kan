@@ -1,11 +1,35 @@
 # HANDOFF — current verified state
 
-**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 owner registration/onboarding is implemented and locally verified; verify its commit checks and production deployment before sign-off. Step 04 account recovery is next, not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 is verified deployed. Step 04 account recovery is active with Resend; live delivery requires configured credentials, a verified sender and a controlled inbox. Step 05 is not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 **Date:** 2026-11-26
 **Project:** Kan (SME Management System)
-**Current work:** Step 03 implemented and locally verified. Commit/CI/Vercel evidence must match main; Step 04 is next and has not started.
+**Current work:** Step 04 account recovery, authorized by “next”. Resend selected; production key, verified sender and controlled test inbox are pending.
 
-## Step 03 — owner registration and onboarding, locally verified
+## Step 04 — implemented; live-delivery sign-off blocked
+
+K04.01 Resend delivery with durable private queue and idempotent retries; K04.02 trusted reset links and generic public responses; K04.03 atomic single-use/expiry/password/session revocation; K04.04 safe recovery UI; K04.05 real provider/inbox acceptance. Affected files: platform service/store, reset routes/pages, Resend adapter, tests and env documentation. No schema change or non-recovery notification feature is planned. Acceptance: actual controlled inbox receives mail; token expires, works once under concurrent redemption, revokes prior sessions, and never appears in public API responses/logs. Missing Resend credentials/sender/inbox block live delivery sign-off, not independent implementation.
+
+Step 03 post-push evidence: 672ab2c is READY/production on Vercel; CI run 45831098728 passed including 215 tests, 252 render cases, offline till and onboarding transport-failure tests. Production live onboarding passed at 360/1440px and fixtures were removed. This supersedes its locally-verified-only heading below.
+
+Step 04 implementation notes: reset token creation, prior-token invalidation, private email queue and audit commit together. Redemption conditionally consumes one unexpired token, changes the password, invalidates other tokens, erases pending private links, revokes all sessions and audits within one serializable transaction. Unknown/expired tokens are rejected before password hashing. Per-account cooldown is one minute with at most five new tokens per hour; retries of a pending/failed request reuse its queue ID. The global unconfigured endpoint returns 503 for every valid email, without looking up the account.
+
+Delivery: a Vercel `waitUntil` task sends only validated password-reset notifications through the fixed HTTPS Resend API; two bounded attempts share the notification's idempotency key. Provider errors are stored as safe codes; failures stay retryable through another reset request. Used/expired/foreign-recipient links are canceled, and sent/canceled queue bodies are erased. `sent` means accepted by Resend, not proof of inbox delivery. There is no recurring cron worker; a failed background task is resumed by a later recovery request. Other notification types are not sent by this worker.
+
+Operational setup: add server-only `RESEND_API_KEY`, `EMAIL_FROM` using a sender verified in Resend, and HTTPS `NEXT_PUBLIC_SITE_URL` to kan-sme production; redeploy after env changes. Disable click/open tracking on the reset sender domain. Do not paste or commit keys. Use a controlled, disposable test account/inbox for live sign-off; do not reset a real merchant password to test. Verify provider acceptance, actual inbox receipt, expiry/reuse rejection and old-session denial before declaring Step 04 complete. `passwordRecovery` on `/api/health` reports configuration presence only.
+
+Provider references: [Resend send API](https://resend.com/docs/api-reference/emails/send-email), [idempotency](https://resend.com/docs/dashboard/emails/idempotency-keys), [verified domains and tracking](https://resend.com/docs/dashboard/domains/introduction), [Vercel waitUntil for Next.js below 15.1](https://vercel.com/docs/functions/functions-api-reference/vercel-functions-package). No stack/framework migration or database schema migration is required.
+
+Step 04 verification before commit:
+- Lint, default tests (229 passed; 11 opt-in tests skipped), production build and standalone typecheck after build: passed.
+- `KAN_RECOVERY_INTEGRATION=1 npx vitest run __tests__/account-recovery.integration.test.ts`: 5 passed on Neon, covering supersession/throttling, concurrent single use, session revocation, expiry/hour cap, and rollback of password/queue failures. Generated tenants were removed by cleanup assertions. Initial runs encountered database startup/connectivity failures; the final run passed after explicit integration connection deadlines and the platform's transaction-start allowance was increased to ten seconds. Transaction execution remains bounded at thirty seconds.
+- Fourteen default mocked-provider/privacy tests passed; these do not establish actual Resend acceptance or inbox receipt.
+- Recovery UI browser checks at 360/1440px passed: token hidden and stripped from URL, no-referrer metadata, global unavailable state, transient/expired errors and success/sign-in state. External email sent: false.
+- Onboarding transport-failure browser checks and offline cash-sale/expense/close/access workflow passed. Render gate: 63 routes x four widths = 252 cases passed without HTTP/JS/overflow failures.
+- Built API: health 200 with passwordRecovery=not_configured, valid recovery request 503 recovery_unavailable, malformed reset token 400 invalid_reset_token. No public tokens or notification IDs returned.
+
+Current blocker: production has neither RESEND_API_KEY nor EMAIL_FROM, and no controlled test inbox has been supplied. The code checkpoint may be committed/deployed with honest 503 behavior; Step 04 is not complete and Step 05 must not start until real delivery acceptance is recorded or the owner explicitly reorders. Post-push CI and deployment evidence belong to the commit's checks. No actual email was sent in this implementation run.
+
+## Step 03 — owner registration and onboarding, verified deployed
 
 K03.01 validated owner credentials/business/first branch; K03.02 atomic tenant creation; K03.03 retry/resume after interruption; K03.04 authenticated cloud workspace landing; K03.05 two-owner isolation and session lifecycle. Acceptance: two independent owners see only their own business/branch; simultaneous or lost-response retry creates one business/account/branch/subscription; failed transaction leaves no partial records; signup/login reach a usable workspace without a local PIN. Existing till remains independent until Step 05. Affected files: platform service/store/validation and routes, AuthForms, cloud workspace page, OwnerBoundary allowlist, regression/integration/browser checks. Dependencies: existing Neon schema/session cookie; no new provider, schema migration or specialist feature required.
 
@@ -79,7 +103,7 @@ The live integration test uses generated, isolated business/shop IDs and deletes
 
 - Git pushes to main now trigger Vercel production deployment; Step 02 metadata and production checks above supersede the earlier deployment-unknown state.
 - Programmatic Neon multi-client integration passed. A physical two-device offline → online shop test remains required before field sign-off.
-- Email delivery needs a real worker/provider; a queued password-reset notification is not a sent email.
+- Step 04 adds the Resend background delivery path; credentials, verified sender and an actual controlled-inbox test are still required. A queued or provider-accepted email is not proof of inbox receipt.
 - Public online ordering, native installers, bank/crypto services and a configured AI provider remain outside this remediation.
 - Extended local workflow books (purchases/suppliers, bookings, production, reserved/store orders and transfer previews) are backed up but do not have a complete cloud workflow. Do not describe them as synced operational releases.
 - Do not add new screens/releases until the remediation is reviewed and the remaining deployment/field checks are complete.

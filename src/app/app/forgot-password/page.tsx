@@ -20,11 +20,12 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({ email }),
       });
       if (!res.ok) {
-        setMessage("Enter a valid account email address.");
+        const data = await res.json().catch(() => ({})) as { error?: string };
+        setMessage(data.error === "invalid_email" ? "Enter a valid account email address." : "Password reset email is temporarily unavailable. Try again later or contact support.");
         return;
       }
       setMessage(
-        "If the account exists, a reset email has been queued. Email delivery must be configured; contact support if it does not arrive.",
+        "If that account exists, check your email for a reset link. It expires in one hour. Wait one minute before trying again; check spam too.",
       );
     } catch {
       setMessage("Could not reach the server. Check your connection.");
@@ -47,6 +48,8 @@ export default function ForgotPasswordPage() {
           label="Account email"
           type="email"
           required
+          autoComplete="email"
+          maxLength={254}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="owner@shop.ug"
@@ -57,7 +60,7 @@ export default function ForgotPasswordPage() {
 
         {message ? (
           <div className="space-y-2 rounded-xl bg-teal-soft p-3 text-xs font-semibold text-navy">
-            <p>{message}</p>
+            <p role="status">{message}</p>
           </div>
         ) : null}
 

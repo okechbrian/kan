@@ -65,6 +65,7 @@ export function validatePlanChange(body: unknown): ValidationResult<{ plan: stri
 
 export function validateForgotPassword(body: unknown): ValidationResult<{ email: string }> {
   if (!isObject(body)) return { ok: false, error: "invalid_body" };
+  if (typeof body.email !== "string") return { ok: false, error: "invalid_email" };
   const email = String(body.email ?? "").trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
     return { ok: false, error: "invalid_email" };
@@ -77,9 +78,10 @@ export function validateResetPassword(body: unknown): ValidationResult<{
   password: string;
 }> {
   if (!isObject(body)) return { ok: false, error: "invalid_body" };
+  if (typeof body.token !== "string" || typeof body.password !== "string") return { ok: false, error: "invalid_body" };
   const token = String(body.token ?? "").trim();
   const password = String(body.password ?? "");
-  if (!token) return { ok: false, error: "invalid_reset_token" };
+  if (!/^[A-Za-z0-9_-]{43}$/.test(token)) return { ok: false, error: "invalid_reset_token" };
   if (password.length < 10 || password.length > 200) {
     return { ok: false, error: "invalid_password" };
   }

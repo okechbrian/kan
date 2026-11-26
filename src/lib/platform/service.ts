@@ -1,3 +1,4 @@
+import { recoveryOrigin } from "./reset-email";
 import { randomUUID } from "node:crypto";
 import { checkQuota, planById } from "./plans";
 import { hashPassword, verifyPassword } from "./password";
@@ -38,6 +39,16 @@ export type SessionContext = {
   businessId: string;
   role: string;
 };
+
+async function transactionRetry<T>(store: PlatformStore, work: (tx: PlatformStore) => Promise<T>): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try { return await store.transaction(work); }
+    catch (error) {
+      if (attempt < 2 && typeof error === "object" && error !== null && "code" in error && (error.code === "P2002" || error.code === "P2034")) continue;
+      throw error;
+    }
+  }
+}
 
 export class PlatformService {
   constructor(private store: PlatformStore) {}
@@ -91,19 +102,7 @@ export class PlatformService {
       });
       return new PlatformService(store).issueSession(account);
     };
-    for (let attempt = 0; ; attempt++) {
-      try {
-        return await this.store.transaction(register);
-      } catch (error) {
-        // Unique email resolves concurrent registrations; the losing transaction
-        // rolls back its business before authenticating the committed winner.
-        if (attempt < 2 && typeof error === "object" && error !== null && "code" in error &&
-            (error.code === "P2002" || error.code === "P2034")) {
-          continue;
-        }
-        throw error;
-      }
-    }
+    return transactionRetry(this.store, register);
   }
 
   async login(body: unknown) {
@@ -152,58 +151,48 @@ export class PlatformService {
     const parsed = validateForgotPassword(body);
     if (!parsed.ok) throw new PlatformError(parsed.error, 400);
 
-    const account = await this.store.findAccountByEmail(parsed.value.email);
-    if (!account || account.active === false) {
-      return { ok: true };
-    }
-
-    const rawToken = newSessionToken();
-    await this.store.createPasswordResetToken({
-      accountId: account.id,
-      tokenHash: hashSecret(rawToken),
-      expiresAt: new Date(Date.now() + RESET_MS),
+    const origin = recoveryOrigin();
+    if (!origin) throw new PlatformError("recovery_unavailable", 503);
+    return transactionRetry(this.store, async (store) => {
+      const account = await store.findAccountByEmail(parsed.value.email);
+      if (!account || account.active === false) return { ok: true };
+      const businessId = String(account.business_id);
+      const recent = await store.findRecentResetEmail(businessId, parsed.value.email, new Date(Date.now() - 60000));
+      if (recent) return { ok: true, notificationId: ["pending", "failed"].includes(String(recent.status)) ? recent.id : undefined };
+      if (await store.countPasswordResetTokens(account.id, new Date(Date.now() - RESET_MS)) >= 5) return { ok: true };
+      const rawToken = newSessionToken();
+      await store.invalidatePasswordResetTokens(account.id);
+      await store.cancelResetEmails(businessId, parsed.value.email);
+      await store.createPasswordResetToken({ accountId: account.id, tokenHash: hashSecret(rawToken), expiresAt: new Date(Date.now() + RESET_MS) });
+      const notification = await store.createNotification({
+        businessId, channel: "email", recipient: String(account.email), subject: "Reset your Kan password",
+        body: `Reset your Kan password within one hour. If you did not request this, ignore this email. Open this link to choose a new password: ${origin}/app/reset-password?token=${encodeURIComponent(rawToken)}`,
+      });
+      await store.createAudit({ actor: { businessId, accountId: account.id }, action: "password.reset_requested", targetType: "account", targetId: account.id });
+      return { ok: true, notificationId: notification.id };
     });
-    await this.store.createNotification({
-      businessId: String(account.business_id),
-      channel: "email",
-      recipient: String(account.email),
-      subject: "Reset your Kan password",
-      body: `Reset your Kan password within one hour: ${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/app/reset-password?token=${encodeURIComponent(rawToken)}`,
-    });
-    await this.store.createAudit({
-      actor: { businessId: String(account.business_id), accountId: account.id },
-      action: "password.reset_requested",
-      targetType: "account",
-      targetId: account.id,
-    });
-
-    return { ok: true };
   }
 
   async resetPassword(body: unknown) {
     const parsed = validateResetPassword(body);
     if (!parsed.ok) throw new PlatformError(parsed.error, 400);
-
-    const record = await this.store.findPasswordResetToken(hashSecret(parsed.value.token));
-    if (!record || record.used_at || new Date(String(record.expires_at)) < new Date()) {
-      throw new PlatformError("invalid_reset_token", 400);
-    }
-
-    const account = await this.store.findAccountById(String(record.account_id));
-    if (!account || account.active === false) {
-      throw new PlatformError("invalid_reset_token", 400);
-    }
-
-    await this.store.updateAccountPassword(account.id, hashPassword(parsed.value.password));
-    await this.store.markPasswordResetTokenUsed(record.id);
-    await this.store.revokeAllSessionsForAccount(account.id);
-    await this.store.createAudit({
-      actor: { businessId: String(account.business_id), accountId: account.id },
-      action: "password.reset",
-      targetType: "account",
-      targetId: account.id,
+    // Reject bogus/expired credentials before spending CPU on password hashing.
+    // The transaction rechecks this record and claims it atomically below.
+    const candidate = await this.store.findPasswordResetToken(hashSecret(parsed.value.token));
+    if (!candidate || candidate.used_at || new Date(String(candidate.expires_at)).getTime() <= Date.now()) throw new PlatformError("invalid_reset_token", 400);
+    const passwordHash = hashPassword(parsed.value.password);
+    return transactionRetry(this.store, async (store) => {
+      const record = await store.findPasswordResetToken(hashSecret(parsed.value.token));
+      if (!record || record.used_at || new Date(String(record.expires_at)).getTime() <= Date.now()) throw new PlatformError("invalid_reset_token", 400);
+      const account = await store.findAccountById(String(record.account_id));
+      if (!account || account.active === false || !await store.markPasswordResetTokenUsed(record.id)) throw new PlatformError("invalid_reset_token", 400);
+      await store.updateAccountPassword(account.id, passwordHash);
+      await store.invalidatePasswordResetTokens(account.id);
+      await store.cancelResetEmails(String(account.business_id), String(account.email));
+      await store.revokeAllSessionsForAccount(account.id);
+      await store.createAudit({ actor: { businessId: String(account.business_id), accountId: account.id }, action: "password.reset", targetType: "account", targetId: account.id });
+      return { ok: true };
     });
-    return { ok: true };
   }
 
   async getWorkspace(ctx: SessionContext, summary = false) {

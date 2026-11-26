@@ -1,6 +1,6 @@
 # Locked plan — Kan
 
-**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 owner registration/onboarding is implemented and locally verified; verify its commit checks and production deployment before sign-off. Step 04 account recovery is next, not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 is verified deployed. Step 04 account recovery is active with Resend; live delivery requires configured credentials, a verified sender and a controlled inbox. Step 05 is not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 **Date locked:** 2026-11-24 (supersedes the Duuka-only plan of 2026-09-02)
 **Authoritative scope:** [KAN_SCOPE.md](KAN_SCOPE.md) · **Decisions:** [DECISIONS.md](DECISIONS.md) D40–D47
 **Read with:** `PRODUCT_VISION.md`, `DOMAIN.md`, `UI_MAP.md`, `SYNC.md`, `IMPLEMENTATION_PLAN.md`.

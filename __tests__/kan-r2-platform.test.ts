@@ -96,16 +96,24 @@ function fakeStore(): PlatformStore {
       return resetTokens.get(tokenHash) ?? null;
     },
     async markPasswordResetTokenUsed(id) {
-      for (const rt of Array.from(resetTokens.values())) {
-        if (rt.id === id) rt.used_at = new Date();
-      }
+      const token = Array.from(resetTokens.values()).find((row) => row.id === id);
+      if (!token || token.used_at || new Date(String(token.expires_at)) <= new Date()) return false;
+      token.used_at = new Date(); return true;
     },
+    async invalidatePasswordResetTokens(accountId) {
+      for (const row of Array.from(resetTokens.values())) if (row.account_id === accountId && !row.used_at) row.used_at = new Date();
+    },
+    async countPasswordResetTokens() { return 0; },
+    async findRecentResetEmail() { return null; },
+    async findResetEmail() { return null; },
+    async finishResetEmail() {},
+    async cancelResetEmails() {},
     async countUsage(businessId) {
       const branchCount = Array.from(shops.values()).filter((s) => s.business_id === businessId).length;
       return { staff: accounts.size, branches: Math.max(branchCount, 1), skus: 0 };
     },
     async createAudit() {},
-    async createNotification() {},
+    async createNotification(input) { return { id: "notification", business_id: input.businessId, ...input }; },
   };
 }
 
