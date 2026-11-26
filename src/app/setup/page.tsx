@@ -7,6 +7,7 @@ import { setSession } from "../../lib/session";
 import { setDeviceToken } from "../../lib/sync";
 import { hashPin } from "../../lib/pin";
 import { generateId } from "../../lib/uuid";
+import { KanLogo } from "../../components/brand/KanLogo";
 
 type Mode = "choose" | "create" | "join";
 
@@ -100,7 +101,6 @@ export default function SetupPage() {
         return;
       }
 
-      // Cloud configured — save server data locally
       const { business_id: serverBusinessId, shop, user, token } = data;
       const businessId = serverBusinessId || shop.id;
 
@@ -174,27 +174,26 @@ export default function SetupPage() {
 
       const { shop, user, token, snapshot } = data;
 
-      // Save snapshot locally
       const businessId = shop.business_id || shop.id;
-      await db.businesses.add({
+      await db.businesses.put({
         id: businessId,
         name: shop.name,
         created_at: new Date().toISOString(),
         server_updated_at: new Date().toISOString(),
       });
 
-      await db.shops.add({
+      await db.shops.put({
         id: shop.id,
         business_id: businessId,
         name: shop.name,
         shop_code: shop.shop_code,
-        momo_number: "",
+        momo_number: shop.momo_number ?? "",
         currency: "UGX",
         active: true,
         server_updated_at: new Date().toISOString(),
       });
 
-      await db.users.add({
+      await db.users.put({
         id: user.id,
         business_id: businessId,
         shop_id: shop.id,
@@ -206,57 +205,39 @@ export default function SetupPage() {
       });
 
       if (snapshot?.products) {
-        for (const p of snapshot.products) {
-          await db.products.put(p);
-        }
+        for (const p of snapshot.products) await db.products.put(p);
       }
       if (snapshot?.customers) {
-        for (const c of snapshot.customers) {
-          await db.customers.put(c);
-        }
+        for (const c of snapshot.customers) await db.customers.put(c);
       }
       if (snapshot?.users) {
         for (const u of snapshot.users) {
           const existing = await db.users.get(u.id);
-          if (!existing) {
-            await db.users.put(u);
-          }
+          if (!existing) await db.users.put(u);
         }
       }
       if (snapshot?.shifts) {
-        for (const s of snapshot.shifts) {
-          await db.shifts.put(s);
-        }
+        for (const s of snapshot.shifts) await db.shifts.put(s);
       }
       if (snapshot?.sales) {
-        for (const s of snapshot.sales) {
-          await db.sales.put(s);
-        }
+        for (const s of snapshot.sales) await db.sales.put(s);
       }
       if (snapshot?.sale_lines) {
-        for (const sl of snapshot.sale_lines) {
-          await db.sale_lines.put(sl);
-        }
+        for (const sl of snapshot.sale_lines) await db.sale_lines.put(sl);
       }
       if (snapshot?.tenders) {
-        for (const t of snapshot.tenders) {
-          await db.tenders.put(t);
-        }
+        for (const t of snapshot.tenders) await db.tenders.put(t);
       }
       if (snapshot?.stock_movements) {
-        for (const sm of snapshot.stock_movements) {
+        for (const sm of snapshot.stock_movements)
           await db.stock_movements.put(sm);
-        }
       }
       if (snapshot?.deni_ledger) {
-        for (const dl of snapshot.deni_ledger) {
-          await db.deni_ledger.put(dl);
-        }
+        for (const dl of snapshot.deni_ledger) await db.deni_ledger.put(dl);
       }
       if (snapshot?.cash_movements) {
-        for (const cm of snapshot.cash_movements) {
+        for (const cm of snapshot.cash_movements)
           await db.cash_movements.put(cm);
-        }
       }
 
       await setSession(user.id, shop.id);
@@ -271,20 +252,27 @@ export default function SetupPage() {
 
   if (shopCode) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center">
-          <h1 className="text-xl font-bold mb-2">Shop created</h1>
-          <p className="text-sm text-gray-500 mb-4">
+      <main className="flex min-h-screen items-center justify-center bg-kan-navy p-4">
+        <div className="w-full max-w-sm rounded-2xl bg-kan-white p-6 text-center shadow-xl">
+          <KanLogo
+            variant="navy"
+            className="mx-auto mb-3 h-7 w-auto min-w-[80px]"
+          />
+          <h1 className="mb-2 text-xl font-bold text-kan-navy">Shop created</h1>
+          <p className="mb-4 text-sm text-kan-navy/65">
             Share this code with other devices to join:
           </p>
-          <p className="text-3xl font-bold font-mono mb-4">{shopCode}</p>
-          <p className="text-xs text-gray-500 mb-4">
-            This phone is the till for this shop. To watch from a laptop, open
-            Duuka and join with this code.
+          <p className="ugx-amount mb-4 rounded-xl bg-kan-navy px-4 py-3 font-mono text-2xl font-bold tracking-wider text-kan-teal">
+            {shopCode}
+          </p>
+          <p className="mb-5 text-xs text-kan-navy/65">
+            This phone is the till for this shop. To watch from a laptop or pair
+            a second phone, open Kan and join with this code.
           </p>
           <button
+            type="button"
             onClick={() => router.push("/pin")}
-            className="w-full rounded-lg bg-blue-600 py-3 text-white font-semibold active:bg-blue-700"
+            className="min-h-[48px] w-full rounded-xl bg-kan-navy py-3 font-bold text-kan-white active:opacity-90"
           >
             Continue to till
           </button>
@@ -294,24 +282,31 @@ export default function SetupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-        <h1 className="text-xl font-bold text-center mb-6">Duuka</h1>
+    <main className="flex min-h-screen items-center justify-center bg-kan-navy p-4">
+      <div className="w-full max-w-sm rounded-2xl bg-kan-white p-6 shadow-xl">
+        <div className="mb-6 flex flex-col items-center">
+          <KanLogo variant="navy" className="h-8 w-auto min-w-[80px]" />
+          <p className="mt-1.5 text-xs font-medium text-kan-navy/60">
+            Your shop, in one place.
+          </p>
+        </div>
 
         {mode === "choose" && (
           <div className="space-y-3">
-            <p className="text-center text-sm text-gray-500 mb-4">
-              Set up your shop
+            <p className="mb-4 text-center text-sm text-kan-navy/70">
+              Set up your offline till
             </p>
             <button
+              type="button"
               onClick={() => setMode("create")}
-              className="w-full rounded-lg bg-blue-600 py-3 text-white font-semibold active:bg-blue-700"
+              className="min-h-[48px] w-full rounded-xl bg-kan-navy py-3 font-bold text-kan-white active:opacity-90"
             >
               Create new shop
             </button>
             <button
+              type="button"
               onClick={() => setMode("join")}
-              className="w-full rounded-lg border border-gray-300 py-3 font-medium active:bg-gray-100"
+              className="min-h-[48px] w-full rounded-xl border border-kan-navy/25 bg-white py-3 font-bold text-kan-navy active:bg-kan-navy/5"
             >
               Join existing shop
             </button>
@@ -320,20 +315,22 @@ export default function SetupPage() {
 
         {mode === "create" && (
           <div className="space-y-3">
-            <h2 className="font-semibold text-center">Create shop</h2>
+            <h2 className="text-center text-base font-bold text-kan-navy">
+              Create shop
+            </h2>
             <input
               type="text"
               value={createName}
               onChange={(e) => setCreateName(e.target.value)}
               placeholder="Your name"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
             <input
               type="text"
               value={createShop}
               onChange={(e) => setCreateShop(e.target.value)}
-              placeholder="Shop name (e.g. Nateete)"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              placeholder="Shop name (e.g. Entebbe Main)"
+              className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
             <input
               type="password"
@@ -342,26 +339,33 @@ export default function SetupPage() {
                 setCreatePin(e.target.value.replace(/\D/g, "").slice(0, 6))
               }
               placeholder="Owner PIN (4-6 digits)"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
             <input
               type="tel"
               value={createMomo}
               onChange={(e) => setCreateMomo(e.target.value)}
-              placeholder="MoMo number (optional)"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              placeholder="MoMo number (e.g. 0791149592, optional)"
+              className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
-            {error && <p className="text-red-600 text-xs">{error}</p>}
+            {error && (
+              <p className="text-xs font-semibold text-red-600">{error}</p>
+            )}
             <button
+              type="button"
               onClick={handleCreate}
               disabled={loading}
-              className="w-full rounded-lg bg-blue-600 py-3 text-white font-semibold active:bg-blue-700 disabled:opacity-50"
+              className="min-h-[48px] w-full rounded-xl bg-kan-navy py-3 font-bold text-kan-white active:opacity-90 disabled:opacity-50"
             >
               {loading ? "Creating..." : "Create shop"}
             </button>
             <button
-              onClick={() => { setMode("choose"); setError(""); }}
-              className="w-full text-sm text-gray-500"
+              type="button"
+              onClick={() => {
+                setMode("choose");
+                setError("");
+              }}
+              className="w-full text-sm font-semibold text-kan-navy/65"
             >
               Back
             </button>
@@ -370,13 +374,15 @@ export default function SetupPage() {
 
         {mode === "join" && (
           <div className="space-y-3">
-            <h2 className="font-semibold text-center">Join shop</h2>
+            <h2 className="text-center text-base font-bold text-kan-navy">
+              Join shop
+            </h2>
             <input
               type="text"
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
               placeholder="Shop code (e.g. NATE-4K2P)"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-mono text-center focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-center font-mono text-sm font-bold text-kan-navy outline-none focus:border-kan-navy"
             />
             <input
               type="password"
@@ -385,19 +391,26 @@ export default function SetupPage() {
                 setJoinPin(e.target.value.replace(/\D/g, "").slice(0, 6))
               }
               placeholder="Owner PIN"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
-            {error && <p className="text-red-600 text-xs">{error}</p>}
+            {error && (
+              <p className="text-xs font-semibold text-red-600">{error}</p>
+            )}
             <button
+              type="button"
               onClick={handleJoin}
               disabled={loading}
-              className="w-full rounded-lg bg-blue-600 py-3 text-white font-semibold active:bg-blue-700 disabled:opacity-50"
+              className="min-h-[48px] w-full rounded-xl bg-kan-navy py-3 font-bold text-kan-white active:opacity-90 disabled:opacity-50"
             >
               {loading ? "Joining..." : "Join shop"}
             </button>
             <button
-              onClick={() => { setMode("choose"); setError(""); }}
-              className="w-full text-sm text-gray-500"
+              type="button"
+              onClick={() => {
+                setMode("choose");
+                setError("");
+              }}
+              className="w-full text-sm font-semibold text-kan-navy/65"
             >
               Back
             </button>

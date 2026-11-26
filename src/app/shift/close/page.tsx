@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { db } from "../../../lib/db";
 import { getSession } from "../../../lib/session";
 import { ugx } from "../../../lib/money";
 import { closeShift, shiftCashBreakdown } from "../../../lib/till";
+import { KanLogo } from "../../../components/brand/KanLogo";
 
 export default function CloseTillPage() {
   const router = useRouter();
@@ -50,8 +52,8 @@ export default function CloseTillPage() {
 
   if (loading || !breakdown) {
     return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+      <main className="flex min-h-screen items-center justify-center bg-kan-white">
+        <p className="text-sm text-kan-navy/60">Loading...</p>
       </main>
     );
   }
@@ -74,43 +76,53 @@ export default function CloseTillPage() {
 
   if (closed) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4 mx-auto max-w-[420px]">
-        <h1 className="text-2xl font-bold mb-2">Till closed</h1>
-        <p className="text-sm text-gray-500 mb-1">
-          Expected {ugx(breakdown.expected)}
-        </p>
-        <p className="text-sm text-gray-500 mb-6">
-          Counted {ugx(countedCash)} ·{" "}
-          {variance === 0
-            ? "Exact"
-            : variance > 0
-              ? `Over ${ugx(variance)}`
-              : `Short ${ugx(Math.abs(variance))}`}
-        </p>
-        <button
-          onClick={() => router.push("/shift/open")}
-          className="w-full rounded-lg bg-blue-600 py-3 text-white text-lg font-semibold"
-        >
-          Open again
-        </button>
-        <button
-          onClick={() => router.push("/pin")}
-          className="mt-3 text-sm text-gray-500"
-        >
-          Lock
-        </button>
+      <main className="flex min-h-screen flex-col items-center justify-center bg-kan-navy p-4">
+        <div className="w-full max-w-sm rounded-2xl bg-kan-white p-6 text-center shadow-xl">
+          <KanLogo
+            variant="navy"
+            className="mx-auto mb-3 h-7 w-auto min-w-[80px]"
+          />
+          <h1 className="mb-2 text-2xl font-bold text-kan-navy">Till closed</h1>
+          <p className="ugx-amount mb-1 text-sm text-kan-navy/70">
+            Expected {ugx(breakdown.expected)}
+          </p>
+          <p className="ugx-amount mb-6 text-sm font-semibold text-kan-navy">
+            Counted {ugx(countedCash)} ·{" "}
+            {variance === 0
+              ? "Exact"
+              : variance > 0
+                ? `Over ${ugx(variance)}`
+                : `Short ${ugx(Math.abs(variance))}`}
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push("/shift/open")}
+            className="min-h-[48px] w-full rounded-xl bg-kan-navy py-3 text-base font-bold text-kan-white"
+          >
+            Open again
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/pin")}
+            className="mt-3 text-sm font-semibold text-kan-navy/65"
+          >
+            Lock till
+          </button>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 mx-auto max-w-[420px]">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white pb-8">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm">
         <div className="flex items-center justify-between">
           <button
+            type="button"
             onClick={() => router.back()}
-            className="text-blue-600 text-sm font-medium"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-kan-teal"
           >
+            <ArrowLeft className="h-4 w-4" />
             Back
           </button>
           <h1 className="text-lg font-bold">Close till</h1>
@@ -118,8 +130,8 @@ export default function CloseTillPage() {
         </div>
       </header>
 
-      <div className="p-4 space-y-4">
-        <section className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+      <div className="space-y-4 p-4">
+        <section className="space-y-3 rounded-2xl border border-kan-navy/10 bg-white p-4 shadow-sm">
           <Row label="Opening float" value={ugx(breakdown.float)} />
           <Row label="Cash sales" value={ugx(breakdown.cashSales)} />
           <Row label="Cash collections" value={ugx(breakdown.collections)} />
@@ -127,15 +139,19 @@ export default function CloseTillPage() {
           {breakdown.expenses > 0 && (
             <Row label="Expenses" value={ugx(breakdown.expenses)} />
           )}
-          <div className="border-t pt-3">
-            <p className="text-xs text-gray-500">Expected cash</p>
-            <p className="text-3xl font-bold">{ugx(breakdown.expected)}</p>
+          <div className="rounded-xl bg-kan-navy p-3.5 text-kan-white">
+            <p className="text-xs font-semibold uppercase tracking-wide text-kan-white/70">
+              Expected cash
+            </p>
+            <p className="ugx-amount mt-0.5 text-3xl font-bold text-kan-teal">
+              {ugx(breakdown.expected)}
+            </p>
           </div>
         </section>
 
-        <section className="rounded-lg border border-gray-200 bg-white p-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Counted cash
+        <section className="rounded-2xl border border-kan-navy/10 bg-white p-4 shadow-sm">
+          <label className="mb-1 block text-sm font-semibold text-kan-navy">
+            Counted cash (UGX)
           </label>
           <input
             type="text"
@@ -145,14 +161,14 @@ export default function CloseTillPage() {
               const raw = e.target.value.replace(/[^0-9]/g, "");
               setCountedCash(parseInt(raw, 10) || 0);
             }}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg text-center outline-none focus:border-blue-500"
+            className="ugx-amount w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-3 text-center text-lg font-bold text-kan-navy outline-none focus:border-kan-navy"
           />
           <p
-            className={`text-center text-sm mt-2 font-medium ${
+            className={`ugx-amount mt-2.5 text-center text-sm font-bold ${
               variance === 0
-                ? "text-green-600"
+                ? "text-emerald-700"
                 : variance > 0
-                  ? "text-blue-600"
+                  ? "text-kan-navy"
                   : "text-red-600"
             }`}
           >
@@ -164,8 +180,8 @@ export default function CloseTillPage() {
           </p>
         </section>
 
-        <section className="rounded-lg border border-gray-200 bg-white p-4 space-y-2">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase">
+        <section className="space-y-2 rounded-2xl border border-kan-navy/10 bg-white p-4 shadow-sm">
+          <h3 className="text-xs font-bold uppercase tracking-wide text-kan-navy/60">
             Not in the box
           </h3>
           <Row label="MoMo recorded" value={ugx(breakdown.momo)} />
@@ -173,16 +189,17 @@ export default function CloseTillPage() {
         </section>
 
         <button
+          type="button"
           onClick={() => void handleClose()}
           disabled={saving}
-          className="w-full rounded-lg bg-red-600 py-3 text-white text-lg font-semibold disabled:opacity-50"
+          className="min-h-[48px] w-full rounded-xl bg-kan-guava py-3 text-base font-bold text-kan-navy disabled:opacity-50"
         >
           {saving ? "Closing..." : "Close till"}
         </button>
       </div>
 
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded-lg z-50">
+        <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-lg">
           {toast}
         </div>
       )}
@@ -193,8 +210,8 @@ export default function CloseTillPage() {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between text-sm">
-      <span className="text-gray-500">{label}</span>
-      <span className="font-medium">{value}</span>
+      <span className="text-kan-navy/65">{label}</span>
+      <span className="ugx-amount font-bold text-kan-navy">{value}</span>
     </div>
   );
 }

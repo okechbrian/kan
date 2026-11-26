@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { db, type Customer, type DeniLedger, type Shift } from "../../../lib/db";
+import { ArrowLeft } from "lucide-react";
+import {
+  db,
+  type Customer,
+  type DeniLedger,
+  type Shift,
+} from "../../../lib/db";
 import { getSession } from "../../../lib/session";
 import { ugx } from "../../../lib/money";
 import { recordDeniCollection } from "../../../lib/sale";
@@ -102,71 +108,80 @@ export default function CustomerDetailPage() {
 
   if (!customer) {
     return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+      <main className="flex min-h-screen items-center justify-center bg-kan-white">
+        <p className="text-sm text-kan-navy/60">Loading...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20 mx-auto max-w-[420px]">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white pb-20">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm">
         <button
+          type="button"
           onClick={() => router.push("/customers")}
-          className="text-sm text-blue-700 mb-1"
+          className="mb-1 inline-flex items-center gap-1 text-xs font-semibold text-kan-teal"
         >
-          ← Deni
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Deni
         </button>
         <h1 className="text-lg font-bold">{customer.name}</h1>
         {customer.phone && (
-          <p className="text-sm text-gray-500">{customer.phone}</p>
+          <p className="text-xs text-kan-white/75">{customer.phone}</p>
         )}
       </header>
 
-      <div className="p-4 space-y-4">
-        <section className="rounded-lg border border-gray-200 bg-white p-4 text-center">
-          <p className="text-sm text-gray-500">Balance</p>
-          <p className="text-3xl font-bold text-orange-600">
+      <div className="space-y-4 p-4">
+        <section className="rounded-2xl border border-kan-navy/10 bg-white p-5 text-center shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-kan-navy/60">
+            Balance owed
+          </p>
+          <p className="ugx-amount mt-1 text-3xl font-bold text-kan-navy">
             {ugx(customer.balance)}
           </p>
           {customer.balance > 0 && (
             <button
+              type="button"
               onClick={() => {
                 setAmount(customer.balance);
                 setCollecting(true);
               }}
-              className="mt-3 w-full rounded-lg bg-orange-600 py-2.5 text-white font-semibold"
+              className="mt-4 min-h-[46px] w-full rounded-xl bg-kan-guava py-2.5 text-sm font-bold text-kan-navy"
             >
-              Collect
+              Collect deni
             </button>
           )}
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+          <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-kan-navy/60">
             Ledger
           </h2>
           {ledger.length === 0 ? (
-            <p className="text-sm text-gray-500">No entries yet.</p>
+            <p className="text-sm text-kan-navy/60">No entries yet.</p>
           ) : (
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {ledger.map((e) => (
                 <div
                   key={e.id}
-                  className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2"
+                  className="flex items-center justify-between rounded-xl border border-kan-navy/10 bg-white px-3.5 py-2.5"
                 >
                   <div>
-                    <p className="text-sm font-medium">{TYPE_LABEL[e.type]}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm font-semibold text-kan-navy">
+                      {TYPE_LABEL[e.type]}
+                    </p>
+                    <p className="text-xs text-kan-navy/50">
                       {e.created_at.slice(0, 16).replace("T", " ")}
                     </p>
                   </div>
                   <span
-                    className={`text-sm font-bold ${
-                      e.amount > 0 ? "text-orange-600" : "text-green-700"
+                    className={`ugx-amount rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                      e.amount > 0
+                        ? "bg-kan-guava/25 text-kan-navy"
+                        : "bg-kan-teal/25 text-kan-navy"
                     }`}
                   >
-                    {e.amount > 0 ? ugx(e.amount) : ugx(-e.amount)}
+                    {e.amount > 0 ? `+${ugx(e.amount)}` : `−${ugx(-e.amount)}`}
                   </span>
                 </div>
               ))}
@@ -176,18 +191,19 @@ export default function CustomerDetailPage() {
       </div>
 
       {collecting && (
-        <div className="fixed inset-0 bg-black/50 z-40 flex items-end justify-center">
-          <div className="bg-white rounded-t-2xl w-full max-w-md p-4 pb-8">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-bold">Collect deni</h2>
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-kan-navy/60 backdrop-blur-[1px]">
+          <div className="w-full max-w-[420px] rounded-t-2xl bg-kan-white p-4 pb-8 shadow-2xl">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-kan-navy">Collect deni</h2>
               <button
+                type="button"
                 onClick={() => setCollecting(false)}
-                className="text-gray-500 text-sm"
+                className="text-sm font-semibold text-kan-navy/65"
               >
                 Cancel
               </button>
             </div>
-            <p className="text-center text-sm text-gray-500 mb-3">
+            <p className="ugx-amount mb-3 text-center text-sm font-semibold text-kan-navy/70">
               Owes {ugx(customer.balance)}
             </p>
             <input
@@ -200,34 +216,36 @@ export default function CustomerDetailPage() {
                   Math.min(parseInt(raw, 10) || 0, customer.balance)
                 );
               }}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg text-center outline-none focus:border-blue-500"
+              className="ugx-amount w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-3 text-center text-lg font-bold text-kan-navy outline-none focus:border-kan-navy"
             />
-            <div className="flex flex-wrap gap-2 mt-2 mb-3">
+            <div className="mt-2.5 mb-3 flex flex-wrap gap-2">
               {[customer.balance, 5000, 10000, 20000]
                 .filter((chip) => chip > 0 && chip <= customer.balance)
                 .map((chip) => (
                   <button
+                    type="button"
                     key={chip}
                     onClick={() => setAmount(chip)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium border ${
+                    className={`ugx-amount rounded-full border px-3 py-1.5 text-xs font-bold ${
                       amount === chip
-                        ? "bg-orange-600 text-white border-orange-600"
-                        : "bg-gray-100 text-gray-700 border-gray-300"
+                        ? "border-kan-navy bg-kan-navy text-kan-white"
+                        : "border-kan-navy/20 bg-white text-kan-navy"
                     }`}
                   >
                     {chip === customer.balance ? "All" : ugx(chip)}
                   </button>
                 ))}
             </div>
-            <div className="flex gap-1 mb-4 bg-gray-100 rounded-lg p-1">
+            <div className="mb-4 flex gap-1 rounded-xl bg-kan-navy/10 p-1">
               {(["cash", "mtn_momo", "airtel_money"] as const).map((m) => (
                 <button
+                  type="button"
                   key={m}
                   onClick={() => setMethod(m)}
-                  className={`flex-1 rounded-md py-2 text-xs font-medium ${
+                  className={`flex-1 rounded-lg py-2 text-xs font-bold ${
                     method === m
-                      ? "bg-white shadow text-orange-700"
-                      : "text-gray-600"
+                      ? "bg-kan-navy text-kan-white shadow-sm"
+                      : "text-kan-navy/70"
                   }`}
                 >
                   {m === "cash"
@@ -239,6 +257,7 @@ export default function CustomerDetailPage() {
               ))}
             </div>
             <button
+              type="button"
               onClick={() => void handleCollect()}
               disabled={
                 !Number.isInteger(amount) ||
@@ -246,16 +265,18 @@ export default function CustomerDetailPage() {
                 amount > customer.balance ||
                 saving
               }
-              className="w-full rounded-lg bg-orange-600 py-3 text-white text-lg font-semibold disabled:opacity-50 disabled:bg-gray-300"
+              className="ugx-amount min-h-[48px] w-full rounded-xl bg-kan-navy py-3 text-base font-bold text-kan-white disabled:bg-kan-navy/25"
             >
-              {saving ? "Recording..." : `Collect ${amount > 0 ? ugx(amount) : ""}`}
+              {saving
+                ? "Recording..."
+                : `Collect ${amount > 0 ? ugx(amount) : ""}`}
             </button>
           </div>
         </div>
       )}
 
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 font-medium">
+        <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-kan-navy px-4 py-2 text-sm font-bold text-kan-teal shadow-lg">
           {toast}
         </div>
       )}

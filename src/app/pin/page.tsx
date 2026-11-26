@@ -6,6 +6,7 @@ import { db } from "../../lib/db";
 import { verifyPin, shopIdForUser } from "../../lib/pin";
 import { setSession, clearSession } from "../../lib/session";
 import { Numpad } from "../../components/Numpad";
+import { KanLogo } from "../../components/brand/KanLogo";
 
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MS = 30_000;
@@ -56,7 +57,10 @@ export default function PinPage() {
     }
   };
 
-  const submitPin = async (value: string, { forceFail }: { forceFail: boolean }) => {
+  const submitPin = async (
+    value: string,
+    { forceFail }: { forceFail: boolean }
+  ) => {
     if (lockedUntil > 0) return;
     if (value.length < 4 || value.length > 6) return;
 
@@ -114,8 +118,9 @@ export default function PinPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+      <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-kan-white">
+        <KanLogo variant="navy" className="h-8 w-auto min-w-[80px]" />
+        <p className="text-sm text-kan-navy/60">Loading...</p>
       </main>
     );
   }
@@ -126,19 +131,25 @@ export default function PinPage() {
     : 0;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-xs">
-        <h1 className="text-xl font-bold text-center mb-1">{shopName}</h1>
-        <p className="text-sm text-gray-500 text-center mb-6">Enter PIN</p>
+    <main className="flex min-h-screen flex-col bg-kan-white">
+      <div className="bg-kan-navy px-4 pt-8 pb-6 text-center text-kan-white">
+        <KanLogo
+          variant="primary"
+          className="mx-auto mb-3 h-8 w-auto min-w-[80px]"
+        />
+        <h1 className="text-xl font-bold">{shopName}</h1>
+        <p className="mt-1 text-sm text-kan-white/75">Enter attendant or owner PIN</p>
+      </div>
 
-        <div className="flex justify-center gap-2 mb-4">
+      <div className="mx-auto flex w-full max-w-xs flex-1 flex-col justify-center p-4">
+        <div className="mb-5 flex justify-center gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className={`w-8 h-10 rounded border-2 flex items-center justify-center text-lg font-bold ${
+              className={`flex h-11 w-9 items-center justify-center rounded-xl border-2 text-lg font-bold transition-colors ${
                 i < pin.length
-                  ? "border-blue-600 bg-blue-50"
-                  : "border-gray-300"
+                  ? "border-kan-navy bg-kan-teal/25 text-kan-navy"
+                  : "border-kan-navy/20 bg-white text-kan-navy/30"
               }`}
             >
               {i < pin.length ? "•" : ""}
@@ -147,11 +158,13 @@ export default function PinPage() {
         </div>
 
         {error && (
-          <p className="text-red-600 text-sm text-center mb-3">{error}</p>
+          <p className="mb-3 rounded-lg bg-kan-guava/20 px-3 py-2 text-center text-sm font-semibold text-kan-navy">
+            {error}
+          </p>
         )}
 
         {locked && (
-          <p className="text-orange-600 text-sm text-center mb-3">
+          <p className="ugx-amount mb-3 text-center text-sm font-semibold text-kan-navy">
             Wait {remaining}s
           </p>
         )}
@@ -167,26 +180,26 @@ export default function PinPage() {
             <button
               type="button"
               onClick={() => setConfirmWipe(true)}
-              className="text-sm text-gray-500 underline"
+              className="text-xs font-semibold text-kan-navy/60 underline"
             >
               This is not my shop
             </button>
           ) : (
-            <div className="space-y-2">
-              <p className="text-sm text-red-600">
+            <div className="space-y-2 rounded-xl border border-kan-guava bg-kan-guava/15 p-3">
+              <p className="text-xs font-semibold text-kan-navy">
                 This clears the books on this phone. Cloud data is not deleted.
               </p>
               <button
                 type="button"
                 onClick={() => void handleWipe()}
-                className="w-full rounded-lg bg-red-600 py-2 text-white font-medium"
+                className="min-h-[42px] w-full rounded-xl bg-red-600 py-2 text-sm font-bold text-white"
               >
                 Clear this phone
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmWipe(false)}
-                className="text-sm text-gray-500"
+                className="text-xs font-semibold text-kan-navy/70"
               >
                 Cancel
               </button>

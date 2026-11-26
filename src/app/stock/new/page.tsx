@@ -80,12 +80,13 @@ export default function NewProductPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white pb-8">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm">
         <div className="flex items-center justify-between">
           <button
+            type="button"
             onClick={() => router.back()}
-            className="text-blue-600 text-sm font-medium"
+            className="text-sm font-semibold text-kan-teal"
           >
             Cancel
           </button>
@@ -94,9 +95,9 @@ export default function NewProductPage() {
         </div>
       </header>
 
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-sm font-semibold text-kan-navy">
             Name *
           </label>
           <input
@@ -104,23 +105,24 @@ export default function NewProductPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Sugar 1kg"
-            className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-semibold text-kan-navy">
             Unit
           </label>
           <div className="flex flex-wrap gap-2">
             {UNITS.map((u) => (
               <button
+                type="button"
                 key={u}
                 onClick={() => setUnit(u)}
-                className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
+                className={`rounded-xl border px-3 py-1.5 text-sm font-bold ${
                   unit === u
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-gray-700 border-gray-300 active:bg-gray-100"
+                    ? "border-kan-navy bg-kan-navy text-kan-white"
+                    : "border-kan-navy/20 bg-white text-kan-navy"
                 }`}
               >
                 {u}
@@ -131,7 +133,7 @@ export default function NewProductPage() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-kan-navy">
               Selling price (UGX) *
             </label>
             <input
@@ -142,11 +144,11 @@ export default function NewProductPage() {
                 const raw = e.target.value.replace(/[^0-9]/g, "");
                 setSellingPrice(parseInt(raw, 10) || 0);
               }}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="ugx-amount w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 font-bold text-kan-navy outline-none focus:border-kan-navy"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-kan-navy">
               Buying price (UGX)
             </label>
             <input
@@ -157,13 +159,13 @@ export default function NewProductPage() {
                 const raw = e.target.value.replace(/[^0-9]/g, "");
                 setBuyingPrice(parseInt(raw, 10) || 0);
               }}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="ugx-amount w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 font-bold text-kan-navy outline-none focus:border-kan-navy"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-sm font-semibold text-kan-navy">
             Opening stock
           </label>
           <input
@@ -174,36 +176,37 @@ export default function NewProductPage() {
               const raw = e.target.value.replace(/[^0-9]/g, "");
               setOpeningStock(parseInt(raw, 10) || 0);
             }}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="ugx-amount w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 font-bold text-kan-navy outline-none focus:border-kan-navy"
           />
         </div>
 
-        <label className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3">
+        <label className="flex items-center gap-3 rounded-xl border border-kan-navy/10 bg-white px-4 py-3">
           <input
             type="checkbox"
             checked={isFastMover}
             onChange={(e) => setIsFastMover(e.target.checked)}
-            className="h-5 w-5 rounded text-blue-600"
+            className="h-5 w-5 rounded accent-kan-navy"
           />
           <div>
-            <p className="font-medium text-sm">Fast mover</p>
-            <p className="text-xs text-gray-500">
+            <p className="text-sm font-bold text-kan-navy">Fast mover</p>
+            <p className="text-xs text-kan-navy/60">
               Shows on the sell grid for quick access
             </p>
           </div>
         </label>
 
         <button
+          type="button"
           onClick={handleSave}
           disabled={!name.trim() || !Number.isInteger(sellingPrice) || saving}
-          className="w-full rounded-lg bg-green-600 py-3 text-white text-lg font-semibold active:bg-green-700 disabled:opacity-50 disabled:bg-gray-300"
+          className="min-h-[48px] w-full rounded-xl bg-kan-navy py-3 text-base font-bold text-kan-white disabled:bg-kan-navy/25"
         >
           {saving ? "Saving..." : "Add product"}
         </button>
       </div>
 
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 font-medium">
+        <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-kan-navy px-4 py-2 text-sm font-bold text-kan-teal shadow-lg">
           {toast}
         </div>
       )}

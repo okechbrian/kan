@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronRight, Lock } from "lucide-react";
 import { db } from "../../lib/db";
 import { getCurrentUser, clearSession } from "../../lib/session";
 import { ugx } from "../../lib/money";
@@ -79,36 +80,56 @@ export default function MorePage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20 mx-auto max-w-[420px]">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white pb-20">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm">
         <h1 className="text-lg font-bold">More</h1>
       </header>
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         {/* Today summary */}
-        <section className="rounded-lg border border-gray-200 bg-white p-4">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase mb-3">
+        <section className="rounded-2xl bg-kan-navy p-5 text-kan-white shadow-md">
+          <h2 className="mb-1 text-xs font-bold uppercase tracking-wide text-kan-white/70">
             Today
           </h2>
-          <p className="text-3xl font-bold">{ugx(salesTotal)}</p>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="ugx-amount text-3xl font-bold text-kan-teal">
+            {ugx(salesTotal)}
+          </p>
+          <p className="mt-1 text-xs text-kan-white/75">
             {salesCount} sale{salesCount === 1 ? "" : "s"}
           </p>
-          <ul className="mt-3 space-y-1 text-sm text-gray-600">
-            <li>Cash {ugx(byMethod.cash)}</li>
-            <li>MTN {ugx(byMethod.mtn_momo)}</li>
-            <li>Airtel {ugx(byMethod.airtel_money)}</li>
-            <li>Credit {ugx(byMethod.credit)}</li>
-          </ul>
+          <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/15 pt-3 text-xs">
+            <div>
+              <span className="text-kan-white/65">Cash</span>
+              <p className="ugx-amount font-bold">{ugx(byMethod.cash)}</p>
+            </div>
+            <div>
+              <span className="text-kan-white/65">MTN MoMo</span>
+              <p className="ugx-amount font-bold">{ugx(byMethod.mtn_momo)}</p>
+            </div>
+            <div>
+              <span className="text-kan-white/65">Airtel Money</span>
+              <p className="ugx-amount font-bold">
+                {ugx(byMethod.airtel_money)}
+              </p>
+            </div>
+            <div>
+              <span className="text-kan-white/65">Credit (Deni)</span>
+              <p className="ugx-amount font-bold text-kan-guava">
+                {ugx(byMethod.credit)}
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Profit estimate (owner only) */}
         {isOwner && (
-          <section className="rounded-lg border border-gray-200 bg-white p-4">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase mb-1">
+          <section className="rounded-2xl border border-kan-navy/10 bg-white p-4 shadow-sm">
+            <h2 className="mb-1 text-xs font-bold uppercase tracking-wide text-kan-navy/60">
               Profit estimate
             </h2>
-            <p className="text-2xl font-bold">{ugx(profitEstimate)}</p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="ugx-amount text-2xl font-bold text-kan-navy">
+              {ugx(profitEstimate)}
+            </p>
+            <p className="mt-1 text-xs text-kan-navy/60">
               Estimate (last cost). Not net profit — overheads like rent,
               transport, and staff are not included.
             </p>
@@ -124,11 +145,11 @@ export default function MorePage() {
             />
           )}
           <MenuItem
-            label="Today's sales"
+            label="Today's sales & receipts"
             onClick={() => router.push("/more/sales")}
           />
           <MenuItem
-            label="Who owes"
+            label="Who owes (Deni)"
             onClick={() => router.push("/customers")}
           />
           <MenuItem
@@ -137,6 +158,10 @@ export default function MorePage() {
           />
           {isOwner && (
             <>
+              <MenuItem
+                label="Web dashboard"
+                onClick={() => router.push("/app/dashboard")}
+              />
               <MenuItem
                 label="Owner draw"
                 onClick={() => router.push("/more/draw")}
@@ -167,40 +192,42 @@ export default function MorePage() {
 
         <BackupButton canRestore={isOwner} />
 
-        <MenuItem
-          label="Install Kan"
-          onClick={() => router.push("/more/install")}
-        />
-        <MenuItem
-          label="Hardware"
-          onClick={() => router.push("/more/hardware")}
-        />
-
-        <MenuItem
-          label="Sync now"
-          onClick={() => {
-            void import("../../lib/sync").then((s) => s.syncNow());
-          }}
-        />
-
-        {isOwner && (
+        <div className="space-y-2">
           <MenuItem
-            label="Pair another device"
+            label="Install Kan"
+            onClick={() => router.push("/more/install")}
+          />
+          <MenuItem
+            label="Hardware"
+            onClick={() => router.push("/more/hardware")}
+          />
+          <MenuItem
+            label="Sync now"
             onClick={() => {
-              const shop = db.shops.toArray().then((shops) => {
-                if (shops.length > 0) {
-                  alert(`Share this code:\n${shops[0].shop_code}`);
-                }
-              });
+              void import("../../lib/sync").then((s) => s.syncNow());
             }}
           />
-        )}
+          {isOwner && (
+            <MenuItem
+              label="Pair another device"
+              onClick={() => {
+                void db.shops.toArray().then((shops) => {
+                  if (shops.length > 0) {
+                    alert(`Share this code:\n${shops[0].shop_code}`);
+                  }
+                });
+              }}
+            />
+          )}
+        </div>
 
         <button
+          type="button"
           onClick={handleLock}
-          className="w-full rounded-lg bg-white border border-gray-200 px-4 py-3 text-left font-medium active:bg-gray-100"
+          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-kan-navy/20 bg-white px-4 py-3 font-bold text-kan-navy active:bg-kan-navy/5"
         >
-          Lock
+          <Lock className="h-4 w-4" />
+          Lock till
         </button>
       </div>
       <BottomNav />
@@ -208,13 +235,21 @@ export default function MorePage() {
   );
 }
 
-function MenuItem({ label, onClick }: { label: string; onClick: () => void }) {
+function MenuItem({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="w-full rounded-lg bg-white border border-gray-200 px-4 py-3 text-left font-medium active:bg-gray-100"
+      className="flex min-h-[48px] w-full items-center justify-between rounded-xl border border-kan-navy/10 bg-white px-4 py-3 text-left text-sm font-semibold text-kan-navy active:bg-kan-teal/10"
     >
-      {label}
+      <span>{label}</span>
+      <ChevronRight className="h-4 w-4 text-kan-navy/40" />
     </button>
   );
 }

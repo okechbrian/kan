@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { AlertTriangle, Printer, Search } from "lucide-react";
 import { db, type Product, type Shift } from "../../lib/db";
 import { getSession } from "../../lib/session";
 import { ugx } from "../../lib/money";
@@ -10,6 +12,8 @@ import { CartSheet, type CartLine } from "../../components/CartSheet";
 import { PayModal, type PayTender } from "../../components/PayModal";
 import { BottomNav } from "../../components/BottomNav";
 import { OnlinePill } from "../../components/OnlinePill";
+import { KanLogo } from "../../components/brand/KanLogo";
+import { ReceiptModal, type ReceiptData } from "../../components/ReceiptModal";
 
 export default function SellPage() {
   const router = useRouter();
@@ -20,6 +24,8 @@ export default function SellPage() {
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<CartLine[]>([]);
   const [showPay, setShowPay] = useState(false);
+  const [lastReceipt, setLastReceipt] = useState<ReceiptData | null>(null);
+  const [showReceipt, setShowReceipt] = useState(false);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -113,8 +119,14 @@ export default function SellPage() {
     if (!session || !shift || sellingRef.current) return;
     sellingRef.current = true;
     setSaving(true);
+    const snapshotLines = cart.map((l) => ({
+      name: l.name,
+      qty: l.qty,
+      unitPrice: l.unitPrice,
+    }));
+    const totalSnap = cartTotal;
     try {
-      await recordSale({
+      const result = await recordSale({
         shopId: session.shopId,
         shiftId: shift.id,
         userId: session.userId,
@@ -134,8 +146,16 @@ export default function SellPage() {
       setProducts(items);
       setCart([]);
       setShowPay(false);
+      setLastReceipt({
+        saleId: result.saleId,
+        shopName,
+        createdAt: new Date().toISOString(),
+        lines: snapshotLines,
+        tenders: tenders.map((t) => ({ method: t.method, amount: t.amount })),
+        total: totalSnap,
+      });
       setToast("Sold");
-      setTimeout(() => setToast(""), 2000);
+      setTimeout(() => setToast(""), 4500);
     } catch (err) {
       setToast(err instanceof Error ? err.message : "Sale failed");
       setTimeout(() => setToast(""), 2500);
@@ -147,78 +167,91 @@ export default function SellPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+      <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-kan-white">
+        <KanLogo variant="navy" className="h-8 w-auto min-w-[80px]" />
+        <p className="text-sm text-kan-navy/60">Loading till...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-72 mx-auto max-w-[420px]">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-2">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg font-bold">{shopName}</h1>
-          <div className="flex items-center gap-2">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white pb-72">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm print:hidden">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <KanLogo variant="primary" className="h-5 w-auto min-w-[60px]" />
+            <h1 className="truncate text-base font-bold">{shopName}</h1>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
             {shift && (
-              <span className="text-xs text-green-600 font-medium">
+              <span className="rounded-full bg-kan-teal/20 px-2 py-0.5 text-[11px] font-bold text-kan-teal">
                 Till open
               </span>
             )}
-            <OnlinePill />
+            <OnlinePill onDark />
           </div>
         </div>
       </header>
 
       {lowStockCount > 0 && (
-        <div className="bg-orange-50 border-b border-orange-200 px-4 py-2">
-          <p className="text-xs text-orange-700 font-medium">
+        <div className="flex items-center gap-2 border-b border-kan-guava/40 bg-kan-guava/20 px-4 py-2 print:hidden">
+          <AlertTriangle className="h-4 w-4 shrink-0 text-kan-navy" />
+          <p className="text-xs font-semibold text-kan-navy">
             {lowStockCount} {lowStockCount === 1 ? "item" : "items"} low on
             stock ·{" "}
-            <a href="/stock" className="underline">
+            <Link href="/stock" className="underline">
               View stock
-            </a>
+            </Link>
           </p>
         </div>
       )}
 
-      <div className="p-4">
-        <input
-          type="text"
-          placeholder="Find item"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 mb-4 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-        />
+      <div className="p-4 print:hidden">
+        <div className="relative mb-4">
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-kan-navy/50" />
+          <input
+            type="text"
+            placeholder="Find item or scan barcode"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-xl border border-kan-navy/20 bg-white py-3 pr-4 pl-10 text-sm font-medium text-kan-navy outline-none focus:border-kan-navy"
+          />
+        </div>
 
         {fastMovers.length > 0 && (
-          <section className="mb-4">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+          <section className="mb-5">
+            <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-kan-navy/60">
               Fast movers
             </h2>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               {fastMovers.map((p) => (
                 <button
+                  type="button"
                   key={p.id}
                   onClick={() => addToCart(p)}
-                  className="rounded-lg border border-gray-200 bg-white p-3 text-left active:bg-gray-100"
+                  className="flex min-h-[78px] flex-col justify-between rounded-xl border border-kan-navy/15 bg-white p-3 text-left shadow-sm transition-colors active:border-kan-teal active:bg-kan-teal/10"
                 >
-                  <p className="font-medium text-sm">{p.name}</p>
-                  <p className="text-green-700 font-bold text-sm">
-                    {ugx(p.selling_price)}
+                  <p className="line-clamp-2 text-sm font-bold text-kan-navy">
+                    {p.name}
                   </p>
-                  {p.stock_qty <= 5 && (
-                    <p
-                      className={`text-xs mt-0.5 ${
-                        p.stock_qty === 0
-                          ? "text-red-600"
-                          : "text-orange-500"
-                      }`}
-                    >
-                      {p.stock_qty === 0
-                        ? "Stock not counted"
-                        : `Qty: ${p.stock_qty}`}
+                  <div className="mt-1.5 flex items-baseline justify-between gap-1">
+                    <p className="ugx-amount text-sm font-bold text-kan-navy">
+                      {ugx(p.selling_price)}
                     </p>
-                  )}
+                    {p.stock_qty <= 5 && (
+                      <span
+                        className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                          p.stock_qty <= 0
+                            ? "bg-kan-guava text-kan-navy"
+                            : "bg-kan-guava/25 text-kan-navy"
+                        }`}
+                      >
+                        {p.stock_qty === 0
+                          ? "Not counted"
+                          : `Qty: ${p.stock_qty}`}
+                      </span>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
@@ -227,21 +260,24 @@ export default function SellPage() {
 
         {others.length > 0 && (
           <section>
-            <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+            <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-kan-navy/60">
               Other items
             </h2>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {others.map((p) => (
                 <button
+                  type="button"
                   key={p.id}
                   onClick={() => addToCart(p)}
-                  className="w-full flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-left active:bg-gray-100"
+                  className="flex min-h-[52px] w-full items-center justify-between rounded-xl border border-kan-navy/10 bg-white px-3.5 py-2.5 text-left active:bg-kan-teal/10"
                 >
                   <div>
-                    <p className="font-medium text-sm">{p.name}</p>
-                    <p className="text-xs text-gray-500">{p.unit}</p>
+                    <p className="text-sm font-semibold text-kan-navy">
+                      {p.name}
+                    </p>
+                    <p className="text-xs text-kan-navy/55">{p.unit}</p>
                   </div>
-                  <p className="text-green-700 font-bold text-sm">
+                  <p className="ugx-amount text-sm font-bold text-kan-navy">
                     {ugx(p.selling_price)}
                   </p>
                 </button>
@@ -251,9 +287,9 @@ export default function SellPage() {
         )}
 
         {fastMovers.length === 0 && others.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            <p>No products found.</p>
-            <p className="text-sm mt-1">
+          <div className="rounded-2xl border border-kan-navy/10 bg-white px-4 py-12 text-center text-kan-navy/70">
+            <p className="font-bold text-kan-navy">No products found.</p>
+            <p className="mt-1 text-sm">
               Add sugar, oil, soap before you can sell.
             </p>
           </div>
@@ -277,9 +313,29 @@ export default function SellPage() {
         />
       )}
 
+      {showReceipt && lastReceipt && (
+        <ReceiptModal
+          receipt={lastReceipt}
+          onClose={() => setShowReceipt(false)}
+        />
+      )}
+
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 font-medium">
-          {toast}
+        <div className="fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl bg-kan-navy px-4 py-2.5 text-sm font-bold text-kan-white shadow-xl print:hidden">
+          <span className="text-kan-teal">{toast}</span>
+          {toast === "Sold" && lastReceipt && (
+            <button
+              type="button"
+              onClick={() => {
+                setShowReceipt(true);
+                setToast("");
+              }}
+              className="inline-flex items-center gap-1 rounded-lg bg-kan-teal px-2.5 py-1 text-xs font-bold text-kan-navy"
+            >
+              <Printer className="h-3.5 w-3.5" />
+              Receipt
+            </button>
+          )}
         </div>
       )}
 

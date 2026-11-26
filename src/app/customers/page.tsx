@@ -68,78 +68,88 @@ export default function CustomersPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20 mx-auto max-w-[420px]">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white pb-20">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-bold">Deni</h1>
           <button
+            type="button"
             onClick={() => setAdding((v) => !v)}
-            className="text-sm font-medium text-blue-700"
+            className="rounded-lg bg-kan-teal px-3 py-1.5 text-xs font-bold text-kan-navy"
           >
-            {adding ? "Cancel" : "Add"}
+            {adding ? "Cancel" : "+ Add"}
           </button>
         </div>
       </header>
 
       <div className="p-4">
         {adding && (
-          <div className="mb-4 rounded-lg border border-gray-200 bg-white p-3 space-y-2">
+          <div className="mb-4 space-y-2 rounded-xl border border-kan-navy/15 bg-white p-3.5 shadow-sm">
             <input
               type="text"
               placeholder="Name *"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+              className="w-full rounded-xl border border-kan-navy/20 px-3 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
             <input
               type="tel"
-              placeholder="Phone (optional)"
+              placeholder="Phone (+256..., optional)"
               value={newPhone}
               onChange={(e) => setNewPhone(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+              className="w-full rounded-xl border border-kan-navy/20 px-3 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
             <button
+              type="button"
               onClick={() => void handleAdd()}
               disabled={!newName.trim()}
-              className="w-full rounded-lg bg-blue-600 py-2 text-white text-sm font-medium disabled:opacity-50"
+              className="min-h-[44px] w-full rounded-xl bg-kan-navy py-2.5 text-sm font-bold text-kan-white disabled:opacity-50"
             >
               Save customer
             </button>
           </div>
         )}
 
-        <label className="flex items-center gap-2 mb-3 text-sm text-gray-600">
+        <label className="mb-3 flex items-center gap-2 text-sm font-medium text-kan-navy/75">
           <input
             type="checkbox"
             checked={showAll}
             onChange={(e) => setShowAll(e.target.checked)}
+            className="h-4 w-4 accent-kan-navy"
           />
-          Show all
+          Show all customers
         </label>
 
         {loading ? (
-          <p className="text-center text-gray-500 py-12">Loading...</p>
+          <p className="py-12 text-center text-sm text-kan-navy/60">
+            Loading...
+          </p>
         ) : visible.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <p>Nobody owes the shop right now.</p>
+          <div className="rounded-2xl border border-kan-navy/10 bg-white px-4 py-12 text-center text-sm text-kan-navy/65">
+            <p className="font-semibold text-kan-navy">
+              Nobody owes the shop right now.
+            </p>
           </div>
         ) : (
           <div className="space-y-2">
             {visible.map((c) => (
               <button
+                type="button"
                 key={c.id}
                 onClick={() => router.push(`/customers/${c.id}`)}
-                className="w-full flex items-center justify-between bg-white rounded-lg border border-gray-200 px-4 py-3 text-left active:bg-gray-50"
+                className="flex min-h-[56px] w-full items-center justify-between rounded-xl border border-kan-navy/10 bg-white px-4 py-3 text-left shadow-sm active:bg-kan-teal/10"
               >
                 <div>
-                  <p className="font-medium">{c.name}</p>
+                  <p className="font-bold text-kan-navy">{c.name}</p>
                   {c.phone && (
-                    <p className="text-xs text-gray-500">{c.phone}</p>
+                    <p className="text-xs text-kan-navy/60">{c.phone}</p>
                   )}
                 </div>
                 <span
-                  className={`font-bold ${
-                    c.balance > 0 ? "text-orange-600" : "text-gray-400"
+                  className={`ugx-amount rounded-full px-2.5 py-1 text-xs font-bold ${
+                    c.balance > 0
+                      ? "bg-kan-guava/25 text-kan-navy"
+                      : "bg-kan-navy/5 text-kan-navy/50"
                   }`}
                 >
                   {ugx(c.balance)}

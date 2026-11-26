@@ -59,11 +59,15 @@ export function CustomerPicker({ onSelect, onCancel }: CustomerPickerProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center">
-      <div className="bg-white rounded-t-2xl w-full max-w-md p-4 pb-8 max-h-[85vh] flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold">Select customer</h2>
-          <button onClick={onCancel} className="text-gray-500 text-sm">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-kan-navy/60 backdrop-blur-[1px]">
+      <div className="flex max-h-[85vh] w-full max-w-[420px] flex-col rounded-t-2xl bg-kan-white p-4 pb-8 shadow-2xl">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-kan-navy">Select customer</h2>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="text-sm font-semibold text-kan-navy/65"
+          >
             Cancel
           </button>
         </div>
@@ -73,31 +77,36 @@ export function CustomerPicker({ onSelect, onCancel }: CustomerPickerProps) {
           placeholder="Search name or phone"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 mb-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          className="mb-3 w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
         />
 
-        <div className="flex-1 overflow-y-auto space-y-1.5">
+        <div className="flex-1 space-y-1.5 overflow-y-auto">
           {loading ? (
-            <p className="text-center text-gray-500 py-6">Loading...</p>
+            <p className="py-6 text-center text-sm text-kan-navy/60">
+              Loading...
+            </p>
           ) : filtered.length === 0 ? (
-            <p className="text-center text-gray-500 py-6">
+            <p className="py-6 text-center text-sm text-kan-navy/60">
               {search ? "No match" : "No customers yet"}
             </p>
           ) : (
             filtered.map((c) => (
               <button
+                type="button"
                 key={c.id}
                 onClick={() => onSelect(c)}
-                className="w-full flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-left active:bg-gray-100"
+                className="flex min-h-[48px] w-full items-center justify-between rounded-xl border border-kan-navy/10 bg-white px-3.5 py-2.5 text-left active:bg-kan-teal/15"
               >
                 <div>
-                  <p className="font-medium text-sm">{c.name}</p>
+                  <p className="text-sm font-semibold text-kan-navy">
+                    {c.name}
+                  </p>
                   {c.phone && (
-                    <p className="text-xs text-gray-500">{c.phone}</p>
+                    <p className="text-xs text-kan-navy/60">{c.phone}</p>
                   )}
                 </div>
                 {c.balance > 0 && (
-                  <span className="text-xs text-orange-600 font-medium">
+                  <span className="ugx-amount rounded-full bg-kan-guava/25 px-2.5 py-0.5 text-xs font-bold text-kan-navy">
                     Deni: {ugx(c.balance)}
                   </span>
                 )}
@@ -108,40 +117,43 @@ export function CustomerPicker({ onSelect, onCancel }: CustomerPickerProps) {
 
         {!showNew ? (
           <button
+            type="button"
             onClick={() => setShowNew(true)}
-            className="mt-3 w-full rounded-lg border border-blue-300 py-2.5 text-blue-700 font-medium text-sm active:bg-blue-50"
+            className="mt-3 min-h-[44px] w-full rounded-xl border border-kan-navy/25 bg-white py-2.5 text-sm font-bold text-kan-navy active:bg-kan-navy/5"
           >
             + New customer
           </button>
         ) : (
-          <div className="mt-3 border-t pt-3 space-y-2">
+          <div className="mt-3 space-y-2 border-t border-kan-navy/10 pt-3">
             <input
               type="text"
               placeholder="Name *"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-kan-navy/20 bg-white px-3 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
             <input
               type="tel"
-              placeholder="Phone (optional)"
+              placeholder="Phone (+256..., optional)"
               value={newPhone}
               onChange={(e) => setNewPhone(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-kan-navy/20 bg-white px-3 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
             />
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() => setShowNew(false)}
-                className="flex-1 rounded-lg border border-gray-300 py-2 text-sm text-gray-700 active:bg-gray-100"
+                className="min-h-[42px] flex-1 rounded-xl border border-kan-navy/20 bg-white py-2 text-sm font-semibold text-kan-navy"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleCreate}
                 disabled={!newName.trim()}
-                className="flex-1 rounded-lg bg-blue-600 py-2 text-white text-sm font-medium active:bg-blue-700 disabled:opacity-50"
+                className="min-h-[42px] flex-1 rounded-xl bg-kan-navy py-2 text-sm font-bold text-kan-white disabled:opacity-50"
               >
-                Create & select
+                Create &amp; select
               </button>
             </div>
           </div>

@@ -1,10 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { exportBackup, downloadBackup, uploadBackup, importBackup } from "../lib/backup";
+import { Download, Upload } from "lucide-react";
+import {
+  exportBackup,
+  downloadBackup,
+  uploadBackup,
+  importBackup,
+} from "../lib/backup";
 
 export function BackupButton({ canRestore = true }: { canRestore?: boolean }) {
-  const [status, setStatus] = useState<"idle" | "exporting" | "importing" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "exporting" | "importing" | "error"
+  >("idle");
   const [error, setError] = useState<string | null>(null);
 
   const handleExport = async () => {
@@ -35,24 +43,31 @@ export function BackupButton({ canRestore = true }: { canRestore?: boolean }) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 rounded-xl border border-kan-navy/10 bg-white p-3.5">
+      <p className="text-xs font-medium text-kan-navy/65">
+        Clearing browser data deletes local shop books until synced or backed up.
+      </p>
       <button
+        type="button"
         onClick={handleExport}
         disabled={status === "exporting"}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded disabled:opacity-50"
+        className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-kan-navy px-4 py-2.5 text-sm font-bold text-kan-white disabled:opacity-50"
       >
+        <Download className="h-4 w-4 text-kan-teal" />
         {status === "exporting" ? "Exporting..." : "Download backup"}
       </button>
       {canRestore && (
-      <button
-        onClick={handleImport}
-        disabled={status === "importing"}
-        className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded disabled:opacity-50"
-      >
-        {status === "importing" ? "Importing..." : "Restore backup"}
-      </button>
+        <button
+          type="button"
+          onClick={handleImport}
+          disabled={status === "importing"}
+          className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-kan-navy/20 bg-kan-white px-4 py-2.5 text-sm font-bold text-kan-navy disabled:opacity-50"
+        >
+          <Upload className="h-4 w-4" />
+          {status === "importing" ? "Importing..." : "Restore backup"}
+        </button>
       )}
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-sm font-medium text-red-600">{error}</p>}
     </div>
   );
 }

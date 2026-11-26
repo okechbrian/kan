@@ -1,5 +1,6 @@
 "use client";
 
+import { Minus, Plus, X } from "lucide-react";
 import { ugx } from "../lib/money";
 
 export interface CartLine {
@@ -16,56 +17,79 @@ interface CartSheetProps {
   onCharge: () => void;
 }
 
-export function CartSheet({ lines, onUpdateQty, onRemove, onCharge }: CartSheetProps) {
+export function CartSheet({
+  lines,
+  onUpdateQty,
+  onRemove,
+  onCharge,
+}: CartSheetProps) {
   if (lines.length === 0) return null;
 
   const total = lines.reduce((sum, l) => sum + l.unitPrice * l.qty, 0);
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-30">
-      <div className="max-w-md mx-auto p-3">
-        <div className="max-h-48 overflow-y-auto mb-2">
+    <div className="fixed bottom-14 left-0 right-0 z-30 border-t border-kan-navy/15 bg-white shadow-xl print:hidden">
+      <div className="mx-auto max-w-[420px] p-3">
+        <div className="mb-2 max-h-48 overflow-y-auto divide-y divide-kan-navy/10">
           {lines.map((line) => (
-            <div key={line.productId} className="flex items-center justify-between py-1.5 border-b border-gray-100 last:border-0">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{line.name}</p>
-                <p className="text-xs text-gray-500">{ugx(line.unitPrice)}</p>
+            <div
+              key={line.productId}
+              className="flex items-center justify-between py-2"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-kan-navy">
+                  {line.name}
+                </p>
+                <p className="ugx-amount text-xs text-kan-navy/60">
+                  {ugx(line.unitPrice)}
+                </p>
               </div>
-              <div className="flex items-center gap-2 ml-2">
+              <div className="ml-2 flex items-center gap-1.5">
                 <button
+                  type="button"
+                  aria-label={`Decrease ${line.name}`}
                   onClick={() => onUpdateQty(line.productId, line.qty - 1)}
-                  className="w-7 h-7 rounded bg-gray-200 text-gray-700 font-bold flex items-center justify-center active:bg-gray-300"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-kan-navy/10 text-kan-navy active:bg-kan-navy/20"
                 >
-                  −
+                  <Minus className="h-4 w-4" />
                 </button>
-                <span className="w-6 text-center text-sm font-medium">{line.qty}</span>
+                <span className="ugx-amount w-7 text-center text-sm font-bold text-kan-navy">
+                  {line.qty}
+                </span>
                 <button
+                  type="button"
+                  aria-label={`Increase ${line.name}`}
                   onClick={() => onUpdateQty(line.productId, line.qty + 1)}
-                  className="w-7 h-7 rounded bg-gray-200 text-gray-700 font-bold flex items-center justify-center active:bg-gray-300"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-kan-navy/10 text-kan-navy active:bg-kan-navy/20"
                 >
-                  +
+                  <Plus className="h-4 w-4" />
                 </button>
                 <button
+                  type="button"
+                  aria-label={`Remove ${line.name}`}
                   onClick={() => onRemove(line.productId)}
-                  className="w-7 h-7 rounded bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center active:bg-red-200"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-kan-guava/20 text-kan-navy active:bg-kan-guava/40"
                 >
-                  ✕
+                  <X className="h-4 w-4" />
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-600">Total</span>
-          <span className="text-lg font-bold">{ugx(total)}</span>
+        <div className="mb-2.5 flex items-center justify-between border-t border-kan-navy/10 pt-2">
+          <span className="text-sm font-semibold text-kan-navy/70">Total</span>
+          <span className="ugx-amount text-lg font-bold text-kan-navy">
+            {ugx(total)}
+          </span>
         </div>
 
         <button
+          type="button"
           onClick={onCharge}
-          className="w-full rounded-lg bg-green-600 py-3 text-white text-lg font-semibold active:bg-green-700"
+          className="ugx-amount min-h-[48px] w-full rounded-xl bg-kan-navy py-3 text-base font-bold text-kan-white shadow-sm active:opacity-90"
         >
-          Charge {ugx(total)}
+          Charge <span className="text-kan-teal">{ugx(total)}</span>
         </button>
       </div>
     </div>

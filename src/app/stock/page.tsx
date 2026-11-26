@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Search } from "lucide-react";
 import { db, type Product } from "../../lib/db";
 import { getCurrentUser } from "../../lib/session";
 import { ugx } from "../../lib/money";
@@ -46,35 +47,35 @@ export default function StockPage() {
   const normalStock = filtered.filter((p) => p.stock_qty > REORDER_LEVEL);
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white pb-20">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-lg font-bold">Stock</h1>
           {isOwner && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-1.5">
               <Link
                 href="/stock/receive"
-                className="rounded-lg bg-blue-600 px-3 py-1.5 text-white text-xs font-medium active:bg-blue-700"
+                className="rounded-lg bg-kan-teal px-2.5 py-1.5 text-xs font-bold text-kan-navy"
               >
-                Receive goods
+                Receive
               </Link>
               <Link
                 href="/stock/new"
-                className="rounded-lg bg-green-600 px-3 py-1.5 text-white text-xs font-medium active:bg-green-700"
+                className="rounded-lg bg-white/15 px-2.5 py-1.5 text-xs font-bold text-kan-white"
               >
-                Add product
+                + Product
               </Link>
               <Link
                 href="/stock/batches"
-                className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-700"
+                className="rounded-lg border border-white/25 px-2.5 py-1.5 text-xs font-semibold text-kan-white"
               >
                 Batches
               </Link>
               <Link
                 href="/stock/transfer"
-                className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-700"
+                className="rounded-lg border border-white/25 px-2.5 py-1.5 text-xs font-semibold text-kan-white"
               >
-                Move stock
+                Move
               </Link>
             </div>
           )}
@@ -82,29 +83,32 @@ export default function StockPage() {
       </header>
 
       <div className="p-4">
-        <input
-          type="text"
-          placeholder="Search products"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 mb-4 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-        />
+        <div className="relative mb-4">
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-kan-navy/50" />
+          <input
+            type="text"
+            placeholder="Search products"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-xl border border-kan-navy/20 bg-white py-2.5 pr-4 pl-10 text-sm text-kan-navy outline-none focus:border-kan-navy"
+          />
+        </div>
 
         {loading ? (
-          <p className="text-center text-gray-500 py-12">Loading...</p>
+          <p className="py-12 text-center text-sm text-kan-navy/60">
+            Loading...
+          </p>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <p>No items yet.</p>
-            <p className="text-sm mt-1">
-              Receive goods or add a product.
-            </p>
+          <div className="rounded-2xl border border-kan-navy/10 bg-white px-4 py-12 text-center text-kan-navy/65">
+            <p className="font-bold text-kan-navy">No items yet.</p>
+            <p className="mt-1 text-sm">Receive goods or add a product.</p>
           </div>
         ) : (
           <>
             {lowStock.length > 0 && (
-              <section className="mb-4">
-                <h2 className="text-xs font-semibold text-orange-600 uppercase mb-2 flex items-center gap-1">
-                  <span className="inline-block w-2 h-2 rounded-full bg-orange-500" />
+              <section className="mb-5">
+                <h2 className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-kan-navy">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-kan-guava" />
                   Low stock ({lowStock.length})
                 </h2>
                 <div className="space-y-1.5">
@@ -112,23 +116,19 @@ export default function StockPage() {
                     <Link
                       key={p.id}
                       href={`/stock/${p.id}`}
-                      className="flex items-center justify-between rounded-lg border border-orange-200 bg-orange-50 px-3 py-2.5 active:bg-orange-100"
+                      className="flex min-h-[54px] items-center justify-between rounded-xl border border-kan-guava/50 bg-kan-guava/15 px-3.5 py-2.5 active:bg-kan-guava/25"
                     >
                       <div>
-                        <p className="font-medium text-sm">{p.name}</p>
-                        <p className="text-xs text-gray-500">{p.unit}</p>
+                        <p className="text-sm font-bold text-kan-navy">
+                          {p.name}
+                        </p>
+                        <p className="text-xs text-kan-navy/65">{p.unit}</p>
                       </div>
                       <div className="text-right">
-                        <p
-                          className={`font-bold text-sm ${
-                            p.stock_qty === 0
-                              ? "text-red-600"
-                              : "text-orange-600"
-                          }`}
-                        >
+                        <p className="ugx-amount text-sm font-bold text-kan-navy">
                           {p.stock_qty} {p.unit}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="ugx-amount text-xs text-kan-navy/65">
                           {ugx(p.selling_price)}
                         </p>
                       </div>
@@ -140,7 +140,7 @@ export default function StockPage() {
 
             {normalStock.length > 0 && (
               <section>
-                <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-kan-navy/60">
                   All items ({normalStock.length})
                 </h2>
                 <div className="space-y-1.5">
@@ -148,17 +148,19 @@ export default function StockPage() {
                     <Link
                       key={p.id}
                       href={`/stock/${p.id}`}
-                      className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2.5 active:bg-gray-100"
+                      className="flex min-h-[54px] items-center justify-between rounded-xl border border-kan-navy/10 bg-white px-3.5 py-2.5 active:bg-kan-teal/10"
                     >
                       <div>
-                        <p className="font-medium text-sm">{p.name}</p>
-                        <p className="text-xs text-gray-500">{p.unit}</p>
+                        <p className="text-sm font-semibold text-kan-navy">
+                          {p.name}
+                        </p>
+                        <p className="text-xs text-kan-navy/55">{p.unit}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-sm">
+                        <p className="ugx-amount text-sm font-bold text-kan-navy">
                           {p.stock_qty} {p.unit}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="ugx-amount text-xs text-kan-navy/60">
                           {ugx(p.selling_price)}
                         </p>
                       </div>

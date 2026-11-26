@@ -92,12 +92,13 @@ function AdjustInner() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white pb-8">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm">
         <div className="flex items-center justify-between">
           <button
+            type="button"
             onClick={() => (picked ? setPicked(null) : router.back())}
-            className="text-blue-600 text-sm font-medium"
+            className="text-sm font-semibold text-kan-teal"
           >
             {picked ? "Back" : "Cancel"}
           </button>
@@ -115,26 +116,33 @@ function AdjustInner() {
             placeholder="Search products"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2.5 mb-4 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="mb-4 w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
           />
 
           {loading ? (
-            <p className="text-center text-gray-500 py-12">Loading...</p>
+            <p className="py-12 text-center text-sm text-kan-navy/60">
+              Loading...
+            </p>
           ) : filtered.length === 0 ? (
-            <p className="text-center text-gray-500 py-12">No products found</p>
+            <p className="py-12 text-center text-sm text-kan-navy/60">
+              No products found
+            </p>
           ) : (
             <div className="space-y-1.5">
               {filtered.map((p) => (
                 <button
+                  type="button"
                   key={p.id}
                   onClick={() => handlePick(p)}
-                  className="w-full flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-left active:bg-gray-100"
+                  className="flex min-h-[52px] w-full items-center justify-between rounded-xl border border-kan-navy/10 bg-white px-3.5 py-2.5 text-left active:bg-kan-teal/10"
                 >
                   <div>
-                    <p className="font-medium text-sm">{p.name}</p>
-                    <p className="text-xs text-gray-500">{p.unit}</p>
+                    <p className="text-sm font-semibold text-kan-navy">
+                      {p.name}
+                    </p>
+                    <p className="text-xs text-kan-navy/55">{p.unit}</p>
                   </div>
-                  <p className="font-bold text-sm">
+                  <p className="ugx-amount text-sm font-bold text-kan-navy">
                     {p.stock_qty} {p.unit}
                   </p>
                 </button>
@@ -143,16 +151,16 @@ function AdjustInner() {
           )}
         </div>
       ) : (
-        <div className="p-4 space-y-4">
-          <div className="rounded-lg border border-gray-200 bg-white p-3">
-            <p className="font-medium">{picked.name}</p>
-            <p className="text-xs text-gray-500">
+        <div className="space-y-4 p-4">
+          <div className="rounded-xl border border-kan-navy/10 bg-white p-3.5">
+            <p className="font-bold text-kan-navy">{picked.name}</p>
+            <p className="ugx-amount text-xs text-kan-navy/60">
               System shows: {picked.stock_qty} {picked.unit}
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-kan-navy">
               Actual counted qty
             </label>
             <input
@@ -163,12 +171,12 @@ function AdjustInner() {
                 const raw = e.target.value.replace(/[^0-9]/g, "");
                 setCountedQty(parseInt(raw, 10) || 0);
               }}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg text-center focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="ugx-amount w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-3 text-center text-lg font-bold text-kan-navy outline-none focus:border-kan-navy"
             />
             {delta !== 0 && (
               <p
-                className={`text-center text-sm mt-1 font-medium ${
-                  delta > 0 ? "text-green-600" : "text-red-600"
+                className={`ugx-amount mt-1.5 text-center text-sm font-bold ${
+                  delta > 0 ? "text-emerald-700" : "text-red-600"
                 }`}
               >
                 {delta > 0 ? `+${delta}` : delta} {picked.unit}
@@ -177,18 +185,19 @@ function AdjustInner() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-semibold text-kan-navy">
               Reason
             </label>
             <div className="grid grid-cols-2 gap-2">
               {REASONS.map((r) => (
                 <button
+                  type="button"
                   key={r}
                   onClick={() => setReason(r)}
-                  className={`rounded-lg border py-2.5 text-sm font-medium ${
+                  className={`min-h-[44px] rounded-xl border py-2.5 text-sm font-bold ${
                     reason === r
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-700 border-gray-300 active:bg-gray-100"
+                      ? "border-kan-navy bg-kan-navy text-kan-white"
+                      : "border-kan-navy/20 bg-white text-kan-navy"
                   }`}
                 >
                   {r}
@@ -199,7 +208,7 @@ function AdjustInner() {
 
           {reason === "Other" && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="mb-1 block text-sm font-semibold text-kan-navy">
                 Note
               </label>
               <input
@@ -207,12 +216,13 @@ function AdjustInner() {
                 value={otherNote}
                 onChange={(e) => setOtherNote(e.target.value)}
                 placeholder="What happened?"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
               />
             </div>
           )}
 
           <button
+            type="button"
             onClick={handleAdjust}
             disabled={
               !Number.isInteger(countedQty) ||
@@ -220,7 +230,7 @@ function AdjustInner() {
               (reason === "Other" && !otherNote.trim()) ||
               saving
             }
-            className="w-full rounded-lg bg-blue-600 py-3 text-white text-lg font-semibold active:bg-blue-700 disabled:opacity-50 disabled:bg-gray-300"
+            className="min-h-[48px] w-full rounded-xl bg-kan-navy py-3 text-base font-bold text-kan-white disabled:bg-kan-navy/25"
           >
             {saving ? "Saving..." : "Confirm adjustment"}
           </button>
@@ -228,7 +238,7 @@ function AdjustInner() {
       )}
 
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 font-medium">
+        <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-kan-navy px-4 py-2 text-sm font-bold text-kan-teal shadow-lg">
           {toast}
         </div>
       )}
@@ -240,8 +250,8 @@ export default function AdjustPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center">
-          <p className="text-gray-500">Loading...</p>
+        <main className="flex min-h-screen items-center justify-center bg-kan-white">
+          <p className="text-sm text-kan-navy/60">Loading...</p>
         </main>
       }
     >

@@ -6,6 +6,7 @@ import { db } from "../../../lib/db";
 import { getSession } from "../../../lib/session";
 import { generateId } from "../../../lib/uuid";
 import { ugx } from "../../../lib/money";
+import { KanLogo } from "../../../components/brand/KanLogo";
 
 export default function ShiftOpenPage() {
   const router = useRouter();
@@ -47,16 +48,22 @@ export default function ShiftOpenPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-xs">
-        <h1 className="text-xl font-bold text-center mb-1">Open till</h1>
-        <p className="text-sm text-gray-500 text-center mb-6">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-kan-navy p-4">
+      <div className="w-full max-w-xs rounded-2xl bg-kan-white p-6 shadow-xl">
+        <KanLogo
+          variant="navy"
+          className="mx-auto mb-3 h-7 w-auto min-w-[80px]"
+        />
+        <h1 className="mb-1 text-center text-xl font-bold text-kan-navy">
+          Open till
+        </h1>
+        <p className="mb-6 text-center text-sm text-kan-navy/65">
           Cash you put in the box for change
         </p>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Opening float
+          <label className="mb-1 block text-sm font-semibold text-kan-navy">
+            Opening float (UGX)
           </label>
           <input
             type="text"
@@ -67,23 +74,26 @@ export default function ShiftOpenPage() {
               setFloat(raw);
             }}
             placeholder="0"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg text-center focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="ugx-amount w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-3 text-center text-lg font-bold text-kan-navy outline-none focus:border-kan-navy"
           />
           {parsed > 0 && (
-            <p className="text-sm text-gray-500 text-center mt-1">
+            <p className="ugx-amount mt-1.5 text-center text-sm font-semibold text-kan-navy/70">
               {ugx(parsed)}
             </p>
           )}
         </div>
 
         {error && (
-          <p className="text-red-600 text-sm text-center mb-3">{error}</p>
+          <p className="mb-3 text-center text-sm font-semibold text-red-600">
+            {error}
+          </p>
         )}
 
         <button
+          type="button"
           onClick={handleOpen}
           disabled={saving}
-          className="w-full rounded-lg bg-blue-600 py-3 text-white text-lg font-semibold active:bg-blue-700 disabled:opacity-50"
+          className="min-h-[48px] w-full rounded-xl bg-kan-navy py-3 text-base font-bold text-kan-white active:opacity-90 disabled:opacity-50"
         >
           {saving ? "Opening..." : "Open till"}
         </button>

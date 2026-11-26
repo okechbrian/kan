@@ -4,7 +4,7 @@ Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
 
-**Status:** Phases 0–4 plus **Phase 5 (12 Analytics Reports + CSV/Print, Online Store Order Inbox, Bookings, Production, Notifications, Billing & Settings)** complete per **[KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md)**. Next: **Phase 6 (Offline Till Reskin & Multi-Shop Sync Sign-Off)**. See [HANDOFF.md](HANDOFF.md) and [DECISIONS.md](DECISIONS.md) D48–D50.
+**Status:** Phases 0–5 plus **Phase 6 (Offline Till Kan Brand Reskin, 80mm Thermal Receipts with Black `KanLogo`, & Multi-Shop Sync Sign-Off on Neon PostgreSQL)** complete per **[KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md)**. Next: **Phase 7 (Uganda Payments, AI Assistant & Launch Ops)**. See [HANDOFF.md](HANDOFF.md) and [DECISIONS.md](DECISIONS.md) D48–D50.
 
 **Live (temporary Vercel URL):** https://kan-sme.vercel.app · Repo: https://github.com/okechbrian/kan
 

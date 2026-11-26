@@ -14,8 +14,8 @@ Chat memory is not the source of truth. The `.md` files in this folder are.
 |---|---|
 | Product | Re-scoped to **Kan** platform (D40–D47); full scope in `KAN_SCOPE.md` |
 | Offline till (former Duuka Phases 1–5) | Done and signed off — 49 passing tests; engine preserved |
-| Thin sync (Phase 6) | Scaffolding exists (`sync-core.ts`, `/api/pair`, `/api/sync`, outbox), **not signed off** |
-| Current release | **Konna Parity Rebuild — Phase 5 (12 Analytics Reports, Store Inbox, Bookings, Production, Notifications, Billing & Settings) complete; ready for Phase 6 (Offline Till Reskin & Multi-Shop Sync Sign-Off)** |
+| Thin sync (Phase 6) | **Signed off** — live 2-device pair+push+pull and multi-shop tenant isolation verified against Neon PostgreSQL (`neon-blue-clock`) |
+| Current release | **Konna Parity Rebuild — Phase 6 (Offline Till Kan Brand Reskin, 80mm Black-Logo Receipts & Multi-Shop Sync Sign-Off) complete; ready for Phase 7 (Uganda Payments, AI Assistant & Launch Ops)** |
 | Git | `https://github.com/okechbrian/kan` (`main`) |
 | Brand / domain | Kan (a product of **Pwata Inc**); Navy `#070D35` / Teal `#42DFD1` / Guava `#FF806B` / Soft White `#FAFAFF`; `NEXT_PUBLIC_SITE_URL` on Vercel Hobby |
 | Master plan | [KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md) — Phase 0 (Housekeeping), Phase 1 (Brand & UI Kit), Phase 2 (14-page Public Site), Phase 3 (Supabase Cloud & Auth), Phase 4–7 (Dashboard, Reports, Till Reskin, Payments/AI) |

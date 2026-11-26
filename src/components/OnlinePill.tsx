@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CloudOff, RefreshCw, Wifi } from "lucide-react";
 import { isOnline, syncNow, getDeviceToken } from "../lib/sync";
 
-export function OnlinePill() {
+export function OnlinePill({ onDark = false }: { onDark?: boolean }) {
   const [online, setOnline] = useState(true);
   const [hasToken, setHasToken] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -34,9 +35,7 @@ export function OnlinePill() {
     try {
       const result = await syncNow();
       if (result.pushed > 0 || result.pulled > 0) {
-        setLastSync(
-          `Pushed ${result.pushed}, pulled ${result.pulled}`
-        );
+        setLastSync(`Pushed ${result.pushed}, pulled ${result.pulled}`);
       } else if (result.failed > 0) {
         setLastSync(`${result.failed} failed`);
       } else {
@@ -53,8 +52,15 @@ export function OnlinePill() {
 
   if (!hasToken) {
     return (
-      <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
-        Cloud not configured
+      <span
+        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+          onDark
+            ? "bg-white/15 text-kan-white/85"
+            : "bg-kan-navy/10 text-kan-navy/70"
+        }`}
+      >
+        <CloudOff className="h-3 w-3" />
+        Offline local
       </span>
     );
   }
@@ -62,23 +68,38 @@ export function OnlinePill() {
   return (
     <div className="flex items-center gap-1.5">
       <span
-        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
           online
-            ? "bg-green-100 text-green-700"
-            : "bg-red-100 text-red-700"
+            ? "bg-kan-teal text-kan-navy"
+            : "bg-kan-guava text-kan-navy"
         }`}
       >
+        {online ? (
+          <Wifi className="h-3 w-3" />
+        ) : (
+          <CloudOff className="h-3 w-3" />
+        )}
         {syncing ? "Syncing" : online ? "Synced" : "Offline"}
       </span>
       <button
+        type="button"
         onClick={handleSync}
         disabled={syncing || !online}
-        className="text-xs text-blue-600 underline disabled:opacity-50"
+        className={`inline-flex min-h-[28px] items-center gap-1 rounded-md px-1.5 text-[11px] font-semibold underline disabled:opacity-50 ${
+          onDark ? "text-kan-teal" : "text-kan-navy"
+        }`}
       >
+        <RefreshCw className={`h-3 w-3 ${syncing ? "animate-spin" : ""}`} />
         {syncing ? "Syncing..." : "Sync"}
       </button>
       {lastSync && (
-        <span className="text-xs text-gray-500">{lastSync}</span>
+        <span
+          className={`text-[11px] ${
+            onDark ? "text-kan-white/80" : "text-kan-navy/65"
+          }`}
+        >
+          {lastSync}
+        </span>
       )}
     </div>
   );

@@ -1,9 +1,22 @@
 import { NextResponse } from "next/server";
-import { APPEND_TABLES, CATALOG_TABLES, PRISMA_DELEGATE } from "../../../lib/sync-core";
+import {
+  APPEND_TABLES,
+  CATALOG_TABLES,
+  PRISMA_DELEGATE,
+} from "../../../lib/sync-core";
+
+const SHOP_SCOPED_TABLES = new Set([
+  "products",
+  "customers",
+  "shifts",
+  "sales",
+  "stock_movements",
+  "deni_ledger",
+  "cash_movements",
+]);
 
 async function getPrisma() {
   try {
-
     const { PrismaClient } = require("@prisma/client");
     return new PrismaClient();
   } catch {
@@ -37,10 +50,13 @@ function delegate(
 async function verifyToken(
   prisma: NonNullable<Awaited<ReturnType<typeof getPrisma>>>,
   token: string
-): Promise<{ shopId: string } | null> {
-  const device = await prisma.device.findUnique({ where: { token } });
-  if (!device) return null;
-  return { shopId: device.shop_id };
+): Promise<{ shopId: string; businessId: string } | null> {
+  const device = await prisma.device.findUnique({
+    where: { token },
+    include: { shop: { select: { business_id: true } } },
+  });
+  if (!device || !device.shop) return null;
+  return { shopId: device.shop_id, businessId: device.shop.business_id };
 }
 
 export async function GET(req: Request) {
@@ -69,15 +85,11 @@ export async function GET(req: Request) {
         ? new Date(sinceRaw)
         : null;
 
-    const shopId = identity.shopId;
+    const { shopId, businessId } = identity;
     const rows: Record<string, unknown[]> = {};
 
-    const timeWhere = sinceDate
-      ? { created_at: { gt: sinceDate } }
-      : {};
-    const updatedWhere = sinceDate
-      ? { updated_at: { gt: sinceDate } }
-      : {};
+    const timeWhere = sinceDate ? { created_at: { gt: sinceDate } } : {};
+    const updatedWhere = sinceDate ? { updated_at: { gt: sinceDate } } : {};
 
     rows.products = await prisma.product.findMany({
       where: { shop_id: shopId, ...updatedWhere },
@@ -86,7 +98,10 @@ export async function GET(req: Request) {
       where: { shop_id: shopId },
     });
     rows.users = await prisma.user.findMany({
-      where: { OR: [{ shop_id: shopId }, { shop_id: null }] },
+      where: {
+        business_id: businessId,
+        OR: [{ shop_id: shopId }, { shop_id: null }],
+      },
     });
     rows.shifts = await prisma.shift.findMany({
       where: { shop_id: shopId, ...timeWhere },
@@ -165,7 +180,39 @@ export async function POST(req: Request) {
       const model = delegate(p, table);
       if (!model || !row_id || !op) continue;
 
-      const data = { ...payload, id: row_id };
+      // Enforce multi-shop tenant isolation
+      if (SHOP_SCOPED_TABLES.has(table)) {
+        if (payload?.shop_id && payload.shop_id !== identity.shopId) {
+          continue;
+        }
+      }
+      if (table === "users") {
+        if (payload?.business_id && payload.business_id !== identity.businessId) {
+          continue;
+        }
+        if (payload?.shop_id && payload.shop_id !== identity.shopId) {
+          continue;
+        }
+      }
+      if (table === "sale_lines" || table === "tenders") {
+        const parentSaleId = payload?.sale_id;
+        if (!parentSaleId) continue;
+        const parentSale = await prisma.sale.findUnique({
+          where: { id: parentSaleId },
+          select: { shop_id: true },
+        });
+        if (!parentSale || parentSale.shop_id !== identity.shopId) {
+          continue;
+        }
+      }
+
+      const data: Record<string, unknown> = { ...payload, id: row_id };
+      if (SHOP_SCOPED_TABLES.has(table)) {
+        data.shop_id = identity.shopId;
+      }
+      if (table === "users") {
+        data.business_id = identity.businessId;
+      }
       if (table === "products") delete data.stock_qty;
       if (CATALOG_TABLES.has(table)) {
         data.server_updated_at = new Date();
@@ -173,6 +220,13 @@ export async function POST(req: Request) {
 
       try {
         if (op === "void" && table === "sales" && model.update) {
+          const existingSale = await prisma.sale.findUnique({
+            where: { id: row_id },
+            select: { shop_id: true },
+          });
+          if (!existingSale || existingSale.shop_id !== identity.shopId) {
+            continue;
+          }
           await model.update({
             where: { id: row_id },
             data: {
@@ -194,6 +248,14 @@ export async function POST(req: Request) {
         }
 
         if (model.upsert) {
+          if (SHOP_SCOPED_TABLES.has(table) && model.findUnique) {
+            const existing = (await model.findUnique({
+              where: { id: row_id },
+            })) as { shop_id?: string } | null;
+            if (existing && existing.shop_id !== identity.shopId) {
+              continue;
+            }
+          }
           await model.upsert({
             where: { id: row_id },
             create: data,

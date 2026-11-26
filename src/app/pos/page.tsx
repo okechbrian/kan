@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "../../lib/db";
 import { getSession } from "../../lib/session";
+import { KanLogo } from "../../components/brand/KanLogo";
 
 // This is the former `/` entry point. Marketing now lives at `/`.
 export default function PosEntry() {
@@ -36,8 +37,9 @@ export default function PosEntry() {
   }, [router]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-cream">
-      <p className="text-sm text-gray-500">Opening the till…</p>
+    <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-kan-white">
+      <KanLogo variant="navy" className="h-9 w-auto min-w-[80px]" />
+      <p className="text-sm font-medium text-kan-navy/65">Opening the till…</p>
     </main>
   );
 }

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { db } from "../../../lib/db";
 import { getSession, getCurrentUser } from "../../../lib/session";
 import { generateId } from "../../../lib/uuid";
+import { ugx } from "../../../lib/money";
 
 export default function DrawPage() {
   const router = useRouter();
@@ -54,7 +56,7 @@ export default function DrawPage() {
         created_at: new Date().toISOString(),
       });
 
-      setToast(`Drew ${amount.toLocaleString()}`);
+      setToast(`Drew ${ugx(amount)}`);
       setTimeout(() => router.push("/more"), 1500);
     } catch (err) {
       setToast(err instanceof Error ? err.message : "Failed");
@@ -65,13 +67,15 @@ export default function DrawPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3">
+    <main className="mx-auto min-h-screen max-w-[420px] bg-kan-white">
+      <header className="sticky top-0 z-20 bg-kan-navy px-4 py-3 text-kan-white shadow-sm">
         <div className="flex items-center justify-between">
           <button
+            type="button"
             onClick={() => router.back()}
-            className="text-blue-600 text-sm font-medium"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-kan-teal"
           >
+            <ArrowLeft className="h-4 w-4" />
             Back
           </button>
           <h1 className="text-lg font-bold">Owner draw</h1>
@@ -79,9 +83,9 @@ export default function DrawPage() {
         </div>
       </header>
 
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-sm font-semibold text-kan-navy">
             Amount (UGX)
           </label>
           <input
@@ -92,12 +96,12 @@ export default function DrawPage() {
               const raw = e.target.value.replace(/[^0-9]/g, "");
               setAmount(parseInt(raw, 10) || 0);
             }}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg text-center focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="ugx-amount w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-3 text-center text-lg font-bold text-kan-navy outline-none focus:border-kan-navy"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-sm font-semibold text-kan-navy">
             Reason
           </label>
           <input
@@ -105,11 +109,12 @@ export default function DrawPage() {
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="e.g. lunch, home"
-            className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="w-full rounded-xl border border-kan-navy/20 bg-white px-4 py-2.5 text-sm text-kan-navy outline-none focus:border-kan-navy"
           />
         </div>
 
         <button
+          type="button"
           onClick={handleDraw}
           disabled={
             !Number.isInteger(amount) ||
@@ -117,14 +122,14 @@ export default function DrawPage() {
             !reason.trim() ||
             saving
           }
-          className="w-full rounded-lg bg-red-600 py-3 text-white text-lg font-semibold active:bg-red-700 disabled:opacity-50 disabled:bg-gray-300"
+          className="min-h-[48px] w-full rounded-xl bg-kan-guava py-3 text-base font-bold text-kan-navy disabled:bg-kan-navy/20 disabled:text-kan-navy/50"
         >
           {saving ? "Recording..." : "Draw from till"}
         </button>
       </div>
 
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 font-medium">
+        <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-kan-navy px-4 py-2 text-sm font-bold text-kan-teal shadow-lg">
           {toast}
         </div>
       )}
