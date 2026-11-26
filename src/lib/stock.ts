@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { generateId } from "./uuid";
 import { requireOwner } from "./session";
+import { syncNow } from "./sync";
 
 export type ReceiveLineInput = {
   productId: string;
@@ -15,16 +16,16 @@ export async function receiveStock(opts: {
   supplier?: string;
 }): Promise<{ receiveId: string }> {
   const { shopId, userId, lines, supplier } = opts;
-  await requireOwner(userId);
+  await requireOwner(userId, shopId);
 
   if (lines.length === 0) {
     throw new Error("Add at least one product");
   }
   for (const line of lines) {
-    if (!Number.isInteger(line.qty) || line.qty <= 0) {
+    if (!Number.isSafeInteger(line.qty) || line.qty <= 0) {
       throw new Error("Quantity must be a positive integer");
     }
-    if (!Number.isInteger(line.unitCost) || line.unitCost < 0) {
+    if (!Number.isSafeInteger(line.unitCost) || line.unitCost < 0) {
       throw new Error("Unit cost must be an integer");
     }
   }
@@ -60,6 +61,7 @@ export async function receiveStock(opts: {
     }
   });
 
+  void syncNow();
   return { receiveId };
 }
 
@@ -71,24 +73,20 @@ export async function adjustStock(opts: {
   reason: string;
 }): Promise<void> {
   const { shopId, userId, productId, countedQty, reason } = opts;
-  await requireOwner(userId);
+  await requireOwner(userId, shopId);
 
-  if (!Number.isInteger(countedQty) || countedQty < 0) {
+  if (!Number.isSafeInteger(countedQty) || countedQty < 0) {
     throw new Error("Counted quantity must be a whole number");
   }
   if (!reason.trim()) {
     throw new Error("Reason is required");
   }
 
-  const product = await db.products.get(productId);
-  if (!product || product.shop_id !== shopId) {
-    throw new Error("Product not found");
-  }
-
-  const delta = countedQty - product.stock_qty;
   const now = new Date().toISOString();
-
   await db.transaction("rw", [db.stock_movements, db.products], async () => {
+    const product = await db.products.get(productId);
+    if (!product || product.shop_id !== shopId) throw new Error("Product not found");
+    const delta = countedQty - product.stock_qty;
     await db.stock_movements.add({
       id: generateId(),
       shop_id: shopId,
@@ -107,4 +105,5 @@ export async function adjustStock(opts: {
         p.stock_qty = countedQty;
       });
   });
+  void syncNow();
 }

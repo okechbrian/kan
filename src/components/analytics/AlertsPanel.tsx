@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows } from "../../lib/dashboard/access";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { db } from "../../lib/db";
@@ -16,10 +18,10 @@ export function AlertsPanel() {
   useEffect(() => {
     async function load() {
       const [allProducts, allBatches, allCustomers, sales] = await Promise.all([
-        db.products.toArray(),
-        db.batches.toArray(),
-        db.customers.toArray(),
-        db.sales.toArray(),
+        ownerRows(db.products),
+        ownerRows(db.batches),
+        ownerRows(db.customers),
+        ownerRows(db.sales),
       ]);
       setProducts(
         allProducts.map((product) => ({

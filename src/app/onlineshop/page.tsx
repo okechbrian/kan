@@ -25,28 +25,28 @@ const HIGHLIGHTS = [
     title: "Auto-hides expired & out-of-stock",
     description:
       "Expired batches and unavailable items are automatically filtered out of your customer storefront.",
-    state: "now" as const,
+    state: "soon" as const,
   },
   {
     icon: <Share2 className="h-5 w-5" />,
     title: "WhatsApp & social sharing",
     description:
       "Generate ready-to-share product cards and links for WhatsApp status, Instagram and Facebook.",
-    state: "now" as const,
+    state: "soon" as const,
   },
   {
     icon: <Bell className="h-5 w-5" />,
     title: "7 automatic shop alerts",
     description:
       "Low stock, close-to-expiry items, deni overdue balances, new orders, staff activity, top/slow movers and shift summaries.",
-    state: "now" as const,
+    state: "soon" as const,
   },
   {
     icon: <FileText className="h-5 w-5" />,
     title: "Digital receipts & creditor invoices",
     description:
       "Share clean black-ink printable or digital receipts and send invoices to deni customers for collection.",
-    state: "now" as const,
+    state: "soon" as const,
   },
 ];
 
@@ -63,7 +63,7 @@ export default function OnlineShopPage() {
             </h1>
             <p className="mt-4 text-base leading-relaxed text-navy/75">
               Set up your shop catalogue once, sell at the physical counter offline, and
-              let online buyers browse and order from the exact same inventory.
+              preview your catalogue on this device. Public browsing and online ordering are coming soon.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="/shop/demo-duuka" className="btn-primary">

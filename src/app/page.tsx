@@ -84,7 +84,7 @@ const CORE_MODULES = [
     title: "Social Store",
     description:
       "Share products straight to WhatsApp and social channels with integer UGX pricing and direct order links.",
-    state: "now" as const,
+    state: "soon" as const,
     href: "/onlineshop",
   },
   {

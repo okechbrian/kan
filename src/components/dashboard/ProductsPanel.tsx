@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { Copy, Globe, PackagePlus, Upload } from "lucide-react";
@@ -22,7 +24,7 @@ export function ProductsPanel() {
   const [feedback, setFeedback] = useState("");
 
   async function load() {
-    const [shops, items] = await Promise.all([db.shops.toArray(), db.products.toArray()]);
+    const [shops, items] = await Promise.all([ownerRows(db.shops), ownerRows(db.products)]);
     setShopId(shops[0]?.id ?? "default-shop");
     setProducts(items.sort((a, b) => a.name.localeCompare(b.name)));
   }
@@ -33,6 +35,7 @@ export function ProductsPanel() {
 
   async function handleAdd(event: FormEvent) {
     event.preventDefault();
+    const actor = await ownerContext(shopId);
     setFeedback("");
     const buyVal = Number(buying || "0");
     const sellVal = Number(selling);
@@ -47,6 +50,7 @@ export function ProductsPanel() {
     }
     const id = generateId();
     const now = new Date().toISOString();
+    await db.transaction("rw", [db.products, db.stock_movements], async () => {
     await db.products.add({
       id,
       shop_id: shopId,
@@ -71,11 +75,12 @@ export function ProductsPanel() {
         type: "receive",
         qty_delta: qtyVal,
         reason: "Opening stock from dashboard",
-        user_id: "dashboard",
+        user_id: actor.userId,
         created_at: now,
         ref_id: id,
       });
     }
+    });
     setName("");
     setBuying("");
     setSelling("");
@@ -86,6 +91,7 @@ export function ProductsPanel() {
   }
 
   async function togglePublish(product: Product) {
+    await ownerContext(shopId);
     const next = !(product.published_online ?? true);
     await db.products.update(product.id, { published_online: next });
     await load();

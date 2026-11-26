@@ -65,7 +65,7 @@ describe("Shift", () => {
       status: "open",
     });
 
-    const result = await closeShift({ shiftId, countedCash: 48000 });
+    const result = await closeShift({ shiftId, userId: user.id, countedCash: 48000 });
     expect(result.expected).toBe(50000);
     expect(result.variance).toBe(-2000);
 
@@ -114,7 +114,7 @@ describe("Shift", () => {
     });
 
     expect(await expectedCash(shiftId)).toBe(120000);
-    const closed = await closeShift({ shiftId, countedCash: 120000 });
+    const closed = await closeShift({ shiftId, userId: user.id, countedCash: 120000 });
     expect(closed.variance).toBe(0);
   });
 
@@ -135,8 +135,8 @@ describe("Shift", () => {
       variance: null,
       status: "open",
     });
-    await closeShift({ shiftId, countedCash: 0 });
-    await expect(closeShift({ shiftId, countedCash: 0 })).rejects.toThrow(
+    await closeShift({ shiftId, userId: user.id, countedCash: 0 });
+    await expect(closeShift({ shiftId, userId: user.id, countedCash: 0 })).rejects.toThrow(
       "Till is not open"
     );
   });

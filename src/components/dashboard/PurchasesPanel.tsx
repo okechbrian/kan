@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { Truck } from "lucide-react";
 import { db, type PurchaseRecord, type SupplierRecord } from "../../lib/db";
@@ -23,9 +25,9 @@ export function PurchasesPanel() {
 
   async function load() {
     const [shops, pRows, sRows] = await Promise.all([
-      db.shops.toArray(),
-      db.purchases.toArray(),
-      db.suppliers.toArray(),
+      ownerRows(db.shops),
+      ownerRows(db.purchases),
+      ownerRows(db.suppliers),
     ]);
     setShopId(shops[0]?.id ?? "default-shop");
     setPurchases(pRows.sort((a, b) => b.created_at.localeCompare(a.created_at)));
@@ -38,6 +40,7 @@ export function PurchasesPanel() {
 
   async function handleRecord(event: FormEvent) {
     event.preventDefault();
+    await ownerContext(shopId);
     setFeedback("");
     const qtyVal = Number(qty);
     const costVal = Number(unitCost);

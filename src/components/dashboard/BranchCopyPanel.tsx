@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Copy } from "lucide-react";
@@ -14,7 +16,7 @@ export function BranchCopyPanel() {
   const [status, setStatus] = useState("");
 
   async function load() {
-    const [shopRows, productRows] = await Promise.all([db.shops.toArray(), db.products.toArray()]);
+    const [shopRows, productRows] = await Promise.all([ownerRows(db.shops, true), ownerRows(db.products, true)]);
     setShops(shopRows);
     setProducts(productRows);
     if (shopRows[0]) setFromShopId((cur) => cur || shopRows[0].id);
@@ -35,7 +37,9 @@ export function BranchCopyPanel() {
       : [];
 
   async function handleCopy() {
+    await ownerContext();
     if (plan.length === 0) return;
+    if (!shops.some((shop) => shop.id === toShopId) || !shops.some((shop) => shop.id === fromShopId)) throw new Error("Shop access denied");
     await db.products.bulkAdd(plan);
     setStatus(`Copied ${plan.length} products with opening quantity 0.`);
     await load();

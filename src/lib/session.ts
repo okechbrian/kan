@@ -21,7 +21,9 @@ export async function getCurrentUser(): Promise<{
   const session = getSession();
   if (!session) return null;
   const user = await db.users.get(session.userId);
-  if (!user || !user.active) return null;
+  const shop = await db.shops.get(session.shopId);
+  if (!user || !user.active || !shop?.active || user.business_id !== shop.business_id ||
+      (user.role !== "owner" && user.shop_id !== shop.id)) return null;
   return {
     userId: session.userId,
     shopId: session.shopId,
@@ -30,11 +32,27 @@ export async function getCurrentUser(): Promise<{
   };
 }
 
-export async function requireOwner(userId: string): Promise<void> {
+export async function requireOwner(userId: string, shopId?: string): Promise<void> {
   const user = await db.users.get(userId);
-  if (!user || user.role !== "owner") {
+  if (!user?.active || user.role !== "owner") {
     throw new Error("Owner only");
   }
+  if (shopId) await requireShopUser(userId, shopId);
+}
+
+export async function requireShopUser(userId: string, shopId: string) {
+  const [user, shop] = await Promise.all([db.users.get(userId), db.shops.get(shopId)]);
+  if (!user?.active || !shop?.active || user.business_id !== shop.business_id ||
+      (user.role !== "owner" && user.shop_id !== shopId)) throw new Error("Shop access denied");
+  return user;
+}
+
+export async function requireOpenShift(shopId: string, shiftId: string, userId: string) {
+  const user = await requireShopUser(userId, shopId);
+  const shift = await db.shifts.get(shiftId);
+  if (!shift || shift.shop_id !== shopId || shift.status !== "open" ||
+      (user.role !== "owner" && shift.user_id !== userId)) throw new Error("Till is not open");
+  return shift;
 }
 
 export async function setSession(
@@ -47,10 +65,12 @@ export async function setSession(
   if (user) {
     localStorage.setItem(ROLE_KEY, user.role);
   }
+  window.dispatchEvent(new Event("kan-session"));
 }
 
 export function clearSession(): void {
   localStorage.removeItem(USER_KEY);
   localStorage.removeItem(SHOP_KEY);
   localStorage.removeItem(ROLE_KEY);
+  window.dispatchEvent(new Event("kan-session"));
 }

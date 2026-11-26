@@ -8,32 +8,24 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const [resetToken, setResetToken] = useState("");
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setBusy(true);
     setMessage("");
-    setResetToken("");
     try {
       const res = await fetch("/api/platform/password/forgot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = (await res.json().catch(() => ({}))) as {
-        ok?: boolean;
-        resetToken?: string;
-        error?: string;
-      };
       if (!res.ok) {
         setMessage("Enter a valid account email address.");
         return;
       }
       setMessage(
-        "If an account exists for that email, a reset token has been generated (valid for 1 hour).",
+        "If the account exists, a reset email has been queued. Email delivery must be configured; contact support if it does not arrive.",
       );
-      if (data.resetToken) setResetToken(data.resetToken);
     } catch {
       setMessage("Could not reach the server. Check your connection.");
     } finally {
@@ -66,20 +58,6 @@ export default function ForgotPasswordPage() {
         {message ? (
           <div className="space-y-2 rounded-xl bg-teal-soft p-3 text-xs font-semibold text-navy">
             <p>{message}</p>
-            {resetToken ? (
-              <div className="rounded-lg bg-white p-2.5 text-navy">
-                <p className="text-[11px] text-navy/65">
-                  SMTP is not yet configured — use this one-time token to continue:
-                </p>
-                <p className="mt-1 break-all font-mono text-xs">{resetToken}</p>
-                <Link
-                  href={`/app/reset-password?token=${encodeURIComponent(resetToken)}`}
-                  className="mt-2 inline-block font-bold underline"
-                >
-                  Continue to reset password →
-                </Link>
-              </div>
-            ) : null}
           </div>
         ) : null}
 

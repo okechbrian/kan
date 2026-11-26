@@ -88,7 +88,7 @@ const GROUPS = [
         icon: <Globe className="h-5 w-5" />,
         title: "Online store",
         description:
-          "Shareable storefront preview synced with stock; real buyer checkout completes once cloud sync is enabled.",
+          "Owner-only catalogue preview on this device; public storefronts and buyer checkout are coming soon.",
         state: "soon" as const,
         href: "/onlineshop",
       },

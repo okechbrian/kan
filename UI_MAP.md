@@ -4,7 +4,9 @@ This file has two parts:
 - **Part A (R1, new):** Kan public site + dashboard shell. These are the screens to build now.
 - **Part B (preserved):** the offline till screens. Unchanged except the brand name in copy; reused from R3 onward.
 
-Full scope: `KAN_SCOPE.md`. Decisions: `DECISIONS.md` D40–D47.
+Full scope: `KAN_SCOPE.md`. Decisions: `DECISIONS.md` D40–D51.
+
+**Current D51 correction:** local dashboard books require an active owner PIN and are scoped to the selected shop. Storefront links are owner-only local previews, not public ordering. `/api/store/orders` returns 503 without creating an order. Cash expenses require an open shift and reduce expected till cash. JSON backups include every business table; restoring requires an owner and clears cloud pairing credentials.
 
 ---
 

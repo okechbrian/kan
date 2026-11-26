@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { generateId } from "./uuid";
-import { requireOwner } from "./session";
+import { requireOwner, requireOpenShift, getSession } from "./session";
+import { syncNow } from "./sync";
 
 export async function recordDraw(opts: {
   shopId: string;
@@ -12,29 +13,20 @@ export async function recordDraw(opts: {
   const { shopId, shiftId, userId, amount, reason } = opts;
   await requireOwner(userId);
 
-  if (!Number.isInteger(amount) || amount <= 0) {
+  if (!Number.isSafeInteger(amount) || amount <= 0) {
     throw new Error("Amount must be a positive integer");
   }
   if (!reason.trim()) {
     throw new Error("Reason is required");
   }
 
-  const shift = await db.shifts.get(shiftId);
-  if (!shift || shift.shop_id !== shopId || shift.status !== "open") {
-    throw new Error("Till is not open");
-  }
-
   const id = generateId();
-  await db.cash_movements.add({
-    id,
-    shop_id: shopId,
-    shift_id: shiftId,
-    type: "draw",
-    amount,
-    reason: reason.trim(),
-    user_id: userId,
-    created_at: new Date().toISOString(),
+  await db.transaction("rw", [db.shifts, db.shops, db.users, db.cash_movements], async () => {
+    await requireOwner(userId, shopId);
+    await requireOpenShift(shopId, shiftId, userId);
+    await db.cash_movements.add({ id, shop_id: shopId, shift_id: shiftId, type: "draw", amount, reason: reason.trim(), user_id: userId, created_at: new Date().toISOString() });
   });
+  void syncNow();
   return { id };
 }
 
@@ -133,33 +125,38 @@ export async function shiftCashBreakdown(shiftId: string): Promise<{
   };
 }
 
-export async function closeShift(opts: {
-  shiftId: string;
-  countedCash: number;
-}): Promise<{ expected: number; variance: number }> {
-  const { shiftId, countedCash } = opts;
-  if (!Number.isInteger(countedCash) || countedCash < 0) {
-    throw new Error("Counted cash must be a whole number");
-  }
+export async function closeShift(opts: { shiftId: string; countedCash: number; userId?: string }): Promise<{ expected: number; variance: number }> {
+  if (!Number.isSafeInteger(opts.countedCash) || opts.countedCash < 0) throw new Error("Counted cash must be a whole number");
+  const result = await db.transaction("rw", [db.shifts, db.sales, db.tenders, db.cash_movements, db.users, db.shops], async () => {
+    const shift = await db.shifts.get(opts.shiftId);
+    if (!shift) throw new Error("Shift not found");
+    const actor = opts.userId ?? getSession()?.userId;
+    if (!actor) throw new Error("Unlock the till first");
+    await requireOpenShift(shift.shop_id, shift.id, actor);
+    const expected = await expectedCash(shift.id);
+    const variance = opts.countedCash - expected;
+    await db.shifts.update(shift.id, { closed_at: new Date().toISOString(), counted_cash: opts.countedCash, expected_cash: expected, variance, status: "closed" });
+    return { expected, variance };
+  });
+  void syncNow();
+  return result;
+}
 
-  const shift = await db.shifts.get(shiftId);
-  if (!shift) throw new Error("Shift not found");
-  if (shift.status !== "open") throw new Error("Till is not open");
-
-  const expected = await expectedCash(shiftId);
-  const variance = countedCash - expected;
-  const now = new Date().toISOString();
-
-  await db.shifts
-    .where("id")
-    .equals(shiftId)
-    .modify((s) => {
-      s.closed_at = now;
-      s.counted_cash = countedCash;
-      s.expected_cash = expected;
-      s.variance = variance;
-      s.status = "closed";
-    });
-
-  return { expected, variance };
+/** Cash expenses post to both the expense journal and the active till exactly once. */
+export async function recordExpense(opts: { shopId: string; userId: string; category: string; amount: number; description: string; method: "cash" | "mtn_momo" | "airtel_money" }) {
+  if (!Number.isSafeInteger(opts.amount) || opts.amount <= 0) throw new Error("Amount must be a positive integer");
+  if (!opts.category.trim() || !["cash", "mtn_momo", "airtel_money"].includes(opts.method)) throw new Error("Select an expense category and payment method");
+  const id = generateId();
+  await db.transaction("rw", [db.expenses, db.cash_movements, db.shifts, db.users, db.shops], async () => {
+    await requireOwner(opts.userId, opts.shopId);
+    const now = new Date().toISOString();
+    if (opts.method === "cash") {
+      const shift = await db.shifts.where("[shop_id+status]").equals([opts.shopId, "open"]).first();
+      if (!shift) throw new Error("Open the till before recording a cash expense");
+      await db.cash_movements.add({ id, shop_id: opts.shopId, shift_id: shift.id, type: "expense", amount: opts.amount, reason: `${opts.category}: ${opts.description}`, user_id: opts.userId, created_at: now });
+    }
+    await db.expenses.add({ id, shop_id: opts.shopId, category: opts.category, amount: opts.amount, description: opts.description, user_id: opts.userId, incurred_at: now });
+  });
+  void syncNow();
+  return { id };
 }

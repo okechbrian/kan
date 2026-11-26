@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { Settings } from "lucide-react";
@@ -15,7 +17,7 @@ export function SettingsPanel() {
 
   useEffect(() => {
     async function load() {
-      const shops = await db.shops.toArray();
+      const shops = await ownerRows(db.shops);
       const first = shops[0] ?? null;
       setShop(first);
       if (first) {
@@ -28,6 +30,7 @@ export function SettingsPanel() {
 
   async function handleSave(event: FormEvent) {
     event.preventDefault();
+    await ownerContext();
     if (!shop) return;
     await db.shops.update(shop.id, {
       name: name.trim() || shop.name,

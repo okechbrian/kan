@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { Factory } from "lucide-react";
 import { db, type ProductionRunRecord } from "../../lib/db";
@@ -21,8 +23,8 @@ export function ProductionPanel() {
 
   async function load() {
     const [shops, rows] = await Promise.all([
-      db.shops.toArray(),
-      db.production_runs.toArray(),
+      ownerRows(db.shops),
+      ownerRows(db.production_runs),
     ]);
     setShopId(shops[0]?.id ?? "default-shop");
     setRuns(rows.sort((a, b) => b.created_at.localeCompare(a.created_at)));
@@ -34,6 +36,7 @@ export function ProductionPanel() {
 
   async function handleAdd(event: FormEvent) {
     event.preventDefault();
+    await ownerContext(shopId);
     setFeedback("");
     const qtyVal = Number(qtyProduced);
     const costVal = Number(costUgx || "0");

@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { Warehouse as WarehouseIcon } from "lucide-react";
@@ -17,9 +19,9 @@ export function WarehousePanel() {
 
   async function load() {
     const [shops, wRows, tRows] = await Promise.all([
-      db.shops.toArray(),
-      db.warehouses.toArray(),
-      db.stock_transfers.toArray(),
+      ownerRows(db.shops),
+      ownerRows(db.warehouses),
+      ownerRows(db.stock_transfers),
     ]);
     setShopId(shops[0]?.id ?? "default-shop");
     setWarehouses(wRows);
@@ -32,6 +34,7 @@ export function WarehousePanel() {
 
   async function handleAdd(event: FormEvent) {
     event.preventDefault();
+    await ownerContext(shopId);
     setFeedback("");
     if (!name.trim()) {
       setFeedback("Warehouse name is required.");

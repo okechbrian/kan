@@ -1,4 +1,5 @@
 /** Pure sync rules (no Dexie, no Prisma) so tests can hit the spec. */
+import { SYNC_TABLE_SET } from "./sync-tables";
 
 export const APPEND_TABLES = new Set([
   "sales",
@@ -7,7 +8,6 @@ export const APPEND_TABLES = new Set([
   "stock_movements",
   "deni_ledger",
   "cash_movements",
-  "shifts",
 ]);
 
 export const CATALOG_TABLES = new Set([
@@ -15,7 +15,6 @@ export const CATALOG_TABLES = new Set([
   "customers",
   "users",
   "shops",
-  "businesses",
 ]);
 
 export type Mutation = {
@@ -44,6 +43,7 @@ export function emptyStore(): Store {
 
 /** First-write-wins for append-only; LWW for catalog. Never copy stock_qty. */
 export function applyMutation(store: Store, m: Mutation): boolean {
+  if (!SYNC_TABLE_SET.has(m.table)) return false;
   if (!store[m.table]) store[m.table] = new Map();
   const table = store[m.table];
   const payload: Record<string, unknown> = { ...m.payload, id: m.row_id };
@@ -87,7 +87,6 @@ export const PRISMA_DELEGATE: Record<string, string> = {
   customers: "customer",
   users: "user",
   shops: "shop",
-  businesses: "business",
   shifts: "shift",
   sales: "sale",
   sale_lines: "saleLine",
@@ -95,5 +94,4 @@ export const PRISMA_DELEGATE: Record<string, string> = {
   stock_movements: "stockMovement",
   deni_ledger: "deniLedger",
   cash_movements: "cashMovement",
-  devices: "device",
 };

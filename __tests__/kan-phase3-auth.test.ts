@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { hashPassword } from "../src/lib/platform/password";
@@ -144,11 +144,13 @@ describe("Kan Phase 3 — password reset, branch quotas & routes", () => {
       password: "old-strong-password",
     });
 
+    const notification = vi.spyOn(store, "createNotification");
     const resetReq = await service.requestPasswordReset({ email: "owner@kiwafu.ug" });
     expect(resetReq.ok).toBe(true);
-    expect(resetReq.resetToken).toBeTruthy();
-
-    const token = resetReq.resetToken as string;
+    expect(resetReq).not.toHaveProperty("resetToken");
+    const delivered = notification.mock.calls[0][0].body;
+    const token = new URL(delivered.split(" ").at(-1)!).searchParams.get("token")!;
+    expect(token).toBeTruthy();
     await service.resetPassword({ token, password: "new-strong-password" });
 
     // Old session must be revoked

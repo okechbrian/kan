@@ -5,7 +5,7 @@
 
 Read with: `KAN_SCOPE.md`, `LOCKED_PLAN.md`, `DECISIONS.md`, `DOMAIN.md`, `UI_MAP.md`, `SYNC.md`, `AGENTS.md`.
 
-Builder agent: implement **one release at a time**. Do not scaffold R2 while R1 fails.
+Builder agent: implement **one release at a time**. Current work is D51 audit remediation of existing code; the R0/R1-only builder commands below are historical and do not prohibit these fixes. New releases remain gated.
 
 ---
 

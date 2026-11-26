@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "../../lib/db";
 import { setSession } from "../../lib/session";
-import { setDeviceToken } from "../../lib/sync";
+import { bindDeviceShop, setDeviceToken } from "../../lib/sync";
 import { hashPin } from "../../lib/pin";
 import { generateId } from "../../lib/uuid";
 import { KanLogo } from "../../components/brand/KanLogo";
@@ -135,6 +135,7 @@ export default function SetupPage() {
 
       await setSession(user.id, shop.id);
       setDeviceToken(token);
+      bindDeviceShop(shop.id);
       setShopCode(shop.shop_code);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create shop");
@@ -242,6 +243,7 @@ export default function SetupPage() {
 
       await setSession(user.id, shop.id);
       setDeviceToken(token);
+      bindDeviceShop(shop.id);
       router.push("/pin");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to join");

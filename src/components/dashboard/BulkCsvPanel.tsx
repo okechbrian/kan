@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Upload } from "lucide-react";
@@ -26,6 +28,7 @@ export function BulkCsvPanel() {
   }
 
   async function handleImport() {
+    const actor = await ownerContext();
     if (parsed.rows.length === 0) {
       setStatus("No valid rows to import.");
       return;
@@ -33,10 +36,11 @@ export function BulkCsvPanel() {
     setBusy(true);
     setStatus("");
     try {
-      const shops = await db.shops.toArray();
+      const shops = await ownerRows(db.shops);
       const shopId = shops[0]?.id ?? "default-shop";
       const now = new Date().toISOString();
 
+      await db.transaction("rw", [db.products, db.stock_movements], async () => {
       for (const row of parsed.rows) {
         const id = generateId();
         await db.products.add({
@@ -64,12 +68,13 @@ export function BulkCsvPanel() {
             type: "receive",
             qty_delta: row.stock_qty,
             reason: "Bulk CSV import",
-            user_id: "dashboard",
+            user_id: actor.userId,
             created_at: now,
             ref_id: id,
           });
         }
       }
+      });
       setStatus(`Imported ${parsed.rows.length} products into your shop.`);
     } finally {
       setBusy(false);

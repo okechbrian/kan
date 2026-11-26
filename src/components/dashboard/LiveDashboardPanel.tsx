@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AlertTriangle, BarChart3, CreditCard, DollarSign, ShoppingBag, Store } from "lucide-react";
@@ -20,14 +22,14 @@ export function LiveDashboardPanel() {
     async function load() {
       const [shops, sales, lines, tenders, expenses, products, batches, customers] =
         await Promise.all([
-          db.shops.toArray(),
-          db.sales.toArray(),
-          db.sale_lines.toArray(),
-          db.tenders.toArray(),
-          db.expenses.toArray(),
-          db.products.toArray(),
-          db.batches.toArray(),
-          db.customers.toArray(),
+          ownerRows(db.shops),
+          ownerRows(db.sales),
+          ownerRows(db.sale_lines),
+          ownerRows(db.tenders),
+          ownerRows(db.expenses),
+          ownerRows(db.products),
+          ownerRows(db.batches),
+          ownerRows(db.customers),
         ]);
 
       if (shops[0]?.name) setShopName(shops[0].name);

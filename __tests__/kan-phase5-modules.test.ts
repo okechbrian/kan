@@ -62,43 +62,13 @@ describe("Kan Phase 5 — 12 analytics reports, store orders, bookings & product
     expect(csv).toBe('Product,Price\n"Sugar, ""1kg""",5000\nSoap,3500');
   });
 
-  it("validates POST /api/store/orders and computes exact integer totals", async () => {
-    const bad = await storeOrderPost(
-      new Request("http://localhost/api/store/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: "", customerPhone: "1", items: [] }),
-      }),
-    );
-    expect(bad.status).toBe(400);
-
-    const ok = await storeOrderPost(
-      new Request("http://localhost/api/store/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: "demo-duuka",
-          customerPhone: "0791149592",
-          deliveryBand: "Entebbe Town",
-          deliveryFee: 5000,
-          items: [
-            { name: "Sugar 1kg", qty: 2, unitPrice: 5000 },
-            { name: "Bar soap", qty: 1, unitPrice: 3500 },
-          ],
-        }),
-      }),
-    );
-    expect(ok.status).toBe(201);
-    const data = (await ok.json()) as {
-      ok: boolean;
-      subtotal: number;
-      deliveryFee: number;
-      total: number;
-    };
-    expect(data.ok).toBe(true);
-    expect(data.subtotal).toBe(13500);
-    expect(data.deliveryFee).toBe(5000);
-    expect(data.total).toBe(18500);
+  it("rejects preview checkout honestly without fabricating an order", async () => {
+    const response = await storeOrderPost(new Request("http://localhost/api/store/orders", {method:"POST",body:JSON.stringify({slug:"demo-duuka",customerPhone:"0791149592",items:[{name:"Sugar",qty:2,unitPrice:1}],deliveryFee:0})}));
+    expect(response.status).toBe(503);
+    const body = await response.json();
+    expect(body.error).toBe("ordering_not_available");
+    expect(body).not.toHaveProperty("orderId");
+    expect(body).not.toHaveProperty("ok", true);
   });
 
   it("persists Dexie v4 tables (bookings, production_runs, store_orders)", async () => {

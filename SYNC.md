@@ -4,6 +4,18 @@ The owner watches from a **laptop** while attendants sell on **phones**, possibl
 
 This is **not** a public multi-tenant SaaS (no billing, no self-serve empire). It is **one business**, many shops, each till offline-first. See `LOCKED_PLAN.md`.
 
+## Current protocol correction — D51 (2026-11-26)
+
+- Protocol v2 uses an explicit table allowlist. Device tokens, businesses and accounts cannot be created or changed through sync. Existing shop/user IDs and every referenced parent must belong to the paired shop/business.
+- The local DBCore outbox middleware saves business mutations and their outbox entries in one IndexedDB transaction. Projection-only stock/balance updates never upload stale catalogue rows. Catalogue edits carry changed-field patches.
+- Outbox sequence numbers preserve order even when writes share a timestamp. Bounded pushes preserve local transaction groups. A server batch commits atomically and returns acknowledged mutation IDs; HTTP 200 alone never marks rows synced.
+- Pulls use complete shop snapshots in a repeatable-read transaction, not timestamp deltas. This deliberately trades bandwidth for correctness while the thin-sync data set is small. Client application is atomic, skips unsent edits, recomputes stock and deni from movements/ledger, and advances its cursor only after commit.
+- Serializable push conflicts are retryable. A second distinct void reversal is rejected; replays of the same UUIDs are idempotent. Closed shifts are mutable state, not append-only events.
+- A till token remains bound to the shop paired at setup; changing the owner's local selected shop does not change token scope. Other shops' mutations remain pending until that shop is paired on a device.
+- Isolated Neon multi-client integration passed in D51, including cleanup assertions. Physical two-device field sign-off has not been repeated.
+
+## Original design (historical where superseded above)
+
 ## Principle
 
 1. Build the till **offline-first on one device** (phases 1–5).

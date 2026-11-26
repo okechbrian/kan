@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans } from "next/font/google";
 import { ServiceWorkerRegister } from "../components/pwa/ServiceWorkerRegister";
+import { SyncLifecycle } from "../components/pwa/SyncLifecycle";
 import "./globals.css";
 
 const notoSans = Noto_Sans({
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body>
         {children}
         <ServiceWorkerRegister />
+        <SyncLifecycle />
       </body>
     </html>
   );

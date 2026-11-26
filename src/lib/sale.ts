@@ -1,8 +1,9 @@
 import Dexie from "dexie";
 import { db } from "./db";
 import { generateId } from "./uuid";
-import { requireOwner } from "./session";
-import { queueAndMaybeSync } from "./sync";
+import { requireOwner, requireOpenShift } from "./session";
+import { syncNow } from "./sync";
+import { expectedCash } from "./till";
 
 export type SaleLineInput = {
   productId: string;
@@ -39,20 +40,20 @@ function validateSale(opts: RecordSaleOpts): number {
   }
 
   for (const line of lines) {
-    if (!Number.isInteger(line.qty) || line.qty <= 0) {
+    if (!Number.isSafeInteger(line.qty) || line.qty <= 0) {
       throw new Error("Quantity must be a positive integer");
     }
-    if (!Number.isInteger(line.unitPrice) || line.unitPrice < 0) {
+    if (!Number.isSafeInteger(line.unitPrice) || line.unitPrice < 0) {
       throw new Error("Unit price must be an integer");
     }
   }
 
   for (const tender of tenders) {
-    if (!Number.isInteger(tender.amount) || tender.amount <= 0) {
+    if (!Number.isSafeInteger(tender.amount) || tender.amount <= 0) {
       throw new Error("Tender amount must be a positive integer");
     }
     if (tender.method === "cash" && tender.amountTendered !== undefined) {
-      if (!Number.isInteger(tender.amountTendered)) {
+      if (!Number.isSafeInteger(tender.amountTendered)) {
         throw new Error("Amount tendered must be an integer");
       }
       if (tender.amountTendered < tender.amount) {
@@ -62,7 +63,7 @@ function validateSale(opts: RecordSaleOpts): number {
   }
 
   const total = lines.reduce((sum, line) => sum + line.unitPrice * line.qty, 0);
-  if (!Number.isInteger(total)) {
+  if (!Number.isSafeInteger(total)) {
     throw new Error("Sale total must be an integer");
   }
 
@@ -93,10 +94,10 @@ export async function recordSale(
     db.sale_lines,
     db.tenders,
     db.stock_movements,
-    db.products,
+    db.products, db.shifts, db.users, db.shops, db.customers,
   ];
   if (tenders.some((t) => t.method === "credit")) {
-    tables.push(db.deni_ledger, db.customers);
+    tables.push(db.deni_ledger);
   }
 
   const saleId = generateId();
@@ -124,12 +125,19 @@ export async function recordSale(
   }[] = [];
 
   await db.transaction("rw", tables, async () => {
-
+    await requireOpenShift(shopId, shiftId, userId);
+    const actor = await db.users.get(userId);
+    if (customerId) {
+      const customer = await db.customers.get(customerId);
+      if (!customer || customer.shop_id !== shopId) throw new Error("Customer not found");
+    }
     for (const line of lines) {
       const product = await db.products.get(line.productId);
-      if (!product) {
+      if (!product?.active || product.shop_id !== shopId) {
         throw new Error("Product not found");
       }
+
+      if (actor?.role !== "owner" && line.unitPrice !== product.selling_price) throw new Error("Owner only: price override");
 
       saleLines.push({
         id: generateId(),
@@ -174,7 +182,7 @@ export async function recordSale(
       const change = isCash
         ? (tender.amountTendered ?? tender.amount) - tender.amount
         : 0;
-      if (isCash) cashChange = change;
+      if (isCash) cashChange += change;
 
       await db.tenders.add({
         id: generateId(),
@@ -218,199 +226,63 @@ export async function recordSale(
     }
   });
 
-  const saleRow = await db.sales.get(saleId);
-
-  const queued: any[] = [
-    { table: "sales", row_id: saleId, op: "insert" as const, payload: saleRow },
-    ...saleLines.map((l) => ({
-      table: "sale_lines",
-      row_id: l.id,
-      op: "insert" as const,
-      payload: l,
-    })),
-    ...stockMovements.map((m) => ({
-      table: "stock_movements",
-      row_id: m.id,
-      op: "insert" as const,
-      payload: m,
-    })),
-  ];
-  const tenderRows = await db.tenders.where("sale_id").equals(saleId).toArray();
-  for (const t of tenderRows) {
-    queued.push({
-      table: "tenders",
-      row_id: t.id,
-      op: "insert",
-      payload: t,
-    });
-  }
-  void queueAndMaybeSync(queued);
-
+  void syncNow();
 
   return { saleId, total, change: cashChange };
 }
 
 export async function recordDeniCollection(opts: {
-  shopId: string;
-  shiftId: string;
-  userId: string;
-  customerId: string;
-  amount: number;
-  method: "cash" | "mtn_momo" | "airtel_money";
-  note?: string;
+  shopId: string; shiftId: string; userId: string; customerId: string;
+  amount: number; method: "cash" | "mtn_momo" | "airtel_money"; note?: string;
 }): Promise<{ entryId: string }> {
   const { shopId, shiftId, userId, customerId, amount, method, note } = opts;
-
-  if (!Number.isInteger(amount) || amount <= 0) {
-    throw new Error("Amount must be a positive integer");
-  }
-
-  const customer = await db.customers.get(customerId);
-  if (!customer) {
-    throw new Error("Customer not found");
-  }
-  if (amount > customer.balance) {
-    throw new Error("Amount is more than they owe");
-  }
-
-  const tables: Dexie.Table[] = [db.deni_ledger, db.customers];
-  if (method === "cash") {
-    tables.push(db.cash_movements);
-  }
-
+  if (!Number.isSafeInteger(amount) || amount <= 0) throw new Error("Amount must be a positive integer");
+  if (!["cash", "mtn_momo", "airtel_money"].includes(method)) throw new Error("Invalid collection method");
   const entryId = generateId();
   const now = new Date().toISOString();
-
-  await db.transaction("rw", tables, async () => {
-    await db.deni_ledger.add({
-      id: entryId,
-      shop_id: shopId,
-      customer_id: customerId,
-      type: "collection",
-      amount: -amount,
-      sale_id: "",
-      user_id: userId,
-      created_at: now,
-      note: note ?? "",
-    });
-
-    await db.customers
-      .where("id")
-      .equals(customerId)
-      .modify((c) => {
-        c.balance -= amount;
-      });
-
-    if (method === "cash") {
-      await db.cash_movements.add({
-        id: generateId(),
-        shop_id: shopId,
-        shift_id: shiftId,
-        type: "collection_cash",
-        amount,
-        reason: `Deni collection from ${customer.name}`,
-        user_id: userId,
-        created_at: now,
-      });
-    }
+  await db.transaction("rw", [db.deni_ledger, db.customers, db.cash_movements, db.users, db.shops, db.shifts], async () => {
+    await requireOpenShift(shopId, shiftId, userId);
+    const customer = await db.customers.get(customerId);
+    if (!customer || customer.shop_id !== shopId) throw new Error("Customer not found");
+    if (amount > customer.balance) throw new Error("Amount is more than they owe");
+    await db.deni_ledger.add({ id: entryId, shop_id: shopId, customer_id: customerId, type: "collection", amount: -amount, sale_id: "", user_id: userId, created_at: now, note: note ?? "" });
+    await db.customers.update(customerId, { balance: customer.balance - amount });
+    if (method === "cash") await db.cash_movements.add({ id: generateId(), shop_id: shopId, shift_id: shiftId, type: "collection_cash", amount, reason: `Deni collection from ${customer.name}`, user_id: userId, created_at: now });
   });
-
+  void syncNow();
   return { entryId };
 }
 
-export async function voidSale(opts: {
-  saleId: string;
-  reason: string;
-  userId: string;
-}): Promise<void> {
+export async function voidSale(opts: { saleId: string; reason: string; userId: string }): Promise<void> {
   const { saleId, reason, userId } = opts;
-
-  if (!reason.trim()) {
-    throw new Error("Void reason is required");
-  }
-
-  await requireOwner(userId);
-
-  const sale = await db.sales.get(saleId);
-  if (!sale) {
-    throw new Error("Sale not found");
-  }
-  if (sale.status === "voided") {
-    throw new Error("Sale is already voided");
-  }
-
-  const lines = await db.sale_lines
-    .where("sale_id")
-    .equals(saleId)
-    .toArray();
-
-  const tenders = await db.tenders
-    .where("sale_id")
-    .equals(saleId)
-    .toArray();
-
-  const hasCredit = tenders.some((t) => t.method === "credit");
-
-  const tables: Dexie.Table[] = [
-    db.sales,
-    db.stock_movements,
-    db.products,
-  ];
-  if (hasCredit) {
-    tables.push(db.deni_ledger, db.customers);
-  }
-
-  const now = new Date().toISOString();
-
-  await db.transaction("rw", tables, async () => {
-    await db.sales.where("id").equals(saleId).modify((s) => {
-      s.status = "voided";
-      s.void_reason = reason.trim();
-    });
-
+  if (!reason.trim()) throw new Error("Void reason is required");
+  await db.transaction("rw", [db.users, db.shops, db.sales, db.sale_lines, db.tenders, db.stock_movements, db.products, db.deni_ledger, db.customers, db.shifts, db.cash_movements], async () => {
+    const sale = await db.sales.get(saleId);
+    if (!sale) throw new Error("Sale not found");
+    await requireOwner(userId, sale.shop_id);
+    if (sale.status === "voided") throw new Error("Sale is already voided");
+    const lines = await db.sale_lines.where("sale_id").equals(saleId).toArray();
+    const tenders = await db.tenders.where("sale_id").equals(saleId).toArray();
+    const now = new Date().toISOString();
+    await db.sales.update(saleId, { status: "voided", void_reason: reason.trim() });
     for (const line of lines) {
-      await db.stock_movements.add({
-        id: generateId(),
-        shop_id: sale.shop_id,
-        product_id: line.product_id,
-        type: "void",
-        qty_delta: line.qty,
-        reason: reason.trim(),
-        user_id: userId,
-        created_at: now,
-        ref_id: saleId,
-      });
-
-      await db.products
-        .where("id")
-        .equals(line.product_id)
-        .modify((p) => {
-          p.stock_qty += line.qty;
-        });
+      const product = await db.products.get(line.product_id);
+      if (!product || product.shop_id !== sale.shop_id) throw new Error("Product not found");
+      await db.stock_movements.add({ id: generateId(), shop_id: sale.shop_id, product_id: line.product_id, type: "void", qty_delta: line.qty, reason: reason.trim(), user_id: userId, created_at: now, ref_id: saleId });
+      await db.products.update(product.id, { stock_qty: product.stock_qty + line.qty });
     }
-
-    if (hasCredit && sale.customer_id) {
-      const creditTender = tenders.find((t) => t.method === "credit");
-      if (creditTender) {
-        await db.deni_ledger.add({
-          id: generateId(),
-          shop_id: sale.shop_id,
-          customer_id: sale.customer_id,
-          type: "void",
-          amount: -creditTender.amount,
-          sale_id: saleId,
-          user_id: userId,
-          created_at: now,
-          note: reason.trim(),
-        });
-
-        await db.customers
-          .where("id")
-          .equals(sale.customer_id)
-          .modify((c) => {
-            c.balance -= creditTender.amount;
-          });
-      }
+    const credit = tenders.filter((t) => t.method === "credit").reduce((sum, t) => sum + t.amount, 0);
+    if (credit && sale.customer_id) {
+      const customer = await db.customers.get(sale.customer_id);
+      if (!customer || customer.shop_id !== sale.shop_id) throw new Error("Customer not found");
+      await db.deni_ledger.add({ id: generateId(), shop_id: sale.shop_id, customer_id: customer.id, type: "void", amount: -credit, sale_id: saleId, user_id: userId, created_at: now, note: reason.trim() });
+      await db.customers.update(customer.id, { balance: customer.balance - credit });
+    }
+    const shift = await db.shifts.get(sale.shift_id);
+    if (shift?.status === "closed") {
+      const expected = await expectedCash(shift.id);
+      await db.shifts.update(shift.id, { expected_cash: expected, variance: (shift.counted_cash ?? 0) - expected });
     }
   });
+  void syncNow();
 }

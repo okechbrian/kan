@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
@@ -24,12 +26,12 @@ export function NotificationsPanel() {
     async function load() {
       const [products, batches, customers, storeOrders, reservedOrders, bookings] =
         await Promise.all([
-          db.products.toArray(),
-          db.batches.toArray(),
-          db.customers.toArray(),
-          db.store_orders.toArray(),
-          db.reserved_orders.toArray(),
-          db.bookings.toArray(),
+          ownerRows(db.products),
+          ownerRows(db.batches),
+          ownerRows(db.customers),
+          ownerRows(db.store_orders),
+          ownerRows(db.reserved_orders),
+          ownerRows(db.bookings),
         ]);
 
       const feed: FeedItem[] = [];

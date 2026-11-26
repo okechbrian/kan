@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows } from "../../lib/dashboard/access";
+
 import { useEffect, useMemo, useState } from "react";
 import { Download, Printer } from "lucide-react";
 import { db, type Customer, type ExpenseRecord, type Product, type PurchaseRecord, type StockTransfer, type User, type Warehouse } from "../../lib/db";
@@ -51,17 +53,17 @@ export function ReportsPanel() {
         whRows,
         trRows,
       ] = await Promise.all([
-        db.sales.toArray(),
-        db.tenders.toArray(),
-        db.sale_lines.toArray(),
-        db.customers.toArray(),
-        db.expenses.toArray(),
-        db.cash_movements.toArray(),
-        db.products.toArray(),
-        db.purchases.toArray(),
-        db.users.toArray(),
-        db.warehouses.toArray(),
-        db.stock_transfers.toArray(),
+        ownerRows(db.sales),
+        ownerRows(db.tenders),
+        ownerRows(db.sale_lines),
+        ownerRows(db.customers),
+        ownerRows(db.expenses),
+        ownerRows(db.cash_movements),
+        ownerRows(db.products),
+        ownerRows(db.purchases),
+        ownerRows(db.users),
+        ownerRows(db.warehouses),
+        ownerRows(db.stock_transfers),
       ]);
 
       const prodMap = new Map(prodRows.map((p) => [p.id, p]));
@@ -87,7 +89,7 @@ export function ReportsPanel() {
         })),
       );
       const cashExpenses: ExpenseRecord[] = cashMoves
-        .filter((m) => m.type === "expense")
+        .filter((m) => m.type === "expense" && !expRows.some((expense) => expense.id === m.id))
         .map((m) => ({
           id: m.id,
           shop_id: m.shop_id,

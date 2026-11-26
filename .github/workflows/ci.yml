@@ -36,3 +36,23 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install browser verification tools
+        run: python -m pip install -r scripts/requirements-browser.txt
+
+      - name: Render public and protected pages at phone and desktop widths
+        run: |
+          export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          node node_modules/next/dist/bin/next start -p 3100 > /tmp/kan-render-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:3100/ > /dev/null; then break; fi
+            sleep 1
+          done
+          npm run check:render
+          python scripts/check-till-workflow.py --base http://localhost:3100

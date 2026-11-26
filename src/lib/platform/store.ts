@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { AuditAction } from "./audit";
 import { hashSecret } from "./tokens";
+import { getServerDb } from "../server-db";
 
 type Actor = { businessId: string; accountId?: string };
 
@@ -64,9 +65,9 @@ export type PlatformStore = {
 };
 
 function requirePrisma() {
-  // eslint-disable-next-line
-  const { PrismaClient } = require("@prisma/client") as typeof import("@prisma/client");
-  return new PrismaClient();
+  const prisma = getServerDb();
+  if (!prisma) throw new Error("Database not configured");
+  return prisma;
 }
 
 export function createPlatformStore(): PlatformStore {

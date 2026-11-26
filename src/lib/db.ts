@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import { outboxMiddleware } from "./outbox-middleware";
 
 export interface Business {
   id: string;
@@ -184,6 +185,8 @@ export interface OutboxItem {
   payload: string;
   created_at: string;
   synced_at: string | null;
+  sequence?: number;
+  batch_id?: string;
 }
 
 export interface ExpenseRecord {
@@ -316,6 +319,7 @@ export class DuukaDB extends Dexie {
 
   constructor() {
     super("duuka");
+    this.use({ stack: "dbcore", name: "durable-outbox", level: 2, create: outboxMiddleware });
     this.version(1).stores({
       businesses: "id",
       shops: "id, business_id, shop_code",

@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { db, type User } from "../../lib/db";
@@ -14,7 +16,7 @@ export function StaffPanel() {
 
   useEffect(() => {
     async function load() {
-      const [users, sales] = await Promise.all([db.users.toArray(), db.sales.toArray()]);
+      const [users, sales] = await Promise.all([ownerRows(db.users), ownerRows(db.sales)]);
       const stats = new Map<string, { count: number; total: number }>();
       for (const s of sales) {
         if (s.status !== "completed") continue;

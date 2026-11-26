@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { BookmarkCheck } from "lucide-react";
@@ -23,8 +25,8 @@ export function ReservedOrdersPanel() {
 
   async function load() {
     const [shops, rows] = await Promise.all([
-      db.shops.toArray(),
-      db.reserved_orders.toArray(),
+      ownerRows(db.shops),
+      ownerRows(db.reserved_orders),
     ]);
     setShopId(shops[0]?.id ?? "default-shop");
     setOrders(rows.sort((a, b) => b.created_at.localeCompare(a.created_at)));
@@ -36,6 +38,7 @@ export function ReservedOrdersPanel() {
 
   async function handleCreate(event: FormEvent) {
     event.preventDefault();
+    await ownerContext(shopId);
     setFeedback("");
     const lineQty = Number(qty);
     const priceVal = Number(unitPrice);
@@ -80,6 +83,7 @@ export function ReservedOrdersPanel() {
   }
 
   async function updateStatus(id: string, status: ReservedOrderRecord["status"]) {
+    await ownerContext(shopId);
     await db.reserved_orders.update(id, { status });
     await load();
   }

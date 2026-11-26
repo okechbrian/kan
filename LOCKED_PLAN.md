@@ -21,7 +21,13 @@ An Uganda-first commerce platform, built on a phone till that sells with no inte
 
 The offline till engine, integer money, PIN roles, `shop_id` on every row, deni rules and close formula are **unchanged**. See `DOMAIN.md` and `SYNC.md`.
 
-## Right now (R0/R1)
+## Right now — audit remediation (D51, 2026-11-26)
+
+The user authorized fixing all findings in the project audit, starting with critical security, then sync and money correctness. This is the current work across existing code. The historical R1-only editing restriction does not block these fixes. No new feature release, deployment or field-test sign-off is implied.
+
+Required gates: lint, typecheck, full regression tests, production build, phone/desktop render checks and an offline till workflow check. Cloud and two-device sign-off must be supported by new evidence; previous completion claims are withdrawn. Public storefront ordering stays **Coming soon** and its API must reject orders honestly until the complete cloud flow is built and verified.
+
+## Original first release (R0/R1, historical)
 
 1. **R0** — re-lock docs, `git init` + push, brand.
 2. **R1** — public marketing site at a temporary Vercel URL + **honest** dashboard shell:

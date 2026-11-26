@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { CloudOff, RefreshCw, Wifi } from "lucide-react";
 import { isOnline, syncNow, getDeviceToken } from "../lib/sync";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "../lib/db";
 
 export function OnlinePill({ onDark = false }: { onDark?: boolean }) {
   const [online, setOnline] = useState(true);
   const [hasToken, setHasToken] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [lastSync, setLastSync] = useState("");
+  const pending = useLiveQuery(() => db.outbox.filter((row) => row.synced_at === null).count(), [], 0);
 
   useEffect(() => {
     setOnline(isOnline());
@@ -34,7 +37,9 @@ export function OnlinePill({ onDark = false }: { onDark?: boolean }) {
     setSyncing(true);
     try {
       const result = await syncNow();
-      if (result.pushed > 0 || result.pulled > 0) {
+      if (result.failed > 0) {
+        setLastSync("Sync incomplete — changes kept on this device");
+      } else if (result.pushed > 0 || result.pulled > 0) {
         setLastSync(`Pushed ${result.pushed}, pulled ${result.pulled}`);
       } else if (result.failed > 0) {
         setLastSync(`${result.failed} failed`);
@@ -79,7 +84,7 @@ export function OnlinePill({ onDark = false }: { onDark?: boolean }) {
         ) : (
           <CloudOff className="h-3 w-3" />
         )}
-        {syncing ? "Syncing" : online ? "Synced" : "Offline"}
+        {syncing ? "Syncing" : !online ? "Offline" : pending ? "Pending sync" : "Online"}
       </span>
       <button
         type="button"

@@ -86,7 +86,7 @@ describe("Close till", () => {
       50000 + sugar.selling_price * 2 + 5000 - 10000;
     expect(await expectedCash(shiftId)).toBe(expected);
 
-    const closed = await closeShift({ shiftId, countedCash: expected });
+    const closed = await closeShift({ shiftId, userId: user.id, countedCash: expected });
     expect(closed.variance).toBe(0);
   });
 });

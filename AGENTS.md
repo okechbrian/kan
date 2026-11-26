@@ -15,7 +15,7 @@ Read these files before any code:
 9. `SYNC.md` (from the old Phase 6)
 10. This file
 
-Work on **one release at a time** (currently R1). Konna is a structural reference only: never copy its copy, branding, testimonials, numbers or legal text. Banking, crypto and AI are partner-or-defer — never simulated.
+Work on **one release at a time**. Current authorized work is **D51 audit remediation of existing code**, including the till and sync; do not add a new feature release. Konna is a structural reference only: never copy its copy, branding, testimonials, numbers or legal text. Banking, crypto and AI are partner-or-defer — never simulated.
 
 ## Mission
 
@@ -80,6 +80,8 @@ Minimum tests for the first vertical slice:
 - Close: expected cash matches a known fixture (float + cash sales − draws)
 
 ## Git
+
+Standing owner instruction (2026-11-26): after completing and verifying authorized changes, commit and push to `main` so Vercel can deploy. Do not force-push. Exclude unrelated files and secrets.
 
 - Do not commit `node_modules`
 - Conventional commits, one phase per commit when possible

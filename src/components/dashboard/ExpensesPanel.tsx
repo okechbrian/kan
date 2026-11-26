@@ -1,11 +1,13 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { Receipt } from "lucide-react";
 import { db, type ExpenseRecord } from "../../lib/db";
 import { ugx } from "../../lib/money";
 import { validateExpenseInput } from "../../lib/dashboard/tools";
-import { generateId } from "../../lib/uuid";
+import { recordExpense } from "../../lib/till";
 import { DataTable, Input, StatCard } from "../ui";
 import { StatusBadge } from "../site/StatusBadge";
 
@@ -18,9 +20,10 @@ export function ExpensesPanel() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [method, setMethod] = useState<"cash" | "mtn_momo" | "airtel_money">("cash");
 
   async function load() {
-    const [shops, rows] = await Promise.all([db.shops.toArray(), db.expenses.toArray()]);
+    const [shops, rows] = await Promise.all([ownerRows(db.shops), ownerRows(db.expenses)]);
     setShopId(shops[0]?.id ?? "default-shop");
     setExpenses(rows.sort((a, b) => b.incurred_at.localeCompare(a.incurred_at)));
   }
@@ -31,6 +34,7 @@ export function ExpensesPanel() {
 
   async function handleAdd(event: FormEvent) {
     event.preventDefault();
+    const actor = await ownerContext(shopId);
     setFeedback("");
     const parsed = validateExpenseInput({
       category,
@@ -42,15 +46,9 @@ export function ExpensesPanel() {
       return;
     }
 
-    await db.expenses.add({
-      id: generateId(),
-      shop_id: shopId,
-      category: parsed.value.category,
-      amount: parsed.value.amount,
-      description: parsed.value.description,
-      user_id: "dashboard",
-      incurred_at: new Date().toISOString(),
-    });
+    try {
+      await recordExpense({ shopId, userId: actor.userId, category: parsed.value.category, amount: parsed.value.amount, description: parsed.value.description, method });
+    } catch (error) { setFeedback(error instanceof Error ? error.message : "Could not record expense"); return; }
     setAmount("");
     setDescription("");
     setFeedback("Expense recorded.");
@@ -62,6 +60,11 @@ export function ExpensesPanel() {
   return (
     <div className="space-y-6">
       <header>
+        <label className="block text-sm font-bold">Paid from
+          <select aria-label="Expense payment method" value={method} onChange={(e) => setMethod(e.target.value as typeof method)} className="ml-3 min-h-11 rounded-xl border px-3">
+            <option value="cash">Cash in this till</option><option value="mtn_momo">MTN MoMo</option><option value="airtel_money">Airtel Money</option>
+          </select>
+        </label>
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight text-navy">Expenses</h1>
           <StatusBadge state="now" />

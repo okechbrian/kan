@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { CalendarCheck } from "lucide-react";
 import { db, type BookingRecord } from "../../lib/db";
@@ -21,7 +23,7 @@ export function BookingsPanel() {
   const [feedback, setFeedback] = useState("");
 
   async function load() {
-    const [shops, rows] = await Promise.all([db.shops.toArray(), db.bookings.toArray()]);
+    const [shops, rows] = await Promise.all([ownerRows(db.shops), ownerRows(db.bookings)]);
     setShopId(shops[0]?.id ?? "default-shop");
     setBookings(rows.sort((a, b) => a.scheduled_at.localeCompare(b.scheduled_at)));
   }
@@ -32,6 +34,7 @@ export function BookingsPanel() {
 
   async function handleCreate(event: FormEvent) {
     event.preventDefault();
+    await ownerContext(shopId);
     setFeedback("");
     const duration = Number(durationMin || "30");
     const deposit = Number(depositUgx || "0");
@@ -68,6 +71,7 @@ export function BookingsPanel() {
   }
 
   async function updateStatus(id: string, status: BookingRecord["status"]) {
+    await ownerContext(shopId);
     await db.bookings.update(id, { status });
     await load();
   }

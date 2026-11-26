@@ -1,12 +1,13 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { db, type Sale, type Tender } from "../../lib/db";
 import { ugx } from "../../lib/money";
 import { voidSale } from "../../lib/sale";
-import { getSession } from "../../lib/session";
 import { DataTable, Modal } from "../ui";
 import { StatusBadge } from "../site/StatusBadge";
 
@@ -21,9 +22,9 @@ export function OrdersPanel() {
 
   async function load() {
     const [sales, tenders, customers] = await Promise.all([
-      db.sales.toArray(),
-      db.tenders.toArray(),
-      db.customers.toArray(),
+      ownerRows(db.sales),
+      ownerRows(db.tenders),
+      ownerRows(db.customers),
     ]);
     const custMap = new Map(customers.map((c) => [c.id, c.name]));
     const tenderBySale = new Map<string, Tender[]>();
@@ -52,19 +53,11 @@ export function OrdersPanel() {
     if (!voidTarget) return;
     setFeedback("");
     try {
-      const session = getSession();
-      const users = await db.users.toArray();
-      const owner =
-        (session && users.find((u) => u.id === session.userId && u.role === "owner")) ||
-        users.find((u) => u.role === "owner");
-      if (!owner) {
-        setFeedback("Only an owner PIN user can void or refund a sale.");
-        return;
-      }
+      const owner = await ownerContext();
       await voidSale({
         saleId: voidTarget.id,
         reason: reason.trim() || "Customer refund",
-        userId: owner.id,
+        userId: owner.userId,
       });
       setVoidTarget(null);
       setReason("");

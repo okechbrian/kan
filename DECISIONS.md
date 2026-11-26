@@ -21,6 +21,7 @@ Status key: `OPEN` | `LOCKED`
 | D48 | Pixel-close Konna layout, navigation, and tool-flow parity; zero copied text, images, icons, logos, testimonials, or metrics | LOCKED | 2026-11-25 | Demos labeled `"Demo"` with realistic UGX figures; amends D46 |
 | D49 | Provision a new **Neon PostgreSQL** database via Vercel Marketplace (`neon-blue-clock`) for cloud accounts, multi-device sync, and live storefront orders | LOCKED | 2026-11-25 | Switched from Supabase due to active free-project limit; auto-connected to `kan-sme` |
 | D50 | Legal entity **Pwata Inc** ("Kan is a product of Pwata Inc"); address Block 5D, Entebbe Kiwafu, Uganda; phone/WhatsApp `0791149592` (`+256 791 149 592`); email `ubombo256@gmail.com`; Konna subscription & hardware prices converted to integer UGX | LOCKED | 2026-11-25 | Rates referenced: `1 USD ≈ 4,240 UGX`, `1 NGN ≈ 3.05 UGX` |
+| D51 | Audit remediation of existing code is the current authorized work: security, transactional sync, money/stock, access controls, backup coverage, honest feature states and verification. This supersedes R1-only editing restrictions for these fixes; it does not unlock a new feature release. | LOCKED | 2026-11-26 | User explicitly requested all audit findings fixed. Online ordering remains Coming soon; no fabricated success. Live deployment and two-device field sign-off remain separate verification. |
 | D0 | Project folder is `Desktop/New folder/SME Management System` | LOCKED | 2026-09-02 | All docs live here |
 | D1 | Working product name is **Duuka** | LOCKED | 2026-09-02 | Folder name unchanged |
 | D2 | Docs are the source of truth for the builder agent | LOCKED | 2026-09-02 | See WORKING_METHOD.md |
@@ -48,7 +49,7 @@ Status key: `OPEN` | `LOCKED`
 
 ## Open — blocking (answer before scaffold)
 
-None for R1. Builder starts R0/R1 (doc re-lock + public site/dashboard shell). Do not start R2 platform work until R1 is signed off.
+No product decision blocks the D51 remediation. The original R1 build gate is historical; no new feature release is unlocked by the audit fixes.
 
 Still needed from the owner for final copy (not blocking code): final UGX plan prices, legal entity name, preferred tagline (default "Kan — your shop, in one place.").
 

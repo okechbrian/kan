@@ -23,10 +23,12 @@ export function StorefrontView({ slug }: { slug: string }) {
         db.shops.toArray(),
         db.products.toArray(),
       ]);
-      const match = shops.find((shop) => slugifyShop(shop.name) === slug);
+      const session = (await import("../../lib/session")).getCurrentUser;
+      const user = await session();
+      const match = user?.role === "owner" ? shops.find((shop) => shop.id === user.shopId && slugifyShop(shop.name) === slug) : undefined;
       if (match) {
         setShopName(match.name);
-        setListings(publicCatalogue(products.filter((p) => p.shop_id === match.id)));
+        setListings(publicCatalogue(products.filter((p) => p.shop_id === match.id && (p.published_online ?? false))));
       }
       setLoading(false);
     }
@@ -74,13 +76,12 @@ export function StorefrontView({ slug }: { slug: string }) {
 
       <main className="mx-auto max-w-4xl px-4 py-8">
         <p className="mb-6 rounded-xl border border-sun/30 bg-sun/10 p-3 text-xs text-ink/60">
-          This is a preview of your public storefront. Orders are not sent until cloud
-          sync is configured. Browsing and cart maths work offline.
+          This is an owner-only local storefront preview. Shared links do not show your catalogue to buyers and online orders are not available. Browsing and cart maths work offline.
         </p>
 
         {listings.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-black/15 p-8 text-center text-sm text-ink/50">
-            No products on this storefront yet. Add products on the till first.
+            Unlock this shop with an owner PIN to preview its published products. Online shopping is coming soon.
           </p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

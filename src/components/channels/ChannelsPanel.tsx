@@ -3,7 +3,7 @@ import { EmptyPanel } from "../dashboard/EmptyPanel";
 import { StatusBadge } from "../site/StatusBadge";
 
 const CHANNELS = [
-  { name: "Online store", state: "now" as const },
+  { name: "Online store", state: "soon" as const },
   { name: "Social store", state: "soon" as const },
   { name: "Marketplace connector", state: "soon" as const },
   { name: "Discover merchants", state: "soon" as const },
@@ -41,7 +41,7 @@ export function ChannelsPanel() {
 
       <EmptyPanel
         title="Share your storefront"
-        message="Social sharing links work today with a preview storefront; automatic syncing opens with cloud sync."
+        message="Public catalogue sharing and online orders are coming soon. The storefront preview uses books on this device only."
         state="soon"
         action={
           <div className="flex flex-wrap gap-2">

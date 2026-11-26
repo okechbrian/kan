@@ -4,7 +4,7 @@ Working brand: **Kan**. Folder name stays `SME Management System`.
 
 This folder is the **source of truth** for product, architecture and implementation. A builder agent works from these files, not from chat memory.
 
-**Status:** All **Phases 0–7** complete per **[KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md)** — Kan Brand System, 14-page Public Site, Neon PostgreSQL Cloud & Auth, Live Merchant Dashboard, 12 Analytics Reports / Online Store / Bookings / Production, Offline Till Reskin & Live Multi-Shop Sync Sign-Off, Uganda Payment Webhooks, Guardrailed AI Assistant, Partner-Only Wallet, Health Endpoint, and Security Headers. See [HANDOFF.md](HANDOFF.md) and [DECISIONS.md](DECISIONS.md) D48–D50.
+**Status:** Audit remediation (D51). Existing web, till and platform code is being hardened; the former claim that all Phases 0–7 were complete is withdrawn. Online orders, native clients and partner features are not signed off. See [HANDOFF.md](HANDOFF.md) for current verification and limitations.
 
 **Live (temporary Vercel URL):** https://kan-sme.vercel.app · Repo: https://github.com/okechbrian/kan
 
@@ -83,4 +83,4 @@ TLS/proxy note: `npm install` has failed with `ERR_SSL_CIPHER_OPERATION_FAILED` 
 
 ## Next step
 
-Point the builder at `HANDOFF.md` and **R1 only**. Do not start R2 platform work until R1 is signed off.
+Follow `HANDOFF.md` and D51 for audit remediation. Do not add a new release or treat local checks as a live deployment / two-device field sign-off.

@@ -1,77 +1,85 @@
-# HANDOFF — read this first
+# HANDOFF — current verified state
 
-**Date:** 2026-11-24
-**Project:** Kan (folder: `SME Management System`)
-**Path:** `C:\Users\y\OneDrive\Desktop\New folder\SME Management System`
+**Date:** 2026-11-26
+**Project:** Kan (SME Management System)
+**Current work:** D51 audit remediation, explicitly authorized by the user. No new feature release is unlocked.
 
-Chat memory is not the source of truth. The `.md` files in this folder are.
+## Status
 
----
+The previous “all Phases 0–7 complete” and live sync sign-off statements are withdrawn. They were inconsistent with the locked plan and unsupported by the implementation audited on 2026-11-26. Historical R0–R11 / parity plans describe intended scope, not proof of delivery.
 
-## Where we are
+Implemented remediation:
 
-| Item | Status |
-|---|---|
-| Product | Re-scoped to **Kan** platform (D40–D47); full scope in `KAN_SCOPE.md` |
-| Offline till (former Duuka Phases 1–5) | Done and signed off — 49 passing tests; engine preserved |
-| Thin sync (Phase 6) | **Signed off** — live 2-device pair+push+pull and multi-shop tenant isolation verified against Neon PostgreSQL (`neon-blue-clock`) |
-| Current release | **Konna Parity Rebuild — All Phases 0–7 complete (Brand System, 14-Page Public Site, Neon Cloud & Auth, Live Merchant Dashboard, 12 Analytics Reports/Store/Bookings/Production, Offline Till Reskin & Multi-Shop Sync Sign-Off, Uganda Payments Webhook, Guardrailed AI Assistant, Partner Wallet, Health & Security Headers)** |
-| Git | `https://github.com/okechbrian/kan` (`main`) |
-| Brand / domain | Kan (a product of **Pwata Inc**); Navy `#070D35` / Teal `#42DFD1` / Guava `#FF806B` / Soft White `#FAFAFF`; `NEXT_PUBLIC_SITE_URL` on Vercel Hobby |
-| Master plan | [KONNA_PARITY_PLAN.md](KONNA_PARITY_PLAN.md) — Phase 0 (Housekeeping), Phase 1 (Brand & UI Kit), Phase 2 (14-page Public Site), Phase 3 (Supabase Cloud & Auth), Phase 4–7 (Dashboard, Reports, Till Reskin, Payments/AI) |
-| Toolchain | Node 22, npm 10, git 2.54, Python 3.13, Docker, adb, Vercel/EAS/Supabase/Flutter/gh CLIs — all verified present |
-| Git remote | `https://github.com/okechbrian/kan` — commit `fc54247` pushed to `main` |
-| Live site | https://kan-sme.vercel.app (Vercel project `kan-sme`, Deployment Protection off, all public routes 200) |
-| R2 platform | Shipped: Prisma `Account`/`Session`/`Subscription`/`AuditEvent`/`Notification`, auth+onboarding APIs, RBAC, plan quotas, audit redaction. Honest 503 `database_not_configured` while `DATABASE_URL` is unset. 76 tests. |
-| R3 core commerce | Shipped: catalogue validation (barcode, units, UGX integers), batch/expiry tracking (FIFO), warehouses, inter-shop transfer recording, receipt total checks; Dexie v2 + Prisma models. 87 tests. |
-| R4 payments | Shipped (manual first): adapter registry, cash with change, MTN/Airtel MoMo explicit confirmation, credit with customer, split validation, reconciliation by method, `/more/payments` screen, Prisma `Payment`. Gateway methods honestly report `gateway_not_configured`. 97 tests. |
-| R5 online store | Shipped: path-based preview storefront `/shop/[slug]`, catalogue publishing rules (active/unexpired), cart with integer UGX + delivery bands, one-way order state machine, invoice text, Prisma Storefront/StoreOrder/Review. No real orders until cloud sync. 104 tests. |
-| R6 channels | Shipped: social share links/post builder, marketplace sync plan with channel availability, unified orders, merchant directory search, `/discover` and `/app/channels`, Prisma ChannelSync/MerchantProfile. 110 tests. |
-| R7 analytics | Shipped: sales/day/method/basket/product-profit aggregates, stock/expiry/deni alerts, daily report text, Prisma ReportSchedule, real `/app/reports` and `/app/alerts` panels computed from local Dexie data. 119 tests. |
-| R8 clients | Shipped: PWA manifest + service worker + offline page, sync retry/backoff and outbox helpers, barcode keyboard-wedge parsing and ESC/POS bytes, `/more/install` and `/more/hardware`. Native apps/printer/drawer honest previews. 126 tests. |
-| R9 wave 1 | Shipped: 16 vertical profiles in 3 waves, capability/selection rules, starter product lists, `/app/verticals` with local profile choice. Wave 1 available; waves 2–3 `Coming soon`. 133 tests. |
-| R9 wave 2 | Shipped: workflow helpers for expiry-aware batch dispensing, recipe scaling, table orders, booking conflicts/slots and laundry ticket states, plus `/app/verticals/wave2` preview. Still marked planned in the till. 139 tests. |
-| R9 wave 3 | Shipped: BOM explosion, production batch codes, serial validation, warranty expiry, delivery quotes and states, plus `/app/verticals/wave3` preview. Profiles still marked planned in the till. 145 tests. |
-| R10 + R11 | Shipped: AI guardrails with safe fallback and `ai_not_configured` API, partner-only banking surfaces with no fake balances, support centre, launch checklist and CI. 154 tests. |
+- Password reset returns the same generic response for existing/missing accounts; reset links are placed only in the private notification queue. No usable token is returned to an unauthenticated caller. A delivery worker/provider is still required to send queued email.
+- Sync protocol v2 has an explicit table allowlist and validates tenant IDs, existing row ownership and parent references. Devices, businesses and accounts cannot be written through sync.
+- Server pushes use one serializable database transaction and acknowledge specific mutation IDs only after commit. Client errors keep entries pending; retries are idempotent.
+- Ledger/outbox writes are atomic in IndexedDB. Sequence numbers and transaction groups preserve write order; bounded pushes allow a backlog of ordinary sale transactions to drain. Stock and deni projections are not synced as catalogue changes.
+- Pulls use full, consistent shop snapshots. This avoids cursor races and missed updates to old sales/shifts; it is a deliberate small-shop bandwidth tradeoff. Client pulls are atomic and preserve unsent edits.
+- Sales validate the open shift, active user, shop, products and credit customer inside the transaction. Collections cannot race into overcollection; voids reverse every credit tender and cannot double-reverse stock on concurrent requests. The cloud rejects a second device's distinct void reversal.
+- Cash expenses post once to both the expense journal and till cash movements; MoMo expenses do not reduce cash. Closing is transactional.
+- Local dashboard books require an active owner PIN and use the selected shop. Browser role flags alone do not grant access. Cloud account/session routes continue to enforce their server permissions independently.
+- Backup v2 exports every business table and validates imports before clearing books. It supports v1 input, clears newer tables when absent from legacy input, excludes device tokens, and clears cloud identity on restore. Restore outbox entries are regrouped by sale so a large backup can drain in bounded pushes without splitting a sale. Re-pair after restore.
+- Online storefronts are explicitly owner-only local previews. The live order API returns 503 with no order ID; public ordering remains Coming soon. It cannot fabricate a successful order or accept attacker-supplied prices.
+- Render verification is included in CI, covering phone and desktop widths.
 
----
+## Verification
 
-## If you are the builder agent
+- `npm run lint`: passed.
+- `npm test`: 212 passed; the two opt-in cloud tests are skipped in the default suite.
+- `KAN_SYNC_INTEGRATION=1 npx vitest run __tests__/audit-sync.integration.test.ts`: 2 passed against the configured Neon Postgres. Two tokens upload distinct sales, replay is idempotent, a second shop stays isolated, credit/collection/void/shift-close roundtrip correctly, and all generated test businesses are removed by cleanup assertions.
+- Browser render: 62 routes × 360/375/412/1440px = 248 cases passed with no HTTP, JavaScript or overflow failures.
+- `scripts/check-till-workflow.py`: passed against the final build with the network disabled. Two items sold, stock 20 → 18; UGX 3,000 cash expense; expected cash UGX 57,000; close variance 0; attendants denied owner dashboard access even with a forged role flag; owner queries exclude another shop's products.
+- `npm run build`: passed.
+- `npm run typecheck`: passed.
 
-1. Read, in order: this file → `AGENTS.md` → `KAN_SCOPE.md` → `LOCKED_PLAN.md` → `DECISIONS.md` → `UI_MAP.md` Part A.
-2. Implement **R0/R1 only**:
-   - Re-lock docs (done in this handoff's commit), init git, add CI + ESLint config.
-   - Public site routes; dashboard shell routes; move old `/` redirect to `/pos`.
-   - Keep `/pin`, `/sell`, `/stock`, `/customers`, `/more` untouched.
-   - Every unbuilt panel tagged `Coming soon` or `With partner`. **No fake data.**
-3. Gates: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`, built-site render at 360/375/412.
-4. Stop and report what to click. Do not start R2 platform work.
+The live integration test uses generated, isolated business/shop IDs and deletes only those IDs. The initial region/network latency exposed per-request pool creation and repeated inserts; sync now reuses a bounded process pool, prefetches references and uses batched inserts. This was programmatic multi-client verification, not a physical shop field test.
 
----
+## Operational limits / next sign-off
 
-## If you are the planning agent
-
-- Product decisions: `DECISIONS.md` D40–D47. Full scope: `KAN_SCOPE.md`.
-- Uganda evidence: `RESEARCH.md`. Duka rules: `DOMAIN.md`.
-- Original Duuka phases 1–5 remain valid for the **till engine**; see `IMPLEMENTATION_PLAN.md` historical section.
-
----
-
-## Locked product in one paragraph
-
-Kan is an Uganda-first commerce platform built on a phone till that sells with no internet. One owner, many shops, each till bound to one shop; stock and deni stay per shop. The first release is a public marketing site and an honest dashboard shell. The offline till is reused for R3. Banking, crypto and AI are partner-or-defer, never simulated. Build order: R0 re-lock → R1 site/shell → R2 platform → … → R11 launch ops.
-
----
-
-## Still needed from the owner (not blocking R1 code)
-
-Final UGX plan prices, legal entity name, tagline (default "Kan — your shop, in one place.").
+- Changes in this workspace are not deployed automatically. The existing Vercel deployment has not been changed by this task.
+- Programmatic Neon multi-client integration passed. A physical two-device offline → online shop test remains required before field sign-off.
+- Email delivery needs a real worker/provider; a queued password-reset notification is not a sent email.
+- Public online ordering, native installers, bank/crypto services and a configured AI provider remain outside this remediation.
+- Extended local workflow books (purchases/suppliers, bookings, production, reserved/store orders and transfer previews) are backed up but do not have a complete cloud workflow. Do not describe them as synced operational releases.
+- Do not add new screens/releases until the remediation is reviewed and the remaining deployment/field checks are complete.
 
 ## Run
 
-```bash
-cd "C:\Users\y\OneDrive\Desktop\New folder\SME Management System"
-npm install
-npm run lint && npm run typecheck && npm run test && npm run build
-npm run dev
+```text
+npm run lint
+npm run typecheck
+npm test
+npm run build
+python -m pip install -r scripts/requirements-browser.txt
+node node_modules/next/dist/bin/next start -p 3100
+# In another terminal while the server runs:
+npm run check:render
+python scripts/check-till-workflow.py --base http://localhost:3100
 ```
+
+Browser checks use local Chrome, or the executable supplied in `CHROME_PATH`. The opt-in cloud suite reads `.env.local`, creates only generated `audit-*` fixtures, and asserts that its cleanup removed them.
+
+## MVP readiness assessment — 2026-11-26
+
+The original full platform plan has 14 workstreams (WS-0 through WS-13), including governance, and 12 releases (R0–R11). It does not define an exact count of individual tools. For a grocery-shop MVP, use the following 12 operational groups; this is an assessment grouping, not a claim that the whole platform is complete.
+
+| MVP tool group | Current assessment |
+|---|---|
+| PIN unlock and owner/attendant roles | Working within the local till |
+| Product catalogue and prices | Working |
+| Offline counter sales and receipts | Working |
+| Cash, manually confirmed MoMo and split payments | Working; no automated collection gateway |
+| Customers, deni and collections | Working |
+| Receiving and stock adjustments | Working; advanced batch dispensing/warehouse workflows are not included |
+| Owner draws and expenses | Working |
+| Till close and variance | Working |
+| Basic sales, stock, deni and profit-estimate reports | Working locally; scheduled delivery is not included |
+| JSON backup and restore | Working |
+| Cloud sync and recovery | Implemented; isolated Neon multi-client tests pass; physical two-device field verification and recovery drills remain |
+| Owner workspace / branch onboarding | Partial; cloud accounts and local PIN till are not one complete onboarding/branch-management flow |
+
+Count: 10 working bounded MVP tools, 2 groups still needing completion/operational sign-off. None of these counts is a production-readiness certification.
+
+Full-platform gaps beyond this MVP: public storefront/checkout/delivery/reviews; automated MoMo/card payments and reconciliation/refunds; purchasing tied atomically to stock/payables; completed warehouse transfers; CRM/loyalty; operational bookings/deposits and production/BOM stock accounting; live channel connectors/directory; scheduled notifications/reports and email delivery; enforceable billing/subscription lifecycle; native clients and real hardware integration; specialist vertical workflows; configured AI and licensed banking/crypto partners; monitoring, disaster recovery and a real-shop field test. Existing forms, schemas, helper functions and preview screens do not make these completed tools.
+
+Owner's standing Git preference: commit verified changes and push to main for Vercel deployment. A successful push is not proof that a deployment succeeded.

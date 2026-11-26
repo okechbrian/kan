@@ -1,9 +1,12 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Copy, ExternalLink, Globe } from "lucide-react";
 import { db, type StoreOrderRecord } from "../../lib/db";
+import { slugifyShop } from "../../lib/store/catalogue";
 import { ugx } from "../../lib/money";
 import { DataTable, StatCard } from "../ui";
 import { StatusBadge } from "../site/StatusBadge";
@@ -17,12 +20,12 @@ export function StorePanel() {
 
   async function load() {
     const [shops, products, orderRows] = await Promise.all([
-      db.shops.toArray(),
-      db.products.toArray(),
-      db.store_orders.toArray(),
+      ownerRows(db.shops),
+      ownerRows(db.products),
+      ownerRows(db.store_orders),
     ]);
-    if (shops[0]?.shop_code) {
-      setSlug(shops[0].shop_code.toLowerCase());
+    if (shops[0]?.name) {
+      setSlug(slugifyShop(shops[0].name));
     }
     const pub = products.filter((p) => p.active && (p.published_online ?? true)).length;
     setPublishedCount(pub);
@@ -35,6 +38,7 @@ export function StorePanel() {
   }, []);
 
   async function updateOrderStatus(id: string, status: StoreOrderRecord["status"]) {
+    await ownerContext();
     await db.store_orders.update(id, { status });
     await load();
   }
@@ -52,17 +56,16 @@ export function StorePanel() {
         <div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-3xl font-bold tracking-tight text-navy">Online store</h1>
-            <StatusBadge state="now" />
+            <StatusBadge state="soon" />
           </div>
           <p className="mt-1 text-sm text-navy/65">
-            Your public storefront stays synced with published products and receives
-            orders into this inbox.
+            Local storefront preview only. Customers cannot place orders from a shared link yet.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={copyLink} className="btn-secondary gap-1.5 text-xs">
             <Copy className="h-4 w-4" aria-hidden="true" />
-            {copied ? "Copied link" : "Copy shop link"}
+            {copied ? "Copied link" : "Copy preview link"}
           </button>
           <Link href={`/shop/${slug}`} className="btn-primary gap-1.5 text-xs">
             <ExternalLink className="h-4 w-4" aria-hidden="true" />
@@ -84,7 +87,7 @@ export function StorePanel() {
       <DataTable
         rows={orders}
         rowKey={(o) => o.id}
-        emptyMessage="No online orders in the inbox yet. Share your storefront link to start receiving orders."
+        emptyMessage="No online orders in the inbox yet. Live online ordering is coming soon."
         columns={[
           {
             key: "customer",

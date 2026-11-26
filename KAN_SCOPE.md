@@ -79,7 +79,7 @@ Smart cash register (15.6" touch, Intel i3, Windows 11 Pro, 8GB/128GB; NGN 386kâ
 
 **Net new:** public marketing site, dashboard shell, real auth & RBAC, subscriptions/quotas, notifications, catalogue depth (barcode/expiry/batches/brands), warehouses & transfers, purchasing/suppliers, payment gateways, online storefront + cart/checkout, marketplace + merchant directory, CRM/loyalty/reviews, bookings, charts, AI agent, native/desktop clients, hardware integrations, legal/support/ops.
 
-**Current repo state:** not a git repository; root `/` is a client-side redirect into the till; `.env.example` only has `DATABASE_URL`; no ESLint config; no brand assets.
+**Repository baseline above is historical. Current state:** versioned Next.js/Prisma/Dexie app with public pages, local dashboard tools, auth routes and sync. D51 audit remediation is active; original release-completion claims are withdrawn. Online ordering remains Coming soon.
 
 ---
 

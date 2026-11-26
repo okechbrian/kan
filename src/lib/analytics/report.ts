@@ -1,12 +1,7 @@
 import { averageBasket, methodTotals, productPerformance, type SaleLike } from "./sales";
 import type { StockAlert, ExpiryAlert } from "./alerts";
 
-const ugx = (amount: number) => {
-  if (!Number.isInteger(amount)) throw new Error("UGX amounts must be integers");
-  return `UGX ${Math.abs(amount)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
-};
+import { ugx } from "../money";
 
 export type ReportFrequency = "daily" | "weekly" | "monthly";
 

@@ -141,7 +141,7 @@ export class PlatformService {
       channel: "email",
       recipient: String(account.email),
       subject: "Reset your Kan password",
-      body: "A password reset was requested for your Kan workspace.",
+      body: `Reset your Kan password within one hour: ${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/app/reset-password?token=${encodeURIComponent(rawToken)}`,
     });
     await this.store.createAudit({
       actor: { businessId: String(account.business_id), accountId: account.id },
@@ -150,9 +150,6 @@ export class PlatformService {
       targetId: account.id,
     });
 
-    if (!process.env.SMTP_HOST) {
-      return { ok: true, resetToken: rawToken };
-    }
     return { ok: true };
   }
 

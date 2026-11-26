@@ -62,13 +62,4 @@ describe("Phase 6 — Offline till Kan brand reskin", () => {
   });
 });
 
-describe("Phase 6 — Multi-shop sync tenant isolation", () => {
-  it("scopes sync GET users by business_id and enforces shop_id on POST & void", () => {
-    const syncRoute = read("src/app/api/sync/route.ts");
-    expect(syncRoute).toContain("SHOP_SCOPED_TABLES");
-    expect(syncRoute).toContain("business_id: businessId");
-    expect(syncRoute).toContain("existingSale.shop_id !== identity.shopId");
-    expect(syncRoute).toContain("parentSale.shop_id !== identity.shopId");
-    expect(syncRoute).toContain("data.shop_id = identity.shopId");
-  });
-});
+// Tenant isolation is exercised with adversarial HTTP requests in audit-sync.test.ts.

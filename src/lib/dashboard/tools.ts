@@ -42,15 +42,15 @@ export function parseProductsCsv(csvText: string): {
     const sellingPrice = Number(sellRaw);
     const stockQty = Number(qtyRaw || "0");
 
-    if (!Number.isInteger(buyingPrice) || buyingPrice < 0) {
+    if (!Number.isSafeInteger(buyingPrice) || buyingPrice < 0) {
       errors.push(`Line ${lineNum} (${name}): buying price must be a non-negative integer UGX.`);
       return;
     }
-    if (!Number.isInteger(sellingPrice) || sellingPrice <= 0) {
+    if (!Number.isSafeInteger(sellingPrice) || sellingPrice <= 0) {
       errors.push(`Line ${lineNum} (${name}): selling price must be a positive integer UGX.`);
       return;
     }
-    if (!Number.isInteger(stockQty) || stockQty < 0) {
+    if (!Number.isSafeInteger(stockQty) || stockQty < 0) {
       errors.push(`Line ${lineNum} (${name}): stock quantity must be a non-negative integer.`);
       return;
     }
@@ -137,7 +137,7 @@ export function validateExpenseInput(input: {
   const category = input.category.trim();
   const description = input.description.trim();
   if (!category) return { ok: false as const, error: "Category is required." };
-  if (!Number.isInteger(input.amount) || input.amount <= 0) {
+  if (!Number.isSafeInteger(input.amount) || input.amount <= 0) {
     return { ok: false as const, error: "Amount must be a positive integer in UGX." };
   }
   return {
@@ -163,15 +163,15 @@ export function validatePurchaseInput(input: {
     if (!item.name.trim()) {
       return { ok: false as const, error: "Each item needs a product name." };
     }
-    if (!Number.isInteger(item.qty) || item.qty <= 0) {
+    if (!Number.isSafeInteger(item.qty) || item.qty <= 0) {
       return { ok: false as const, error: "Quantity must be a positive integer." };
     }
-    if (!Number.isInteger(item.unit_cost) || item.unit_cost < 0) {
+    if (!Number.isSafeInteger(item.unit_cost) || item.unit_cost < 0) {
       return { ok: false as const, error: "Unit cost must be an integer in UGX." };
     }
     total += item.qty * item.unit_cost;
   }
-  if (!Number.isInteger(input.paid) || input.paid < 0 || input.paid > total) {
+  if (!Number.isSafeInteger(input.paid) || input.paid < 0 || input.paid > total) {
     return { ok: false as const, error: "Paid amount must be an integer between 0 and total." };
   }
   return { ok: true as const, total };
@@ -194,15 +194,15 @@ export function validateReservedOrderInput(input: {
     if (!line.name.trim()) {
       return { ok: false as const, error: "Item name is required." };
     }
-    if (!Number.isInteger(line.qty) || line.qty <= 0) {
+    if (!Number.isSafeInteger(line.qty) || line.qty <= 0) {
       return { ok: false as const, error: "Quantity must be a positive integer." };
     }
-    if (!Number.isInteger(line.unit_price) || line.unit_price <= 0) {
+    if (!Number.isSafeInteger(line.unit_price) || line.unit_price <= 0) {
       return { ok: false as const, error: "Unit price must be a positive integer UGX." };
     }
     total += line.qty * line.unit_price;
   }
-  if (!Number.isInteger(input.depositUgx) || input.depositUgx < 0 || input.depositUgx > total) {
+  if (!Number.isSafeInteger(input.depositUgx) || input.depositUgx < 0 || input.depositUgx > total) {
     return { ok: false as const, error: "Deposit must be an integer between 0 and order total." };
   }
   return { ok: true as const, total };

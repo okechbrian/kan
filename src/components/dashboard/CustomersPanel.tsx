@@ -1,5 +1,7 @@
 "use client";
 
+import { ownerRows, ownerContext } from "../../lib/dashboard/access";
+
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { UserPlus } from "lucide-react";
@@ -19,7 +21,7 @@ export function CustomersPanel() {
   const [feedback, setFeedback] = useState("");
 
   async function load() {
-    const [shops, rows] = await Promise.all([db.shops.toArray(), db.customers.toArray()]);
+    const [shops, rows] = await Promise.all([ownerRows(db.shops), ownerRows(db.customers)]);
     setShopId(shops[0]?.id ?? "default-shop");
     setCustomers(rows.sort((a, b) => b.balance - a.balance));
   }
@@ -30,6 +32,7 @@ export function CustomersPanel() {
 
   async function handleAdd(event: FormEvent) {
     event.preventDefault();
+    await ownerContext(shopId);
     setFeedback("");
     if (!name.trim()) {
       setFeedback("Customer name is required.");

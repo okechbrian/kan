@@ -1,5 +1,5 @@
 export function ugx(amount: number): string {
-  if (!Number.isInteger(amount)) {
+  if (!Number.isSafeInteger(amount)) {
     throw new Error("UGX amounts must be integers");
   }
   const negative = amount < 0;
@@ -19,5 +19,5 @@ export function parseUgx(input: string): number {
 }
 
 export function isValidUgxAmount(amount: unknown): amount is number {
-  return typeof amount === "number" && Number.isInteger(amount) && amount >= 0;
+  return typeof amount === "number" && Number.isSafeInteger(amount) && amount >= 0;
 }

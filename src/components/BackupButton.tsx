@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Download, Upload } from "lucide-react";
+import { ownerContext } from "../lib/dashboard/access";
 import {
   exportBackup,
   downloadBackup,
@@ -32,7 +33,9 @@ export function BackupButton({ canRestore = true }: { canRestore?: boolean }) {
     try {
       setStatus("importing");
       setError(null);
+      await ownerContext();
       const data = await uploadBackup();
+      await ownerContext();
       await importBackup(data);
       setStatus("idle");
       window.location.reload();
