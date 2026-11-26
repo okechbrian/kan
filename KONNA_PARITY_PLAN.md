@@ -1,5 +1,6 @@
 # Kan × Konna Parity Master Plan (Uganda)
 
+**Active execution rule (D53, 2026-11-26):** Follow the sequential completion plan in `IMPLEMENTATION_PLAN.md`. Full Konna parity remains the goal. Exactly one step/substep may be active. Next: Step 01, the verified feature inventory; no application build is started by this planning task. Earlier current-phase/start commands are historical where they conflict with D53.
 **D52 reaffirmation (2026-11-26):** Full tool parity is the product target. The smaller grocery MVP is only an interim milestone. Prior phase-complete claims are withdrawn; screens, schemas and helpers require end-to-end acceptance evidence. Current public-site recheck confirms online store/catalogue sync, payment channels, inventory and specialist business capabilities remain relevant. The authenticated dashboard has not been exhaustively re-walked in this session.
 
 **Date:** 2026-11-25  

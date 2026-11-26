@@ -1,5 +1,6 @@
 # Locked plan — Kan
 
+**Active execution rule (D53, 2026-11-26):** Follow the sequential completion plan in `IMPLEMENTATION_PLAN.md`. Full Konna parity remains the goal. Exactly one step/substep may be active. Next: Step 01, the verified feature inventory; no application build is started by this planning task. Earlier current-phase/start commands are historical where they conflict with D53.
 **Date locked:** 2026-11-24 (supersedes the Duuka-only plan of 2026-09-02)
 **Authoritative scope:** [KAN_SCOPE.md](KAN_SCOPE.md) · **Decisions:** [DECISIONS.md](DECISIONS.md) D40–D47
 **Read with:** `PRODUCT_VISION.md`, `DOMAIN.md`, `UI_MAP.md`, `SYNC.md`, `IMPLEMENTATION_PLAN.md`.

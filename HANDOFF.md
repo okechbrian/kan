@@ -1,5 +1,6 @@
 # HANDOFF — current verified state
 
+**Active execution rule (D53, 2026-11-26):** Follow the sequential completion plan in `IMPLEMENTATION_PLAN.md`. Full Konna parity remains the goal. Exactly one step/substep may be active. Next: Step 01, the verified feature inventory; no application build is started by this planning task. Earlier current-phase/start commands are historical where they conflict with D53.
 **Date:** 2026-11-26
 **Project:** Kan (SME Management System)
 **Current work:** D51 audit remediation, explicitly authorized by the user. No new feature release is unlocked.

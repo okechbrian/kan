@@ -9,7 +9,98 @@ Builder agent: implement **one release at a time**. Current work is D51 audit re
 
 ---
 
-## Kan program (ACTIVE)
+## Sequential completion plan — D53 (ACTIVE, 2026-11-26)
+
+### Goal and completion definition
+
+Deliver the complete Kan platform mapped to every Konna capability in KAN_SCOPE.md and KONNA_PARITY_PLAN.md, adapted to Uganda and preserving the offline till. The grocery milestone is an intermediate field-test checkpoint. Existing code is reused and repaired, not automatically rebuilt. A screen, schema, adapter stub or helper does not count as a finished tool.
+
+Full completion means every reference capability has an inventory ID, a working implementation, tenant/role checks, appropriate offline behaviour, tests, deployed acceptance evidence and support/recovery instructions. External integrations need a real configured provider. Banking/crypto require licensed partners; absent partners remain blocked required work. No fake success or simulated balances. Existing exclusions (EFRIS, payroll, multi-currency, custody) remain governed by DECISIONS.md; any reference discrepancy must be explicitly decided in Step 01, not silently omitted or implemented.
+
+### One thing at a time
+
+- Exactly one step is active. Finish its complete user workflow before starting the next step. No parallel module builds, speculative scaffolding, or unrelated redesigns.
+- At step start, write its inventory IDs, current gap, acceptance fixture, affected files and dependencies into HANDOFF.md. Reuse verified parts and implement only the gap.
+- Add meaningful regression tests before changing money/stock behaviour. Run lint, tests and build; run standalone typecheck after the build has finished to avoid generated-file races. Run phone/desktop and offline checks when affected.
+- Update the capability inventory and HANDOFF with test evidence, limitations and click-through instructions. Commit and push that step to main without force. Verify the deployed commit and the affected workflow; a push alone is not a deployment pass.
+- Report the one completed step and stop. The next user instruction advances the sequence. Do not bundle several steps into one claimed completion.
+- If a dependency blocks a step, report the exact dependency and keep its status blocked. Do not silently skip it, invent credentials, or mark it complete. The owner can explicitly authorize a reordering.
+- States: not started / active / blocked / implemented / verified locally / verified deployed / field verified where required. Count feature-level completion, not page count or code coverage percentage.
+
+### Ordered work queue
+
+These are delivery steps, not an invented count of Konna's individual tools. Step 01 establishes the definitive feature count. Each row is a separate build/verification increment.
+
+| Step | One deliverable | Required exit evidence |
+|---|---|---|
+| 01 | Complete parity inventory and gap matrix | Walk public pages, authenticated dashboard and tutorials; give each capability an ID, source/date, current code, gap, dependency and acceptance test. Mark inaccessible flows unverified. Reconcile existing Uganda exclusions explicitly. Every known scope item maps to a later step. |
+| 02 | Current deployment baseline | Confirm main's deployed SHA, CI, critical fixes and rollback procedure; production health check passes without exposing secrets. |
+| 03 | Owner registration and business onboarding | A new isolated owner creates a business and first branch, then reaches their workspace; interrupted onboarding resumes without duplicate businesses. |
+| 04 | Account recovery | Actual reset email arrives; link expires, is single-use, revokes sessions and never leaks through a public response. Requires delivery provider. |
+| 05 | Branch-to-till connection | Existing cloud branch pairs to its local till with consistent IDs; no second disconnected business is created. Wrong-branch access fails. |
+| 06 | Staff permissions and lifecycle | Owner/manager/attendant matrix, PIN attendants, disable/reset and server authorization verified; attendants require no email. |
+| 07 | Owner branch overview | Owner switches authorized branches and sees correct cloud totals; a till's device binding stays fixed and attendants cannot switch. |
+| 08 | Physical two-device offline sync | Phone A sells offline, phone B sells concurrently, reconnect/replay/void/close converge with correct stock, deni and cash. Record physical-device evidence. |
+| 09 | Recovery and grocery field checkpoint | Fresh-device restore/re-pair, duplicate replay and browser-data loss drill pass; seven shop days reconcile and field defects are fixed before advancing. |
+| 10 | Full product catalogue | Required units, brands, variants/images and optional barcode/QR work through actual create/edit/archive flows with integer UGX and tenant isolation. |
+| 11 | Bulk and branch catalogue import | CSV/Excel validation, duplicate handling and permission/quota checks; branch copy starts stock at zero and opening movements reconcile. |
+| 12 | Batch and expiry stock accounting | Receive and sell batch-tracked goods; allocation, expiry and cost snapshots update the same stock ledger. Negative-stock till policy is preserved. |
+| 13 | Warehouse locations | Location balances and valuation reconcile with movements; selecting a location cannot mix tenants or inflate total stock. |
+| 14 | Stock transfers | Dispatch/receive/cancel/retry a transfer; source and destination movements occur exactly once with an auditable in-transit state. |
+| 15 | Supplier ledger | Supplier balances, payments and history reconcile with a known fixture, including permissions and cloud persistence. |
+| 16 | Purchasing and goods receipt | Purchase order through receipt/return updates batches, stock, cost and supplier payables atomically and idempotently. |
+| 17 | Sale pricing controls | Documented discount/promotion/override rules work and are audited; tenders still balance to the final total. |
+| 18 | Held orders and invoices | Hold/resume/cancel and invoice/pay-later flows have defined stock reservation and deni semantics; no premature completed sale. |
+| 19 | Returns and refunds | Full/partial returns link to original lines and payments; stock, credit, cash and reports reconcile on retry and after close. |
+| 20 | Receipt and invoice delivery | Shop branding/notes/customer details, printable receipts and real sharing/delivery work without requiring a printer to sell. |
+| 21 | Uganda MoMo collection | One supported real provider first, then the other as a separate substep; verify callback authenticity, amount/currency, duplicate/late events and outages. Requires merchant keys. |
+| 22 | Bank/card gateway payments | One Uganda-supported gateway end to end, then each required gateway in its own substep; no stored card data or fabricated confirmations. |
+| 23 | Payment reconciliation | Confirmations, settlements, gateway refunds and disputes reconcile to sales and a known provider fixture. |
+| 24 | Gift cards | Issue/redeem/refund with auditable value and concurrent-spend protection, using the provider/legal approach settled in Step 01. |
+| 25 | Public storefront catalogue | A fresh anonymous buyer on another device sees only the intended shop's published stock, with expiry/out-of-stock rules; publishing edits propagate correctly. |
+| 26 | Buyer checkout and order inbox | Server-priced cart/delivery, persisted order and merchant inbox roundtrip; no success without persistence, no overselling policy left undefined. |
+| 27 | Order fulfilment and delivery | Confirm/dispatch/track/deliver/cancel workflow reconciles reservations, stock, payment and customer notices. |
+| 28 | Storefront customisation | Shop identity, settings, custom links and domain behaviour work through a real buyer flow; domain purchase is an explicit dependency where needed. |
+| 29 | Reviews and customer feedback | Verified order linkage, submission, moderation and privacy controls work end to end. |
+| 30 | Social selling | Actual product/catalogue sharing produces working buyer links and traceable orders; each external channel integration is a separate substep. |
+| 31 | Marketplace connector | Complete one agreed connector, then subsequent connectors individually; edits/orders sync idempotently with observable retry/failure states. |
+| 32 | Merchant discovery | Published merchant profiles, category/town search and storefront links work for anonymous users across devices. |
+| 33 | Customer profiles and history | Counter/store/service histories and shop-scoped deni are accurate; consent/export/deletion rules are enforced. |
+| 34 | Loyalty and campaigns | Earn/redeem/reverse rules reconcile with sales/refunds; campaigns deliver through configured channels with consent controls. |
+| 35 | Staff activity and targets | Actual login/activity/order/service/production attribution and target reporting use real records with owner permissions. |
+| 36 | Booking services and availability | Service catalogue, staff calendar, conflict prevention, reschedule and cancellation work across devices. |
+| 37 | Booking deposits and completion | Deposit/refund, service completion and reminders reconcile to payments and customer history. |
+| 38 | Recipes and bill of materials | Versioned inputs, units, costing and shortages use documented domain rules and known fixtures. |
+| 39 | Production accounting | Production consumes inputs and receives outputs exactly once, with batches, waste and traceability; logging a note is insufficient. |
+| 40 | Remaining vertical workflows | Validate each of the 16 documented business types separately. Enable one pack at a time only after its specialist workflow passes; missing domain decisions block that pack. |
+| 41 | Twelve operational reports | Deliver one report per substep: sales, transactions, customers, expenses, inventory, purchases, refunds, staff, warehouse, restock, transfers, statement. Date filters, branch scope, CSV/print and fixtures must agree with ledgers. |
+| 42 | Live dashboard | KPI deltas, time series, alerts, branch selection and channel status reconcile to completed report fixtures across devices. |
+| 43 | Notification delivery | Complete each documented notification type individually; real events produce exactly-once or deduplicated delivery, with preferences and retry visibility. |
+| 44 | Scheduled reports | Real schedules deliver tenant-scoped reports and exports with correct Uganda business-day boundaries and failure recovery. |
+| 45 | Subscription billing | Trial, plan/cycle prices, quotas, invoices, renewals, failed payments, cancellation and referral rewards work with a real billing/payment provider; quota bypasses fail server-side. |
+| 46 | PWA installation and upgrades | Install, offline restart, update and recovery tested on target phones; migrations do not erase books or lose an outbox. |
+| 47 | Android client | Signed installable client sells offline and syncs against the same tenant/ledger contract; release/store requirements verified. |
+| 48 | iOS client | Equivalent signed-device and store acceptance on iOS; requires developer account and real device. |
+| 49 | Windows client | Installer, offline sale, safe upgrades and signing verified on Windows; requires signing credentials where applicable. |
+| 50 | Optional hardware | Scanner, then printer, then drawer, then POS register as separate substeps on actual hardware; none becomes mandatory for a sale. |
+| 51 | Tenant-data AI assistant | Real configured provider; tenant isolation, prompt-injection tests, cost limits, grounded answers and confirmation for actions pass. |
+| 52 | Partner banking | Licensed partner/KYC, actual balances, transfers, payouts and settlements reconcile; remains blocked until a real partner is available. |
+| 53 | Processor-backed crypto | Licensed/appropriate processor flow, verified confirmation and reconciliation; no custody, invented rates or balances. Required regulatory/partner decisions documented. |
+| 54 | Public site, support and data rights | Public copy matches actual availability; contact/newsletter/deletion/export requests persist and are fulfilled; legal/support ownership is confirmed. |
+| 55 | Launch operations | Monitoring/alerts, access review, restore drill, migration rollback, support runbooks and deployment recovery pass against production-like data. |
+| 56 | Full parity acceptance | Revisit every Step 01 inventory ID and every known reference workflow. No required item may remain a placeholder or silently deferred. Record unresolved external blocks explicitly; final owner walkthrough and field sign-off determine completion. |
+
+### Substep rule and provider dependencies
+
+Rows mentioning multiple providers, reports, hardware devices, channels or verticals are queues of substeps: finish one named substep, verify/deploy/report it, then stop. They are not permission for simultaneous builds. Step 01 expands these into individually numbered items once the reference inventory is verified. It also records email/payment/billing accounts, domains, channels, signing/store accounts, devices, AI credentials and licensed partners needed later, so the owner can prepare them without concurrent application builds.
+
+### Current position
+
+**Step 01 is next and not yet executed.** Creating this plan does not start application implementation, authenticate to another product, or count any delivery step as completed. Existing audit evidence remains in HANDOFF.md. Dates and total individual feature counts will be estimated only after Step 01; there is no evidence-based finish date yet.
+
+---
+
+## Previous Kan program (historical; replaced by D53 sequence)
 
 | Release | Build | Verify / exit |
 |---|---|---|
