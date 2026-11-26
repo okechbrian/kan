@@ -9,7 +9,7 @@ Builder agent: implement **one release at a time**. Current work is D51 audit re
 
 ---
 
-## Sequential completion plan — D53 (ACTIVE, 2026-11-26)
+## Sequential completion plan — D53, amended by D54 (ACTIVE, 2026-11-26)
 
 ### Goal and completion definition
 
@@ -29,11 +29,11 @@ Full completion means every reference capability has an inventory ID, a working 
 
 ### Ordered work queue
 
-These are delivery steps, not an invented count of Konna's individual tools. Step 01 establishes the definitive feature count. Each row is a separate build/verification increment.
+These are delivery steps, not an invented count of Konna's individual tools. Step 01 provides the D54 baseline; the definitive feature count remains open until reference gaps and compound rows are resolved. Each row is a separate build/verification increment.
 
 | Step | One deliverable | Required exit evidence |
 |---|---|---|
-| 01 | Complete parity inventory and gap matrix | Walk public pages, authenticated dashboard and tutorials; give each capability an ID, source/date, current code, gap, dependency and acceptance test. Mark inaccessible flows unverified. Reconcile existing Uganda exclusions explicitly. Every known scope item maps to a later step. |
+| 01 | Documented parity baseline (accepted under D54) | Preserve source/date, code, gaps, dependencies and fixtures in K01–K56. Authenticated reference/tutorial details are deferred and explicitly unverified; expand atomic IDs before each build and resolve all reference gaps before Step 56. |
 | 02 | Current deployment baseline | Confirm main's deployed SHA, CI, critical fixes and rollback procedure; production health check passes without exposing secrets. |
 | 03 | Owner registration and business onboarding | A new isolated owner creates a business and first branch, then reaches their workspace; interrupted onboarding resumes without duplicate businesses. |
 | 04 | Account recovery | Actual reset email arrives; link expires, is single-use, revokes sessions and never leaks through a public response. Requires delivery provider. |
@@ -96,7 +96,7 @@ Rows mentioning multiple providers, reports, hardware devices, channels or verti
 
 ### Current position
 
-**Step 01 is active, with reference-browser access blocked.** The provisional K01–K56 delivery-group matrix is in KONNA_PARITY_PLAN.md section 6. Public claims and targeted code gaps have been checked; the authenticated reference and tutorials still need verification, grouped items need expansion, and exclusions need explicit resolution. This is not a completed parity inventory or an application build. Step 02 has not started. Existing audit evidence remains in HANDOFF.md. Dates and definitive individual feature counts await Step 01 completion.
+**Step 01 is accepted as a documented baseline under D54. Step 02 is active.** Authenticated onboarding was inspected, but dashboard/tutorial coverage remains unverified. K01–K56 are delivery groups, not a definitive tool count. Expand each group into atomic IDs before its build; maintain deferred reference work through final parity acceptance. No application module is being built in Step 02.
 
 ---
 

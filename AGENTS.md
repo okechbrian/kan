@@ -1,6 +1,6 @@
 # AGENTS.md — rules for the coding agent
 
-**Active execution rule (D53, 2026-11-26):** Follow the sequential completion plan in `IMPLEMENTATION_PLAN.md`. Full Konna parity remains the goal. Exactly one step/substep may be active. Next: Step 01, the verified feature inventory; no application build is started by this planning task. Earlier current-phase/start commands are historical where they conflict with D53.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment verification is active. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 You are implementing **Kan**, an Uganda-first commerce platform built on the existing offline till. The former product name was Duuka; the till engine and its rules are preserved.
 
 Read these files before any code:

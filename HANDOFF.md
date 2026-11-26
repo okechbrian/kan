@@ -1,21 +1,22 @@
 # HANDOFF — current verified state
 
-**Active execution rule (D53, 2026-11-26):** Follow the sequential completion plan in `IMPLEMENTATION_PLAN.md`. Full Konna parity remains the goal. Exactly one step/substep may be active. Next: Step 01, the verified feature inventory; no application build is started by this planning task. Earlier current-phase/start commands are historical where they conflict with D53.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment verification is active. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 **Date:** 2026-11-26
 **Project:** Kan (SME Management System)
-**Current work:** D53 Step 01 capability inventory, started by the user's “buil” instruction. No application module build is active.
+**Current work:** D54 Step 02 deployment baseline. Step 01 accepted as documented baseline; no new application module build.
 
-## Step 01 — active, reference access blocked
+## Step 01 — accepted baseline; reference verification deferred
 
-Inventory IDs K01–K56 are mapped in `KONNA_PARITY_PLAN.md`, section 6. This is a provisional delivery-group inventory, not a definitive count of individual Konna tools. Public source checks and targeted code inspection are recorded separately from historical teardown claims. No tool is promoted to deployed/field verified by this documentation task.
+K01–K56 in KONNA_PARITY_PLAN.md map delivery groups to code, gaps, dependencies and fixtures. They are not individual tool counts. D54 records owner approval to proceed despite browser failures. Authenticated onboarding was inspected: 30 category entries, optional image, business/phone fields and required branch details. No test business was submitted. Authenticated dashboard and tutorials remain unverified. Expand atomic IDs before each feature build and resolve reference unknowns before K56 sign-off.
 
-Acceptance: inspect the public reference, authenticated dashboard and tutorials; expand grouped capabilities into individual source-backed IDs; map each to code, gaps, dependencies and a fixture; resolve scope discrepancies explicitly. Affected files: this handoff, IMPLEMENTATION_PLAN.md and KONNA_PARITY_PLAN.md. Dependencies: working reference-browser access, an authorized Konna session, remaining tutorial evidence and owner decisions where Uganda locks differ.
+Purchases, production, booking payments and warehouse accounting remain partial; existing badges do not prove complete workflows. Prior lint, 212 tests, build and typecheck passed at 1772e98; opt-in Neon and browser evidence below were not rerun for these documentation changes.
 
-Observed access failure: the existing Edge Konna tab was visible in the accessibility inventory, but selecting it returned “coordinate input geometry is unavailable”. Opening app.konna.io through the in-app browser timed out and reset the kernel. No authenticated reference workflow was inspected. Public pages were readable through web tools. Step 01 remains active/blocked; Step 02 must not start automatically.
+## Step 02 — active deployment baseline
 
-Newly confirmed code gaps: purchasing writes supplier balances and purchase records separately without goods-receipt stock movements; production logs output notes without consuming recipe inputs or receiving finished stock; booking deposits are fields without payment settlement; warehouse creation is not proof of location stock accounting. Existing “now” badges on these screens overstate full workflow availability. Repair each in its scheduled step and keep them out of completion counts.
+Inventory K02. Gap: production alias served commit 4bef800, while main is 1772e98 with audited security/sync fixes. Vercel project had no Git link, so pushes did not trigger deployments. Connected existing kan-sme project to okechbrian/kan using Vercel CLI; no new project or credentials created.
 
-Verification for this increment: `git diff --check`, `npm run lint`, `npm test` (212 passed, 2 opt-in integration tests skipped), `npm run build` (102 static pages generated) and standalone `npm run typecheck` after build all passed. No runtime files changed. Browser/offline and opt-in Neon integration results below remain prior evidence, not rerun results. Deployment identity remains unverified until Step 02.
+Acceptance: production metadata identifies main SHA, CI passes, health and critical negative checks pass, and rollback instructions name an appropriate audited target. Affected files: governance docs and this handoff; deployment metadata is external. Dependencies: existing GitHub/Vercel access and production configuration. Do not begin Step 03 until this baseline is verified.
+
 
 ## Status
 

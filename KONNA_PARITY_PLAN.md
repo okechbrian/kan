@@ -2,7 +2,7 @@
 
 ## 6. Step 01 provisional capability and gap register — 2026-11-26
 
-Status: **active / blocked on reference access**. K01–K56 below identify delivery groups, mapped one-to-one to D53 steps 01–56. They are not 56 individual tools. Compound rows must be expanded before Step 01 can pass. No definitive fully functional tool count is established yet; local till evidence in HANDOFF is bounded and does not establish complete platform parity.
+Status: **accepted documented baseline under D54; reference verification incomplete**. K01–K56 below identify delivery groups, mapped one-to-one to D53 steps 01–56. They are not 56 individual tools. Compound rows must be expanded before their individual builds; the owner accepted this baseline without a full reference walkthrough. No definitive fully functional tool count is established yet; local till evidence in HANDOFF is bounded and does not establish complete platform parity.
 
 Source key (all public checks dated 2026-11-26):
 
@@ -13,7 +13,7 @@ Source key (all public checks dated 2026-11-26):
 - H: saved teardown in KAN_SCOPE sections 2–4 and this document sections 3–4; **not independently reverified this session**.
 - K: Kan's own safety/operational scope in KAN_SCOPE, DOMAIN and SYNC; not asserted to be a Konna feature.
 
-Public marketing is evidence of advertised scope, not proof of reference runtime behavior. Authenticated dashboard and tutorial walkthroughs remain unverified: native Edge selection failed with unavailable input geometry; the in-app browser timed out. No account was created and no merchant records were changed.
+Public marketing is advertised scope, not proof of runtime behavior. Authenticated onboarding at `https://app.konna.io/auth/business/create` was inspected on 2026-11-26: searchable category selection, image upload, business name, multiple phone numbers, and at least one branch; branch form has name/address/country/state/city. The category selector contained 30 entries, exceeding the 16 public-facing groups. Map these before specialist builds; 30 categories do not establish 30 distinct workflows. General Goods was selected and forms inspected, but no business was submitted. Browser URL-policy enforcement then stopped control. Dashboard and tutorial walkthroughs remain unverified.
 
 Legend: **partial** means code/helpers or a bounded local workflow exist; **unverified** means acceptance evidence is missing; **blocked** means an external dependency prevents completion. Paths below are relative to repository root. Each fixture also requires tenant and role denial tests, integer UGX, retry safety and appropriate offline behavior. No row is declared fully deployed/field verified.
 
@@ -90,11 +90,11 @@ Panel filenames without a directory refer to `src/components/dashboard/`. Code e
 
 Konna advertises currency conversion (P), while Kan locks integer UGX and excludes multi-currency. Retain this as an explicit parity discrepancy pending owner decision; no FX implementation is authorized. Gift-card liability/issuer and exact Uganda gateway/channel coverage also require explicit product/provider decisions. Banking and crypto remain required partner-blocked scope; exclusion of custody is preserved. No new evidence here establishes payroll or EFRIS as a Konna tool; existing Kan exclusions remain intact. A Uganda adaptation cannot silently claim identical provider coverage.
 
-### Next action within Step 01
+### Deferred reference work under D54
 
-Restore browser access and inspect an authorized Konna session plus tutorials. Record exact paths and observed actions, expand the grouped register, then resolve the outstanding scope decisions. Until then, Step 01 has a useful baseline but has not met its exit criterion. Do not begin Step 02 or claim full Konna study is complete.
+Restore browser access and inspect an authorized Konna session plus tutorials. Record exact paths and observed actions, expand the grouped register, then resolve the outstanding scope decisions. D54 explicitly permits Step 02 to proceed using this baseline. Full Konna study is not complete; deferred evidence must be resolved before final parity sign-off.
 
-**Active execution rule (D53, 2026-11-26):** Follow the sequential completion plan in `IMPLEMENTATION_PLAN.md`. Full Konna parity remains the goal. Exactly one step/substep may be active. Next: Step 01, the verified feature inventory; no application build is started by this planning task. Earlier current-phase/start commands are historical where they conflict with D53.
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 02 deployment verification is active. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
 **D52 reaffirmation (2026-11-26):** Full tool parity is the product target. The smaller grocery MVP is only an interim milestone. Prior phase-complete claims are withdrawn; screens, schemas and helpers require end-to-end acceptance evidence. Current public-site recheck confirms online store/catalogue sync, payment channels, inventory and specialist business capabilities remain relevant. The authenticated dashboard has not been exhaustively re-walked in this session.
 
 **Date:** 2026-11-25  
