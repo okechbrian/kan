@@ -258,8 +258,8 @@ export async function readShopSnapshot(tx: Tx, identity: Identity) {
   rows.users = await tx.user.findMany({ where: { business_id: businessId, OR: [{ shop_id: shopId }, { shop_id: null }] } });
   for (const table of SYNC_TABLES.filter((name) => !["shops", "users", "sale_lines", "tenders"].includes(name))) rows[table] = await model(tx, table).findMany({ where: { shop_id: shopId } });
   const saleIds = rows.sales.map((s) => s.id);
-  rows.sale_lines = await tx.saleLine.findMany({ where: { sale_id: { in: saleIds } } });
-  rows.tenders = await tx.tender.findMany({ where: { sale_id: { in: saleIds } } });
+  rows.sale_lines = saleIds.length ? await tx.saleLine.findMany({ where: { sale_id: { in: saleIds } } }) : [];
+  rows.tenders = saleIds.length ? await tx.tender.findMany({ where: { sale_id: { in: saleIds } } }) : [];
   for (const p of rows.products) delete p.stock_qty;
   return rows;
 }

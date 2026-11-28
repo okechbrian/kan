@@ -58,3 +58,4 @@ jobs:
           python scripts/check-till-workflow.py --base http://localhost:3100
           python scripts/check-onboarding.py --base http://localhost:3100
           python scripts/check-recovery.py --base http://localhost:3100
+          python scripts/check-pairing.py --base http://localhost:3100

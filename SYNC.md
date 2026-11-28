@@ -125,3 +125,9 @@ Result: 3 sale rows exist. Stock movements: −2 and −1. Qty can go negative. 
 - Same sale UUID pushed twice; only one row
 - Stock qty on each client equals sum of movements after pull
 - Outbox sale completes while `fetch` is failed (offline)
+
+## Cloud branch pairing — Step 05 (2026-11-28)
+
+`POST /api/platform/pair` requires the owner session, existing branch ID, stable device UUID and owner PIN. First connection sets the native business owner PIN; subsequent connections verify it. One serializable transaction preserves business/shop IDs, resumes or issues a branch-bound device and reads a full protocol-v2 snapshot. Foreign tenants and device rebinding fail. It never creates another business or shop. Responses are private/no-store; cross-origin requests are refused when Origin is supplied.
+
+The browser validates branch/parent IDs and integer amounts, then commits books and device credentials together in Dexie without outbox echo. Stock and deni are derived from ledgers. Interrupted activation resumes from committed device records. Other-branch books or unsent work block import: keep them and use an empty browser profile. Legacy create refuses signed-in cloud accounts. Offline PIN selection respects the paired branch; normal sync retains its scoped token. Physical two-device and recovery drills remain Steps 08–09.

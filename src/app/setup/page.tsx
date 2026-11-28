@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { db } from "../../lib/db";
 import { setSession } from "../../lib/session";
@@ -298,6 +299,7 @@ export default function SetupPage() {
             <p className="mb-4 text-center text-sm text-kan-navy/70">
               Set up your offline till
             </p>
+            <Link href="/app/workspace" className="btn-secondary w-full">Connect a cloud workspace branch</Link>
             <button
               type="button"
               onClick={() => setMode("create")}

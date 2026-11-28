@@ -157,7 +157,7 @@ export default function BusinessBranchPage() {
                       </p>
                     </div>
                   </div>
-                  <Link href="/setup" className="btn-secondary text-xs">
+                  <Link href={`/app/business/pair?shop=${encodeURIComponent(shop.id)}`} className="btn-secondary text-xs">
                     Pair till
                   </Link>
                 </article>

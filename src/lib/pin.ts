@@ -32,7 +32,14 @@ export async function verifyPin(pin: string, hash: string): Promise<boolean> {
 export async function shopIdForUser(user: {
   shop_id: string | null;
   business_id: string;
+  role?: string;
 }): Promise<string | null> {
+  const bound = typeof localStorage === "undefined" ? null : localStorage.getItem("duuka_paired_shop_id");
+  if (bound) {
+    const { db } = await import("./db");
+    const shop = await db.shops.get(bound);
+    return shop?.active && shop.business_id === user.business_id && (user.role === "owner" || user.shop_id === bound) ? bound : null;
+  }
   if (user.shop_id) return user.shop_id;
   const { db } = await import("./db");
   const shops = await db.shops

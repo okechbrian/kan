@@ -29,6 +29,9 @@ async function getPrisma() {
 }
 
 export async function POST(req: Request) {
+  if (/(?:^|;\s*)kan_session=/.test(req.headers.get("cookie") ?? "")) {
+    return NextResponse.json({ error: "Use your existing cloud workspace to connect a branch instead of creating another business." }, { status: 409 });
+  }
   const prisma = await getPrisma();
   if (!prisma) {
     return NextResponse.json(

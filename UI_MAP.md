@@ -1,6 +1,6 @@
 # UI map — Kan
 
-**Step 03 addition (2026-11-26):** `/app/workspace` is the cloud-session landing after owner signup/sign-in. It shows the authenticated business and first branch, retry/sign-out states and existing-till link. It does not unlock local books or pair a cloud branch; pairing remains Step 05. `/app/signup` and `/app/business/create` resume an existing signed-in workspace; incomplete form details persist in this tab without passwords.
+**Step 03 addition (2026-11-26):** `/app/workspace` is the cloud-session landing after owner signup/sign-in. It shows the authenticated business and first branch, retry/sign-out states and existing-till link. It does not unlock local books. Step 05 adds Connect till links to `/app/business/pair?shop=<id>`; owner session and PIN authorize atomic installation, then `/pin` unlocks the paired branch offline. `/app/signup` and `/app/business/create` resume an existing signed-in workspace; incomplete form details persist in this tab without passwords.
 
 
 This file has two parts:

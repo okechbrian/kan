@@ -60,9 +60,9 @@ export function WorkspacePanel() {
     {state === "logout-error" ? <p role="alert">Could not sign out. Check your connection and try again.</p> : null}
     <section className="card space-y-4" aria-labelledby="workspace-branches">
       <h2 id="workspace-branches" className="text-xl font-bold">Your branches</h2>
-      {workspace.shops.length ? workspace.shops.map((shop) => <article key={shop.id} className="rounded-xl border border-navy/15 p-4"><h3 className="break-words font-bold">{shop.name}</h3><p className="text-sm text-navy/70">Currency: {shop.currency}</p></article>) : <p>No branch is available. Open branch settings to finish your business setup.</p>}
+      {workspace.shops.length ? workspace.shops.map((shop) => <article key={shop.id} className="rounded-xl border border-navy/15 p-4"><h3 className="break-words font-bold">{shop.name}</h3><p className="text-sm text-navy/70">Currency: {shop.currency}</p>{workspace.account.role === "owner" ? <Link href={`/app/business/pair?shop=${encodeURIComponent(shop.id)}`} className="btn-primary mt-3">Connect till</Link> : null}</article>) : <p>No branch is available. Open branch settings to finish your business setup.</p>}
       {workspace.account.role === "owner" ? <Link href="/app/business/branch" className="btn-secondary">View branch settings</Link> : null}
     </section>
-    <section className="card space-y-3"><h2 className="text-xl font-bold">Your next step</h2><p>Your cloud workspace is ready. Connecting this branch to a counter till is a separate setup step. Existing tills can keep selling offline.</p><Link href="/pos" className="btn-primary">Open existing till</Link></section>
+    <section className="card space-y-3"><h2 className="text-xl font-bold">Your next step</h2><p>Connect a branch above to save its books on this device. Existing tills can keep selling offline.</p><Link href="/pos" className="btn-primary">Open existing till</Link></section>
   </div>;
 }

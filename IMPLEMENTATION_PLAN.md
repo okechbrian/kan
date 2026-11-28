@@ -96,7 +96,7 @@ Rows mentioning multiple providers, reports, hardware devices, channels or verti
 
 ### Current position
 
-**Step 01 is accepted as a documented baseline under D54. Step 03 is verified deployed at 672ab2c. Step 04 recovery is active (Resend, D55); missing credentials/sender/test inbox block actual delivery sign-off. Step 05 has not started.** Authenticated onboarding was inspected, but dashboard/tutorial coverage remains unverified. K01–K56 are delivery groups, not a definitive tool count. Expand each group into atomic IDs before its build; maintain deferred reference work through final parity acceptance. Step 03 acceptance evidence and the remaining till-pairing boundary are in HANDOFF.md.
+**Step 01 is accepted as a documented baseline under D54. Step 03 is verified deployed at 672ab2c. Step 04 recovery is active (Resend, D55); missing credentials/sender/test inbox block actual delivery sign-off. D56 authorizes Step 05 now; Step 04 live delivery remains deferred and incomplete.** Authenticated onboarding was inspected, but dashboard/tutorial coverage remains unverified. K01–K56 are delivery groups, not a definitive tool count. Expand each group into atomic IDs before its build; maintain deferred reference work through final parity acceptance. Step 03 acceptance evidence and the remaining till-pairing boundary are in HANDOFF.md.
 
 ---
 

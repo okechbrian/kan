@@ -1,9 +1,19 @@
 # HANDOFF — current verified state
 
-**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 is verified deployed. Step 04 account recovery is active with Resend; live delivery requires configured credentials, a verified sender and a controlled inbox. Step 05 is not started. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
-**Date:** 2026-11-26
+**Active execution rule (D54, 2026-11-26):** Follow the sequential plan in `IMPLEMENTATION_PLAN.md`. Step 01 is an accepted documented baseline; authenticated reference details remain deferred and unverified. Step 03 is verified deployed. D56 (2026-11-28): defer Step 04 live Resend acceptance; keep it incomplete. Step 05 branch-to-till connection is active, one step at a time. Full Konna parity, one step at a time, and all Uganda/offline safeguards remain required.
+**Date:** 2026-11-28
 **Project:** Kan (SME Management System)
-**Current work:** Step 04 account recovery, authorized by “next”. Resend selected; production key, verified sender and controlled test inbox are pending.
+**Current work:** Step 05 branch-to-till connection, authorized by D56. Resend live acceptance remains deferred.
+
+## Step 05 — implemented; cloud sync acceptance remains open
+
+K05.01 owner-session/tenant authorization; K05.02 owner PIN setup/verification; K05.03 idempotent branch-bound device issuance; K05.04 atomic snapshot/credential installation without echoing cloud rows to outbox; K05.05 offline unlock and sync roundtrip. Acceptance: registered cloud business/shop IDs stay unchanged, wrong tenant/PIN/device binding fails, retries create no duplicate business/shop/device, existing books/unsent work are preserved, paired till works offline. Affected files: pairing API/service, local install helper, workspace connection screen/links, PIN branch selection, tests. Dependencies: existing Neon, account session, Dexie and sync v2; no Resend or schema migration required.
+
+Step 05 implementation: existing cloud business/branch IDs are retained. Only the native PIN owner and scoped device are created when missing; retries reuse the device/token. Local import validates tenant/parent IDs and integer money, commits snapshot and credentials atomically without outbox echo, derives ledger balances and resumes interrupted activation. Other-branch books and unsent changes are preserved and block import. Owner PIN selects the device-bound branch. No schema migration or Resend dependency.
+
+Checks so far: lint, typecheck, production build (105 pages), 236 default tests passed (12 opt-in skipped). Seven new tests cover rollback, interrupted activation, isolation and no outbox echo. Isolated Neon pairing passed with fixture cleanup, including idempotency, wrong PIN/tenant/device denials, second branch and authenticated protocol-v2 pull. The initial run exceeded the 45-second transaction limit; empty sales now skip two unnecessary queries, and the final run passed with the same limit. Headless Chrome at 360/1440px passed lost-response retry with a stable device ID, cloud ID preservation, offline PIN unlock and cash sale. Browser transport is mocked; Neon tests exercise real transactions separately. Existing offline till cash/expense/close/access checks passed. Physical two-device and seven shop-day acceptance remain Steps 08–09. Step 06 has not started; Resend live acceptance stays deferred.
+
+Additional Step 05 regression results: onboarding transport-failure and recovery UI checks passed at 360/1440px; no real email was sent. Final default suite, lint, production build and typecheck passed after expanding snapshot integer checks to tendered cash/change/balance. Supplemental Neon sync was not green: first run passed duplicate replay/isolation but the credit flow returned 503; isolated rerun again passed replay/isolation, then credit/collection/void/close exceeded 180 seconds and cleanup exceeded its hook timeout. This is an outstanding live sync reliability/acceptance gap, not a completed physical two-device check. The generated manifest scopes manual cleanup to those fixture IDs; manual cleanup completed and verified that both generated businesses were absent. Keep Step 05 active until this cloud regression is resolved; do not advance to Step 06.
 
 ## Step 04 — implemented; live-delivery sign-off blocked
 
@@ -27,7 +37,7 @@ Step 04 verification before commit:
 - Onboarding transport-failure browser checks and offline cash-sale/expense/close/access workflow passed. Render gate: 63 routes x four widths = 252 cases passed without HTTP/JS/overflow failures.
 - Built API: health 200 with passwordRecovery=not_configured, valid recovery request 503 recovery_unavailable, malformed reset token 400 invalid_reset_token. No public tokens or notification IDs returned.
 
-Current blocker: production has neither RESEND_API_KEY nor EMAIL_FROM, and no controlled test inbox has been supplied. The code checkpoint may be committed/deployed with honest 503 behavior; Step 04 is not complete and Step 05 must not start until real delivery acceptance is recorded or the owner explicitly reorders. Post-push CI and deployment evidence belong to the commit's checks. No actual email was sent in this implementation run.
+Current blocker: production has neither RESEND_API_KEY nor EMAIL_FROM, and no controlled test inbox has been supplied. The code checkpoint may be committed/deployed with honest 503 behavior; Step 04 is not complete and D56 records the explicit owner reorder to Step 05 while delivery acceptance remains deferred. Post-push CI and deployment evidence belong to the commit's checks. No actual email was sent in this implementation run.
 
 ## Step 03 — owner registration and onboarding, verified deployed
 
